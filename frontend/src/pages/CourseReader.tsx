@@ -181,7 +181,6 @@ export const CourseReader: React.FC = () => {
             setHasExercises(true);
           }
         } catch (e) {
-          // Exercises don't exist or failed to fetch, keep hasExercises as false
           console.log('No exercises available for this module.');
         }
 
@@ -227,9 +226,7 @@ export const CourseReader: React.FC = () => {
     if (!courseId) return;
     try {
       setExportingPDF(true);
-      // Directly trigger download via browser
       window.location.href = `/api/courses/${courseId}/export-pdf`;
-      // Adding a small visual timeout to clear exporting state
       setTimeout(() => setExportingPDF(false), 2000);
     } catch (err) {
       console.error('Error triggering PDF download:', err);
@@ -240,9 +237,9 @@ export const CourseReader: React.FC = () => {
   if (loadingTOC) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-dark-950 text-white">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 text-brand-500 animate-spin" />
-          <p className="text-sm text-dark-400 font-mono">Chargement du cours...</p>
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 text-white animate-spin" />
+          <p className="text-xs text-dark-400 font-mono">Chargement du cours...</p>
         </div>
       </div>
     );
@@ -251,15 +248,15 @@ export const CourseReader: React.FC = () => {
   if (error || !toc) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-dark-950 text-white p-6">
-        <div className="flex flex-col items-center text-center max-w-md p-6 rounded-xl border border-dark-900 bg-dark-900/50 space-y-4">
-          <AlertCircle className="h-12 w-12 text-rose-500" />
-          <h3 className="text-lg font-bold text-white">Une erreur est survenue</h3>
-          <p className="text-sm text-dark-400 font-sans">{error || 'Le cours demandé est introuvable.'}</p>
+        <div className="flex flex-col items-center text-center max-w-sm p-5 rounded-md border border-dark-850 bg-dark-900/50 space-y-3">
+          <AlertCircle className="h-10 w-10 text-rose-500" />
+          <h3 className="text-sm font-semibold text-white">Une erreur est survenue</h3>
+          <p className="text-xs text-dark-400 leading-relaxed">{error || 'Le cours demandé est introuvable.'}</p>
           <Link 
             to="/" 
-            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 transition-all"
+            className="flex items-center gap-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 px-3.5 py-1.5 text-xs font-semibold text-zinc-950 transition-all cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             Retour à l'accueil
           </Link>
         </div>
@@ -288,17 +285,17 @@ export const CourseReader: React.FC = () => {
       {/* 2. Main Reader Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Header Bar */}
-        <header className="flex items-center justify-between border-b border-dark-900/60 px-8 py-4 bg-dark-900/40 backdrop-blur-md shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="flex items-center justify-between border-b border-dark-850 px-6 py-3 bg-dark-900/40 backdrop-blur-md shrink-0">
+          <div className="flex items-center gap-3">
             <Link
               to={`/course/${courseId}`}
-              className="flex items-center gap-1.5 text-xs text-dark-400 hover:text-white transition-colors bg-dark-800/80 px-2.5 py-1.5 rounded-lg border border-dark-900/60 font-semibold"
+              className="flex items-center gap-1.5 text-[11px] text-dark-400 hover:text-white transition-colors bg-dark-800/50 px-2.5 py-1.5 rounded-md border border-dark-850 font-medium"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Syllabus du cours
+              Syllabus
             </Link>
-            <div className="h-4 w-px bg-dark-700" />
-            <span className="text-xs font-mono text-dark-400 font-semibold truncate max-w-[200px] sm:max-w-[400px]">
+            <div className="h-3.5 w-px bg-dark-800" />
+            <span className="text-xs font-mono text-dark-400 font-medium truncate max-w-[150px] sm:max-w-[300px]">
               {toc.title}
             </span>
           </div>
@@ -306,25 +303,25 @@ export const CourseReader: React.FC = () => {
           <button
             onClick={handleExportPDF}
             disabled={exportingPDF}
-            className="flex items-center gap-2 rounded-lg border border-dark-900 bg-dark-850 hover:bg-dark-800 px-5 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-md border border-dark-800 bg-dark-900 hover:bg-dark-800 px-3 py-1.5 text-xs font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer"
           >
             {exportingPDF ? (
               <Loader2 className="h-3.5 w-3.5 text-white animate-spin shrink-0" />
             ) : (
-              <Download className="h-3.5 w-3.5 text-brand-500 shrink-0" />
+              <Download className="h-3.5 w-3.5 text-dark-400 shrink-0" />
             )}
             PDF Complet
           </button>
         </header>
 
         {/* Reader Core Content Panel */}
-        <div className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
-          <div className="max-w-3xl mx-auto">
+        <div className="flex-1 overflow-y-auto px-6 md:px-10 py-8 custom-scrollbar">
+          <div className="max-w-2.5xl mx-auto">
             {activeTab === 'raw_files' ? (
-              <div className="space-y-6 animate-fadeIn">
-                <div className="flex items-center gap-2 mb-2 select-none border-b border-dark-800 pb-3">
-                  <FileText className="h-5 w-5 text-indigo-400" />
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">Explorateur physique des fichiers (RAW)</h2>
+              <div className="space-y-4 animate-fadeIn">
+                <div className="flex items-center gap-2 mb-1 select-none border-b border-dark-850 pb-2">
+                  <FileText className="h-4.5 w-4.5 text-dark-400" />
+                  <h2 className="text-xs font-semibold text-white">Explorateur physique des fichiers (RAW)</h2>
                 </div>
                 <FileExplorer courseId={courseId || ''} />
               </div>
@@ -332,19 +329,18 @@ export const CourseReader: React.FC = () => {
               <>
                 {/* Partial Generation Warning Banner */}
                 {toc.partial && (
-                  <div className="mb-8 rounded-xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-md p-5 text-left relative overflow-hidden">
-                    <div className="absolute top-0 right-0 -mr-8 -mt-8 h-20 w-20 bg-amber-500/10 blur-2xl rounded-full pointer-events-none" />
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <h4 className="text-sm font-bold text-white">Génération Interrompue (Mode RAW / Récupération)</h4>
-                          <p className="text-xs text-dark-300 leading-relaxed max-w-xl">
-                            La génération de ce cours a été interrompue en cours de route. Les chapitres déjà rédigés restent entièrement lisibles. Vous pouvez relancer la génération à tout moment pour la compléter !
+                  <div className="mb-6 rounded-md border border-amber-500/20 bg-amber-950/15 p-4 text-left relative overflow-hidden">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <h4 className="text-xs font-semibold text-white">Génération Interrompue (Mode RAW)</h4>
+                          <p className="text-[11px] text-dark-400 leading-relaxed max-w-xl">
+                            La génération de ce cours a été interrompue en cours de route. Les chapitres rédigés restent lisibles. Vous pouvez relancer la génération pour la compléter !
                           </p>
                           {toc.error && (
-                            <div className="mt-2 rounded bg-dark-950/60 border border-dark-800/80 p-2.5 font-mono text-[10px] text-amber-400/95 overflow-x-auto select-text">
-                              Détail de l'erreur : {toc.error}
+                            <div className="mt-1.5 rounded bg-dark-950/60 border border-dark-850/50 p-2 font-mono text-[9px] text-amber-400/90 overflow-x-auto select-text">
+                              Erreur : {toc.error}
                             </div>
                           )}
                         </div>
@@ -352,54 +348,50 @@ export const CourseReader: React.FC = () => {
                       
                       <button
                         onClick={handleResume}
-                        className="shrink-0 flex items-center gap-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 px-4 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-amber-600/10 select-none"
+                        className="shrink-0 flex items-center gap-1 rounded-md bg-amber-600 hover:bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white transition-all cursor-pointer"
                       >
-                        <Sparkles className="h-3.5 w-3.5 fill-white/10" />
-                        Reprendre la génération
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Reprendre
                       </button>
                     </div>
                   </div>
                 )}
 
                 {/* Module Breadcrumb & Chapter Title */}
-                <div className="space-y-4 mb-8">
-                  <div className="text-xs font-mono text-brand-500 font-semibold">
+                <div className="space-y-2 mb-6">
+                  <div className="text-[10px] font-mono text-dark-400 font-medium">
                     CHAPITRE {currentIndex + 1} SUR {submodulesList.length}
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                  <h1 className="text-2xl font-semibold text-white tracking-tight">
                     {activeSubmodule.title}
                   </h1>
 
                   {/* Tabs Selector (Theory vs Exercises ONLY, RAW is in sidebar) */}
                   {hasExercises && (
-                    <div className="flex border-b border-dark-900/60 pt-4 gap-4 select-none">
+                    <div className="flex border-b border-dark-850 pt-3 gap-4 select-none">
                       <button
                         onClick={() => setActiveTab('theory')}
-                        className={`flex items-center gap-2 pb-3 text-sm font-semibold transition-all relative ${
-                          activeTab === 'theory'
-                            ? 'text-white'
-                            : 'text-dark-400 hover:text-white'
+                        className={`flex items-center gap-1.5 pb-2 text-xs font-semibold transition-all relative ${
+                          activeTab === 'theory' ? 'text-white' : 'text-dark-400 hover:text-white'
                         }`}
                       >
-                        <BookOpen className="h-4.5 w-4.5" />
+                        <BookOpen className="h-3.5 w-3.5" />
                         Cours Théorique
                         {activeTab === 'theory' && (
-                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500 rounded-full" />
+                          <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-white rounded-full" />
                         )}
                       </button>
 
                       <button
                         onClick={() => setActiveTab('exercises')}
-                        className={`flex items-center gap-2 pb-3 text-sm font-semibold transition-all relative ${
-                          activeTab === 'exercises'
-                            ? 'text-white font-bold'
-                            : 'text-dark-400 hover:text-white'
+                        className={`flex items-center gap-1.5 pb-2 text-xs font-semibold transition-all relative ${
+                          activeTab === 'exercises' ? 'text-white font-semibold' : 'text-dark-400 hover:text-white'
                         }`}
                       >
-                        <PenTool className="h-4.5 w-4.5" />
+                        <PenTool className="h-3.5 w-3.5" />
                         Exercices Pratiques
                         {activeTab === 'exercises' && (
-                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500 rounded-full" />
+                          <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-white rounded-full" />
                         )}
                       </button>
                     </div>
@@ -407,19 +399,19 @@ export const CourseReader: React.FC = () => {
                 </div>
 
                 {/* Main Text Content */}
-                <div className="relative min-h-[40vh] pb-16">
+                <div className="relative min-h-[40vh] pb-10">
                   {loadingContent ? (
-                    <div className="space-y-6 py-6 animate-pulse">
-                      <div className="h-6 w-1/3 bg-dark-800 rounded" />
-                      <div className="space-y-3">
-                        <div className="h-4 w-full bg-dark-800 rounded" />
-                        <div className="h-4 w-full bg-dark-800 rounded" />
-                        <div className="h-4 w-5/6 bg-dark-800 rounded" />
+                    <div className="space-y-4 py-4 animate-pulse">
+                      <div className="h-5 w-1/4 bg-dark-800 rounded" />
+                      <div className="space-y-2">
+                        <div className="h-3.5 w-full bg-dark-800 rounded" />
+                        <div className="h-3.5 w-full bg-dark-800 rounded" />
+                        <div className="h-3.5 w-5/6 bg-dark-800 rounded" />
                       </div>
-                      <div className="h-48 w-full bg-dark-900 rounded border border-dark-800" />
-                      <div className="space-y-3">
-                        <div className="h-4 w-full bg-dark-800 rounded" />
-                        <div className="h-4 w-4/5 bg-dark-800 rounded" />
+                      <div className="h-36 w-full bg-dark-900 rounded border border-dark-850" />
+                      <div className="space-y-2">
+                        <div className="h-3.5 w-full bg-dark-800 rounded" />
+                        <div className="h-3.5 w-4/5 bg-dark-800 rounded" />
                       </div>
                     </div>
                   ) : activeTab === 'theory' ? (
@@ -430,40 +422,40 @@ export const CourseReader: React.FC = () => {
                 </div>
 
                 {/* Footer Navigation Bar */}
-                <div className="flex items-center justify-between border-t border-dark-900/60 pt-8 mt-12 pb-16">
+                <div className="flex items-center justify-between border-t border-dark-850 pt-6 mt-8 pb-12">
                   <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
-                    className="flex items-center gap-1 text-sm font-semibold text-dark-400 hover:text-white disabled:opacity-30 disabled:hover:text-dark-400 transition-colors"
+                    className="flex items-center gap-0.5 text-xs font-medium text-dark-400 hover:text-white disabled:opacity-30 disabled:hover:text-dark-400 transition-colors cursor-pointer"
                   >
-                    <ChevronLeft className="h-5 w-5" />
+                    <ChevronLeft className="h-4.5 w-4.5" />
                     Précédent
                   </button>
 
                   {currentIndex < submodulesList.length - 1 ? (
                     <button
                       onClick={handleNext}
-                      className="flex items-center gap-1 rounded-lg bg-dark-800 border border-dark-900 hover:bg-dark-700 px-4 py-2.5 text-sm font-bold text-white transition-all"
+                      className="flex items-center gap-1 rounded-md bg-dark-800 border border-dark-700/60 hover:bg-dark-700 px-3.5 py-1.5 text-xs font-medium text-white transition-all cursor-pointer"
                     >
                       Suivant
-                      <ChevronRight className="h-5 w-5" />
+                      <ChevronRight className="h-4.5 w-4.5" />
                     </button>
                   ) : (
                     <Link
                       to="/"
-                      className="flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white transition-all shadow-lg shadow-emerald-600/20 animate-pulse"
+                      className="flex items-center gap-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 px-4 py-1.5 text-xs font-semibold text-zinc-950 transition-all shadow-sm"
                     >
                       Terminer le cours
-                      <CheckCircle2 className="h-4.5 w-4.5" />
+                      <CheckCircle2 className="h-4 w-4" />
                     </Link>
                   )}
                 </div>
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center h-[50vh] space-y-4">
-                <FileText className="h-12 w-12 text-dark-600" />
-                <h3 className="text-lg font-bold text-white">Aucun chapitre sélectionné</h3>
-                <p className="text-sm text-dark-400 max-w-xs">
+              <div className="flex flex-col items-center justify-center text-center h-[50vh] space-y-3 select-none">
+                <FileText className="h-10 w-10 text-dark-600" />
+                <h3 className="text-xs font-semibold text-white">Aucun chapitre sélectionné</h3>
+                <p className="text-[11px] text-dark-400 max-w-xs leading-relaxed">
                   Veuillez sélectionner un chapitre dans le plan de cours sur la gauche pour commencer la lecture.
                 </p>
               </div>
@@ -478,7 +470,7 @@ export const CourseReader: React.FC = () => {
         onClose={() => {
           setIsGenModalOpen(false);
           setReconnectJobId(null);
-          fetchTOC(); // Refresh TOC when closed
+          fetchTOC();
         }}
         onSuccess={() => {
           setIsGenModalOpen(false);

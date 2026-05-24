@@ -112,7 +112,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
     return nodes.map((node) => {
       const isExpanded = !!expandedDirs[node.path];
       const isSelected = selectedFilePath === node.path;
-      const paddingLeft = `${depth * 12 + 8}px`;
+      const paddingLeft = `${depth * 10 + 6}px`;
 
       if (node.is_dir) {
         return (
@@ -120,17 +120,17 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
             <button
               onClick={() => toggleDirectory(node.path)}
               style={{ paddingLeft }}
-              className="w-full flex items-center gap-1.5 py-1.5 text-xs text-dark-300 hover:text-white hover:bg-dark-900/40 rounded transition-all text-left"
+              className="w-full flex items-center gap-1.5 py-1 text-xs text-dark-300 hover:text-white hover:bg-dark-800/60 rounded-md transition-all text-left cursor-pointer"
             >
               {isExpanded ? (
-                <ChevronDown className="h-3.5 w-3.5 text-dark-400 shrink-0" />
+                <ChevronDown className="h-3.5 w-3.5 text-dark-500 shrink-0" />
               ) : (
-                <ChevronRight className="h-3.5 w-3.5 text-dark-400 shrink-0" />
+                <ChevronRight className="h-3.5 w-3.5 text-dark-500 shrink-0" />
               )}
               {isExpanded ? (
-                <FolderOpen className="h-4 w-4 text-brand-400 shrink-0" />
+                <FolderOpen className="h-3.5 w-3.5 text-dark-300 shrink-0" />
               ) : (
-                <Folder className="h-4 w-4 text-brand-500 shrink-0" />
+                <Folder className="h-3.5 w-3.5 text-dark-400 shrink-0" />
               )}
               <span className="truncate font-medium">{node.name}</span>
             </button>
@@ -147,18 +147,18 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
           <button
             key={node.path}
             onClick={() => handleFileClick(node.path)}
-            style={{ paddingLeft: `${depth * 12 + 22}px` }}
-            className={`w-full flex items-center justify-between py-1.5 pr-2 text-xs rounded transition-all text-left ${
+            style={{ paddingLeft: `${depth * 10 + 20}px` }}
+            className={`w-full flex items-center justify-between py-1 pr-2 text-xs rounded-md transition-all text-left cursor-pointer border ${
               isSelected
-                ? 'bg-brand-500/10 text-white border-l-2 border-brand-500 font-semibold pl-[20px]'
-                : 'text-dark-400 hover:text-dark-200 hover:bg-dark-900/20'
+                ? 'bg-dark-800 text-white border-dark-700/50 font-medium pl-[18px]'
+                : 'text-dark-400 hover:text-dark-200 hover:bg-dark-800/40 border-transparent'
             }`}
           >
             <div className="flex items-center gap-1.5 truncate">
               {isJson ? (
-                <FileCode className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                <FileCode className="h-3.5 w-3.5 text-dark-400 shrink-0" />
               ) : (
-                <FileText className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+                <FileText className="h-3.5 w-3.5 text-dark-400 shrink-0" />
               )}
               <span className="truncate">{node.name}</span>
             </div>
@@ -172,15 +172,15 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
   };
 
   return (
-    <div className="flex border border-dark-800 bg-dark-950/20 rounded-2xl overflow-hidden h-[65vh] shadow-xl backdrop-blur-md">
+    <div className="flex border border-dark-850 bg-dark-900/40 rounded-md overflow-hidden h-[65vh] shadow-sm backdrop-blur-md">
       {/* File Tree Sidebar */}
-      <div className="w-1/3 border-r border-dark-800 flex flex-col bg-dark-950/40 select-none">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-dark-850">
-          <span className="text-[10px] font-bold text-white uppercase tracking-wider">Arborescence physique</span>
+      <div className="w-1/3 border-r border-dark-850 flex flex-col bg-dark-900/60 select-none">
+        <div className="flex items-center justify-between px-3 py-2.5 border-b border-dark-850">
+          <span className="text-xs font-semibold text-white">Arborescence physique</span>
           <button 
             onClick={fetchFilesTree}
             disabled={loadingTree}
-            className="text-dark-400 hover:text-white p-1 hover:bg-dark-900 rounded transition-all"
+            className="text-dark-400 hover:text-white p-1 hover:bg-dark-800 rounded-md transition-all cursor-pointer"
             title="Rafraîchir"
           >
             <RefreshCw className={`h-3 w-3 ${loadingTree ? 'animate-spin' : ''}`} />
@@ -189,11 +189,11 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5 custom-scrollbar">
           {loadingTree && filesTree.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 space-y-2 text-dark-500 text-xs">
-              <Loader2 className="h-4 w-4 animate-spin text-brand-500" />
+              <Loader2 className="h-4.5 w-4.5 animate-spin text-dark-300" />
               <span>Indexation en cours...</span>
             </div>
           ) : error ? (
-            <div className="p-3 text-[11px] text-rose-400 text-center">
+            <div className="p-3 text-[11px] text-rose-400 text-center font-medium">
               {error}
             </div>
           ) : (
@@ -203,20 +203,20 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
       </div>
 
       {/* Raw Content Viewer */}
-      <div className="w-2/3 flex flex-col bg-dark-950/20">
+      <div className="w-2/3 flex flex-col bg-dark-950/40">
         {selectedFilePath ? (
           <div className="flex flex-col h-full overflow-hidden">
             {/* File Info Bar */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-dark-850 bg-dark-950/40 font-mono text-[10px] text-dark-400 shrink-0">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-dark-850 bg-dark-900/60 font-mono text-[11px] text-dark-400 shrink-0">
               <span className="truncate text-white font-medium">{selectedFilePath}</span>
-              <div className="flex items-center gap-3">
-                <span className="text-[9px] uppercase font-bold text-brand-500 select-none bg-dark-900/60 border border-dark-800 px-1.5 py-0.5 rounded">
+              <div className="flex items-center gap-2.5">
+                <span className="text-[9px] uppercase font-semibold text-white select-none bg-dark-800 border border-dark-700/60 px-1.5 py-0.5 rounded-sm">
                   {getLanguage(selectedFilePath)}
                 </span>
                 <button
                   onClick={handleCopy}
                   disabled={!fileContent}
-                  className="flex items-center gap-1 hover:text-white transition-colors bg-dark-900 hover:bg-dark-850 border border-dark-800 px-2 py-1 rounded text-xs select-none"
+                  className="flex items-center gap-1 hover:text-white transition-colors bg-dark-800 hover:bg-dark-700 border border-dark-700/60 px-2 py-0.5 rounded-md text-xs select-none cursor-pointer"
                 >
                   {copied ? (
                     <>
@@ -237,7 +237,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
             <div className="flex-1 overflow-auto bg-dark-950 p-4 font-mono text-xs select-text">
               {loadingFile ? (
                 <div className="flex flex-col items-center justify-center h-full space-y-2 text-dark-500">
-                  <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
+                  <Loader2 className="h-5 w-5 animate-spin text-dark-300" />
                   <span>Chargement du fichier...</span>
                 </div>
               ) : fileContent !== null ? (
@@ -263,12 +263,12 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ courseId }) => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 space-y-3 select-none">
-            <div className="h-10 w-10 rounded-full bg-dark-900 flex items-center justify-center border border-dark-800">
-              <FileText className="h-5 w-5 text-dark-500" />
+            <div className="h-8 w-8 rounded-md bg-dark-800 flex items-center justify-center border border-dark-700/60">
+              <FileText className="h-4.5 w-4.5 text-dark-400" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Visualiseur Brut</h4>
-              <p className="text-[10px] text-dark-400 max-w-xs leading-relaxed">
+              <h4 className="text-xs font-semibold text-white">Visualiseur brut</h4>
+              <p className="text-[11px] text-dark-400 max-w-xs leading-relaxed">
                 Sélectionnez un fichier dans l'arborescence physique pour afficher son code source brut avec coloration syntaxique.
               </p>
             </div>

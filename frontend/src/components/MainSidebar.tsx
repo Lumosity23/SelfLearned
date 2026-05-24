@@ -14,7 +14,6 @@ export const MainSidebar: React.FC = () => {
   // Persist collapse state
   useEffect(() => {
     localStorage.setItem('main_sidebar_collapsed', String(isCollapsed));
-    // Trigger a window resize event so other components (like charts or layouts) can adjust if needed
     window.dispatchEvent(new Event('resize'));
   }, [isCollapsed]);
 
@@ -25,41 +24,41 @@ export const MainSidebar: React.FC = () => {
 
   return (
     <aside 
-      className={`border-r border-dark-800/60 bg-dark-900/30 backdrop-blur-md p-5 flex flex-col h-screen shrink-0 z-20 select-none transition-all duration-300 ${
-        isCollapsed ? 'w-20 items-center' : 'w-64'
+      className={`border-r border-dark-850 bg-dark-900/90 backdrop-blur-md p-4 flex flex-col h-screen shrink-0 z-20 select-none transition-all duration-350 ease-in-out ${
+        isCollapsed ? 'w-16 items-center' : 'w-60'
       }`}
     >
       {/* Brand Logo */}
-      <div className={`flex items-center gap-3 mb-8 px-2 ${isCollapsed ? 'justify-center' : ''}`}>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-400">
-          <GraduationCap className="h-5.5 w-5.5" />
+      <div className={`flex items-center gap-2.5 mb-6 px-1 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-dark-800 border border-dark-700/60 text-white">
+          <GraduationCap className="h-4.5 w-4.5" />
         </div>
         {!isCollapsed && (
           <div className="animate-fadeIn">
-            <span className="text-sm font-extrabold text-white tracking-tight leading-none block">SelfLearned</span>
-            <span className="text-[9px] font-mono text-dark-500 mt-0.5 block">LMS Local AI</span>
+            <span className="text-sm font-semibold text-white tracking-tight leading-none block">SelfLearned</span>
+            <span className="text-[9px] font-mono text-dark-400 mt-0.5 block">LMS Local AI</span>
           </div>
         )}
       </div>
 
       {/* Navigation menu */}
-      <nav className="flex-1 space-y-2 w-full">
+      <nav className="flex-1 space-y-1 w-full">
         {/* Mes Cours */}
         <Link
           to="/"
-          className={`group relative flex items-center rounded-xl transition-all duration-250 ${
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3 gap-3.5'
+          className={`group relative flex items-center rounded-md transition-all duration-150 ${
+            isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
           } ${
             isHomeActive
-              ? 'bg-brand-600/15 text-white border-l-2 border-brand-500 font-bold'
-              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white'
+              ? 'bg-dark-800 text-white border border-dark-700/50 font-medium'
+              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
           }`}
           title={isCollapsed ? "Mes Cours" : ""}
         >
-          <BookOpen className={`h-4.5 w-4.5 shrink-0 ${isHomeActive ? 'text-brand-400' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
-          {!isCollapsed && <span className="text-xs font-bold uppercase tracking-wider">Mes Cours</span>}
+          <BookOpen className={`h-4 w-4 shrink-0 ${isHomeActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
+          {!isCollapsed && <span className="text-sm font-medium">Mes Cours</span>}
           {isCollapsed && (
-            <div className="absolute left-16 scale-0 rounded bg-dark-850 px-2 py-1 text-[10px] font-bold text-white group-hover:scale-100 transition-all shadow-md z-30 pointer-events-none whitespace-nowrap">
+            <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
               Mes Cours
             </div>
           )}
@@ -68,19 +67,19 @@ export const MainSidebar: React.FC = () => {
         {/* Explorateur RAW */}
         <Link
           to="/explorer"
-          className={`group relative flex items-center rounded-xl transition-all duration-250 ${
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3 gap-3.5'
+          className={`group relative flex items-center rounded-md transition-all duration-150 ${
+            isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
           } ${
             isExplorerActive
-              ? 'bg-brand-600/15 text-white border-l-2 border-brand-500 font-bold'
-              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white'
+              ? 'bg-dark-800 text-white border border-dark-700/50 font-medium'
+              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
           }`}
           title={isCollapsed ? "Explorateur RAW" : ""}
         >
-          <FolderOpen className={`h-4.5 w-4.5 shrink-0 ${isExplorerActive ? 'text-indigo-400' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
-          {!isCollapsed && <span className="text-xs font-bold uppercase tracking-wider">Explorateur RAW</span>}
+          <FolderOpen className={`h-4 w-4 shrink-0 ${isExplorerActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
+          {!isCollapsed && <span className="text-sm font-medium">Explorateur RAW</span>}
           {isCollapsed && (
-            <div className="absolute left-16 scale-0 rounded bg-dark-850 px-2 py-1 text-[10px] font-bold text-white group-hover:scale-100 transition-all shadow-md z-30 pointer-events-none whitespace-nowrap">
+            <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
               Explorateur RAW
             </div>
           )}
@@ -89,19 +88,19 @@ export const MainSidebar: React.FC = () => {
         {/* Paramètres */}
         <Link
           to="/settings"
-          className={`group relative flex items-center rounded-xl transition-all duration-250 ${
-            isCollapsed ? 'justify-center p-3' : 'px-4 py-3 gap-3.5'
+          className={`group relative flex items-center rounded-md transition-all duration-150 ${
+            isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
           } ${
             isSettingsActive
-              ? 'bg-brand-600/15 text-white border-l-2 border-brand-500 font-bold'
-              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white'
+              ? 'bg-dark-800 text-white border border-dark-700/50 font-medium'
+              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
           }`}
           title={isCollapsed ? "Paramètres" : ""}
         >
-          <Settings className={`h-4.5 w-4.5 shrink-0 ${isSettingsActive ? 'text-amber-500' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
-          {!isCollapsed && <span className="text-xs font-bold uppercase tracking-wider">Paramètres</span>}
+          <Settings className={`h-4 w-4 shrink-0 ${isSettingsActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
+          {!isCollapsed && <span className="text-sm font-medium">Paramètres</span>}
           {isCollapsed && (
-            <div className="absolute left-16 scale-0 rounded bg-dark-850 px-2 py-1 text-[10px] font-bold text-white group-hover:scale-100 transition-all shadow-md z-30 pointer-events-none whitespace-nowrap">
+            <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
               Paramètres
             </div>
           )}
@@ -111,22 +110,22 @@ export const MainSidebar: React.FC = () => {
       {/* Collapse Trigger Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dark-800/60 bg-dark-950/20 text-dark-500 hover:text-white hover:bg-dark-800/40 hover:border-dark-850 transition-all cursor-pointer mt-4 shrink-0`}
+        className={`w-full flex items-center justify-center gap-2 p-2 rounded-md border border-dark-800 bg-dark-950/20 text-dark-400 hover:text-white hover:bg-dark-800 hover:border-dark-700 transition-all cursor-pointer mt-4 shrink-0`}
         title={isCollapsed ? "Déplier le menu" : "Replier le menu"}
       >
         {isCollapsed ? (
-          <ChevronRight className="h-4.5 w-4.5" />
+          <ChevronRight className="h-4 w-4" />
         ) : (
           <>
-            <ChevronLeft className="h-4.5 w-4.5" />
-            <span className="text-[10px] font-extrabold uppercase tracking-wider">Replier le menu</span>
+            <ChevronLeft className="h-4 w-4" />
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Replier</span>
           </>
         )}
       </button>
 
       {/* Footer copyright */}
       {!isCollapsed && (
-        <div className="pt-4 mt-4 border-t border-dark-800/60 text-[9px] font-mono text-dark-500 text-center animate-fadeIn shrink-0">
+        <div className="pt-3 mt-3 border-t border-dark-800/60 text-[9px] font-mono text-dark-400 text-center animate-fadeIn shrink-0">
           v1.2.0 • Powered by DeepMind
         </div>
       )}
