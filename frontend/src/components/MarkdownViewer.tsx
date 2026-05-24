@@ -10,7 +10,7 @@ interface MarkdownViewerProps {
 
 export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
   return (
-    <div className="prose-custom max-w-none text-dark-200">
+    <div className="prose-custom max-w-none text-zinc-200">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -33,12 +33,12 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
             };
 
             return !isInline ? (
-              <div className="my-6 rounded-lg overflow-hidden border border-dark-900 bg-dark-900 shadow-xl">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-dark-900 bg-dark-900 text-xs text-dark-400 font-mono">
-                  <span className="font-semibold text-brand-500">{language.toUpperCase()}</span>
+              <div className="my-6 rounded-md overflow-hidden bg-[#1e1e1e] shadow-md border-none">
+                <div className="flex items-center justify-between px-4 py-2 bg-[#252526] text-xs text-zinc-400 font-mono select-none">
+                  <span className="font-semibold text-zinc-300">{language.toLowerCase()}</span>
                   <button
                     onClick={handleCopy}
-                    className="hover:text-white transition-colors bg-dark-800 hover:bg-dark-700 px-2 py-1 rounded text-xs"
+                    className="hover:text-zinc-100 transition-colors bg-[#2d2d2d] hover:bg-[#3d3d3d] px-2.5 py-1 rounded text-xs text-zinc-400"
                   >
                     {copied ? 'Copié !' : 'Copier'}
                   </button>
@@ -50,8 +50,8 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
                   customStyle={{
                     margin: 0,
                     padding: '1.25rem',
-                    background: '#121214', // dark-900
-                    fontSize: '0.875rem',
+                    background: '#1e1e1e',
+                    fontSize: '0.85rem',
                     fontFamily: "'JetBrains Mono', ui-monospace, monospace",
                   }}
                 >
@@ -59,7 +59,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
                 </SyntaxHighlighter>
               </div>
             ) : (
-              <code className={`${className || ''} bg-dark-800 text-pink-500 px-1.5 py-0.5 rounded font-mono text-sm`} {...props}>
+              <code className={`${className || ''} bg-zinc-900 text-zinc-200 px-1.5 py-0.5 rounded font-mono text-[13px] border-none`} {...props}>
                 {children}
               </code>
             );

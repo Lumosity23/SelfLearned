@@ -31,7 +31,7 @@ interface SettingsResponse {
 export const Settings: React.FC = () => {
   const { addToast } = useToast();
   const { preset, themeProperties, setThemePreset, updateThemeProperty, importTheme, exportTheme } = useTheme();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const tab = searchParams.get('tab') || 'api_keys';
   const activeSection = (tab === 'system_prompt' || tab === 'api_keys' || tab === 'personalization') ? tab : 'api_keys';
 
@@ -526,20 +526,20 @@ export const Settings: React.FC = () => {
   };
 
   const getProviderBadge = (type: string) => {
-    const baseStyle = "text-[9px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wide shrink-0 ";
+    const baseStyle = "text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wide shrink-0 bg-dark-800 text-zinc-300 border border-zinc-750/40 ";
     switch (type) {
       case 'openai':
-        return <span className={baseStyle + "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"}>OpenAI</span>;
+        return <span className={baseStyle}>OpenAI</span>;
       case 'openrouter':
-        return <span className={baseStyle + "bg-purple-500/10 text-purple-400 border border-purple-500/20"}>OpenRouter</span>;
+        return <span className={baseStyle}>OpenRouter</span>;
       case 'gemini':
-        return <span className={baseStyle + "bg-sky-500/10 text-sky-400 border border-sky-500/20"}>Gemini Direct</span>;
+        return <span className={baseStyle}>Gemini</span>;
       case 'ollama':
-        return <span className={baseStyle + "bg-amber-500/10 text-amber-400 border border-amber-500/20"}>Ollama</span>;
+        return <span className={baseStyle}>Ollama</span>;
       case 'aws_bedrock':
-        return <span className={baseStyle + "bg-orange-500/10 text-orange-400 border border-orange-500/20"}>Amazon Bedrock</span>;
+        return <span className={baseStyle}>Bedrock</span>;
       default:
-        return <span className={baseStyle + "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20"}>Custom</span>;
+        return <span className={baseStyle}>Custom</span>;
     }
   };
 
@@ -550,62 +550,24 @@ export const Settings: React.FC = () => {
 
       {/* 2. Main content container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Decorative background grid & radial glow */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1e_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[350px] w-[600px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
+        {/* Decorative background grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1e_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1e_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-25 pointer-events-none" />
 
         {/* Top Header Bar */}
         <header className="relative flex items-center justify-between border-b border-dark-800/60 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight m-0 leading-none">
-              <SettingsIcon className="inline-block h-5 w-5 text-brand-500 mr-2.5 -mt-1" />
-              Paramètres système
+            <h1 className="text-sm font-semibold text-white tracking-tight m-0 leading-none">
+              <SettingsIcon className="inline-block h-4 w-4 text-white mr-2.5 -mt-0.5" />
+              {activeSection === 'api_keys' ? 'Clés API & Profils' : activeSection === 'system_prompt' ? 'Prompts & Gabarits' : 'Personnalisation'}
             </h1>
             <p className="text-[10px] text-dark-400 font-mono mt-1.5">Configurez vos clés API et personnalisez la structure de vos cours</p>
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Segmented Control Header Navigation Tab Selector */}
-            <div className="flex bg-dark-950/60 p-1.5 rounded-xl border border-dark-900 backdrop-blur-md select-none shrink-0 shadow-lg">
-              <button
-                onClick={() => setSearchParams({ tab: 'api_keys' })}
-                className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer flex items-center ${
-                  activeSection === 'api_keys'
-                    ? 'bg-brand-600 text-white shadow-md'
-                    : 'text-dark-400 hover:text-white hover:bg-dark-800/40'
-                }`}
-              >
-                <Layers className="h-3.5 w-3.5 mr-2 shrink-0" />
-                Clés API & Profils
-              </button>
-              <button
-                onClick={() => setSearchParams({ tab: 'system_prompt' })}
-                className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer flex items-center ${
-                  activeSection === 'system_prompt'
-                    ? 'bg-brand-600 text-white shadow-md'
-                    : 'text-dark-400 hover:text-white hover:bg-dark-800/40'
-                }`}
-              >
-                <FileText className="h-3.5 w-3.5 mr-2 shrink-0" />
-                Prompts & Gabarits
-              </button>
-              <button
-                onClick={() => setSearchParams({ tab: 'personalization' })}
-                className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer flex items-center ${
-                  activeSection === 'personalization'
-                    ? 'bg-brand-600 text-white shadow-md'
-                    : 'text-dark-400 hover:text-white hover:bg-dark-800/40'
-                }`}
-              >
-                <Palette className="h-3.5 w-3.5 mr-2 shrink-0" />
-                Personnalisation
-              </button>
-            </div>
-
             {activeSection === 'api_keys' && !loading && (
               <button
                 onClick={openAddForm}
-                className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all shadow-lg shadow-brand-600/10 cursor-pointer"
+                className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-3.5 py-1.5 text-xs font-semibold text-zinc-950 transition-all cursor-pointer shadow-sm"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Ajouter une clé
@@ -657,7 +619,7 @@ export const Settings: React.FC = () => {
                         </div>
                         <button
                           onClick={openAddForm}
-                          className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-4 py-2 text-xs font-semibold text-zinc-950 transition-all cursor-pointer"
                         >
                           <Plus className="h-3.5 w-3.5" />
                           Ajouter ma première clé
@@ -672,18 +634,18 @@ export const Settings: React.FC = () => {
                           return (
                             <div
                               key={profile.id}
-                              className={`rounded-2xl border transition-all duration-300 ${
+                              className={`rounded-md border transition-all duration-300 ${
                                 isActive 
-                                  ? 'bg-brand-950/5 border-brand-500/40 shadow-[0_0_20px_rgba(99,102,241,0.08)]' 
+                                  ? 'bg-zinc-900 border-zinc-750/80 shadow-sm' 
                                   : 'bg-dark-900/40 border-dark-900 hover:bg-dark-900/60 hover:border-dark-850'
                               } p-5 flex flex-col md:flex-row md:items-center justify-between gap-5`}
                             >
                               <div className="space-y-3 flex-grow max-w-full">
                                 <div className="flex items-center gap-3 flex-wrap">
-                                  <h4 className="text-sm font-extrabold text-white tracking-tight">{profile.name}</h4>
+                                  <h4 className="text-xs font-bold text-white tracking-tight">{profile.name}</h4>
                                   {getProviderBadge(profile.type)}
                                   {isActive && (
-                                    <span className="flex items-center gap-1 text-[8px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider bg-brand-500/25 text-brand-400 border border-brand-500/30">
+                                    <span className="flex items-center gap-1 text-[8px] px-2 py-0.5 rounded font-extrabold uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-zinc-750/50">
                                       <CheckCircle2 className="h-3 w-3" />
                                       Sélectionnée par défaut
                                     </span>
@@ -692,9 +654,9 @@ export const Settings: React.FC = () => {
                                 
                                 <div className="grid grid-cols-1 gap-2 text-xs text-dark-400 font-mono">
                                   {/* API KEY DISPLAY PANEL - FULL WIDTH & NO TRUNCATION */}
-                                  <div className="flex items-center gap-2 overflow-visible bg-dark-950/60 p-2.5 rounded-xl border border-dark-800/80">
-                                    <span className="text-dark-500 shrink-0 select-none uppercase font-bold text-[10px] tracking-wider w-16">Clé:</span>
-                                    <span className="text-dark-200 select-all select-text font-mono break-all leading-normal flex-1">
+                                  <div className="flex items-center gap-2 overflow-visible bg-dark-950/60 p-2.5 rounded-md border border-zinc-800/80">
+                                    <span className="text-zinc-500 shrink-0 select-none uppercase font-bold text-[9px] tracking-wider w-16">Clé:</span>
+                                    <span className="text-zinc-200 select-all select-text font-mono break-all leading-normal flex-1">
                                       {profile.api_key 
                                         ? (isKeyVisible ? profile.api_key : '••••••••••••••••••••••••••••••••')
                                         : <em className="text-dark-600 font-sans font-light">Aucune clé d'authentification</em>
@@ -705,7 +667,7 @@ export const Settings: React.FC = () => {
                                         <button
                                           type="button"
                                           onClick={() => toggleKeyVisibility(profile.id)}
-                                          className="text-dark-500 hover:text-white transition-colors p-1.5 hover:bg-dark-800/60 rounded-lg border border-transparent hover:border-dark-850"
+                                          className="text-dark-500 hover:text-white transition-colors p-1.5 hover:bg-dark-800/60 rounded-md border border-transparent hover:border-dark-850"
                                           title={isKeyVisible ? "Masquer la clé" : "Afficher la clé"}
                                         >
                                           {isKeyVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -713,7 +675,7 @@ export const Settings: React.FC = () => {
                                         <button
                                           type="button"
                                           onClick={() => handleCopyKey(profile.id, profile.api_key)}
-                                          className="text-dark-500 hover:text-white transition-colors p-1.5 hover:bg-dark-800/60 rounded-lg border border-transparent hover:border-dark-850"
+                                          className="text-dark-500 hover:text-white transition-colors p-1.5 hover:bg-dark-800/60 rounded-md border border-transparent hover:border-dark-850"
                                           title="Copier la clé"
                                         >
                                           {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-500 animate-pulse" /> : <Copy className="h-3.5 w-3.5" />}
@@ -722,9 +684,9 @@ export const Settings: React.FC = () => {
                                     )}
                                   </div>
                                   {profile.base_url && (
-                                    <div className="flex items-center gap-2 overflow-visible bg-dark-950/60 p-2.5 rounded-xl border border-dark-800/80">
-                                      <span className="text-dark-500 shrink-0 select-none uppercase font-bold text-[10px] tracking-wider w-16">Endpoint:</span>
-                                      <span className="text-dark-200 select-all select-text font-mono break-all leading-normal flex-1">{profile.base_url}</span>
+                                    <div className="flex items-center gap-2 overflow-visible bg-dark-950/60 p-2.5 rounded-md border border-zinc-800/80">
+                                      <span className="text-zinc-500 shrink-0 select-none uppercase font-bold text-[9px] tracking-wider w-16">Endpoint:</span>
+                                      <span className="text-zinc-200 select-all select-text font-mono break-all leading-normal flex-1">{profile.base_url}</span>
                                     </div>
                                   )}
                                 </div>
@@ -734,7 +696,7 @@ export const Settings: React.FC = () => {
                                 {!isActive && (
                                   <button
                                     onClick={() => handleActivate(profile.id)}
-                                    className="flex items-center gap-1.5 rounded-xl border border-brand-500/30 bg-brand-500/10 text-brand-400 hover:bg-brand-600 hover:text-white transition-all text-xs font-extrabold px-4 py-2 cursor-pointer shadow-sm"
+                                    className="flex items-center gap-1.5 rounded-md border border-zinc-800 bg-transparent text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all text-xs font-semibold px-4 py-2 cursor-pointer shadow-sm animate-fadeIn"
                                   >
                                     <Power className="h-3.5 w-3.5" />
                                     Activer
@@ -742,14 +704,14 @@ export const Settings: React.FC = () => {
                                 )}
                                 <button
                                   onClick={() => openEditForm(profile)}
-                                  className="flex items-center justify-center h-9 w-9 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
+                                  className="flex items-center justify-center h-9 w-9 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
                                   title="Modifier"
                                 >
                                   <Edit3 className="h-4 w-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDelete(profile.id)}
-                                  className="flex items-center justify-center h-9 w-9 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
+                                  className="flex items-center justify-center h-9 w-9 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
                                   title="Supprimer"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -763,11 +725,11 @@ export const Settings: React.FC = () => {
 
                     {/* Form panel */}
                     {isFormOpen && (
-                      <div className="rounded-2xl border border-dark-900 bg-dark-900/60 p-6 space-y-6 shadow-2xl shadow-black/50 animate-slideDown">
-                        <div className="flex items-center justify-between border-b border-dark-900/60 pb-3.5">
+                      <div className="rounded-md border border-zinc-850 bg-dark-900/60 p-6 space-y-6 shadow-2xl shadow-black/50 animate-slideDown">
+                        <div className="flex items-center justify-between border-b border-zinc-850/60 pb-3.5">
                           <div className="flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-brand-500" />
-                            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                            <Sparkles className="h-4 w-4 text-white" />
+                            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                               {editingProfileId ? 'Modifier les identifiants' : 'Ajouter des accès API'}
                             </h3>
                           </div>
@@ -788,9 +750,9 @@ export const Settings: React.FC = () => {
                                   key={t}
                                   type="button"
                                   onClick={() => handleTypeChange(t)}
-                                  className={`py-2 px-2.5 rounded-xl border text-center transition-all cursor-pointer text-xs font-bold leading-tight ${
+                                  className={`py-2 px-2.5 rounded-md border text-center transition-all cursor-pointer text-xs font-semibold leading-tight ${
                                     formType === t 
-                                      ? 'bg-brand-500/10 border-brand-500 text-brand-400 font-extrabold shadow-sm' 
+                                      ? 'bg-zinc-800 border-zinc-700 text-zinc-100 font-bold shadow-sm' 
                                       : 'bg-dark-800/40 border-dark-850 text-dark-300 hover:bg-dark-800'
                                   }`}
                                 >
@@ -803,14 +765,14 @@ export const Settings: React.FC = () => {
                           <div className="space-y-4">
                             {/* Nom */}
                             <div className="space-y-1.5">
-                              <label htmlFor="formName" className="text-xs font-semibold text-white">Nom du profil de clé</label>
+                               <label htmlFor="formName" className="text-xs font-semibold text-white">Nom du profil de clé</label>
                               <input
                                 type="text"
                                 id="formName"
                                 value={formName}
                                 onChange={(e) => setFormName(e.target.value)}
                                 placeholder="Ex: Clé Gemini Pro Directe, Clé OpenRouter Principal..."
-                                className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white placeholder-dark-500 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-sans"
+                                className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none transition-all font-sans"
                                 required
                               />
                             </div>
@@ -836,7 +798,7 @@ export const Settings: React.FC = () => {
                                   value={formApiKey}
                                   onChange={(e) => setFormApiKey(e.target.value)}
                                   placeholder={formType === 'aws_bedrock' ? "AKIAIOSFODNN7EXAMPLE:wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" : "Collez votre jeton d'authentification ici..."}
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 pr-10 text-xs text-white placeholder-dark-500 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 font-mono transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 pr-10 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none font-mono transition-all"
                                 />
                                 <button
                                   type="button"
@@ -860,7 +822,7 @@ export const Settings: React.FC = () => {
                                   value={formBaseUrl}
                                   onChange={(e) => setFormBaseUrl(e.target.value)}
                                   placeholder={formType === 'aws_bedrock' ? 'us-east-1' : 'Saisir l\'URL de base...'}
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 font-mono transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-zinc-700 focus:outline-none font-mono transition-all"
                                 />
                               </div>
                             )}
@@ -870,16 +832,16 @@ export const Settings: React.FC = () => {
                             <button
                               type="button"
                               onClick={closeForm}
-                              className="rounded-xl border border-dark-900 bg-transparent px-4 py-2.5 text-xs font-bold text-dark-200 hover:bg-dark-800 transition-all cursor-pointer"
+                              className="rounded-md border border-zinc-850 bg-transparent px-4 py-2 text-xs font-semibold text-dark-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                             >
                               Annuler
                             </button>
                             <button
                               type="submit"
                               disabled={saving}
-                              className="flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-600/10"
+                              className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                             >
-                              {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                              {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-zinc-950/20 border-t-zinc-950 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                               Enregistrer
                             </button>
                           </div>
@@ -888,9 +850,9 @@ export const Settings: React.FC = () => {
                     )}
 
                     {/* Data Storage directory display */}
-                    <div className="rounded-2xl border border-dark-900 bg-dark-900/40 p-5 space-y-4">
-                      <div className="flex items-center gap-2 border-b border-dark-800 pb-3">
-                        <Database className="h-4.5 w-4.5 text-brand-500" />
+                    <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4">
+                      <div className="flex items-center gap-2 border-b border-zinc-850 pb-3">
+                        <Database className="h-4 w-4 text-white" />
                         <h3 className="text-xs font-bold text-white uppercase tracking-wider">Persistance locale des cours</h3>
                       </div>
                       <div className="space-y-2 text-xs">
@@ -898,7 +860,7 @@ export const Settings: React.FC = () => {
                           <span className="font-bold text-white uppercase tracking-wider text-[9px] text-dark-400">Volume de stockage monté</span>
                           <span className="font-mono text-dark-500">DATA_DIR</span>
                         </div>
-                        <div className="rounded-xl bg-dark-950 border border-dark-800/80 p-3 font-mono text-[11px] text-brand-400 select-all font-bold">
+                        <div className="rounded-md bg-dark-950 border border-zinc-800/80 p-3 font-mono text-[11px] text-zinc-400 select-all font-bold">
                           {dataDir || '/SelfLearned_Data'}
                         </div>
                       </div>
@@ -908,19 +870,19 @@ export const Settings: React.FC = () => {
 
                 {/* 2. System Prompt Section */}
                 {activeSection === 'system_prompt' && (
-                  <div className="space-y-8">
+                  <div className="space-y-8 animate-fadeIn">
                     {/* Prompt templates manager section */}
                     <div className="space-y-6">
                       <div className="flex items-center justify-between border-b border-dark-900/60 pb-3.5">
                         <div className="flex items-center gap-2">
-                          <FileText className="h-4.5 w-4.5 text-brand-500" />
+                          <FileText className="h-4 w-4 text-white" />
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Gabarits de Prompts Système</h3>
                         </div>
                         {!isTplFormOpen && (
                           <button
                             type="button"
                             onClick={openAddTplForm}
-                            className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-all shadow-md shadow-brand-600/10 cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-4 py-2 text-xs font-semibold text-zinc-950 transition-all shadow-sm cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             Créer un gabarit
@@ -928,8 +890,8 @@ export const Settings: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-3 items-start text-xs text-dark-300 bg-brand-500/5 border border-brand-500/25 rounded-2xl p-5 leading-relaxed">
-                        <AlertCircle className="h-5 w-5 text-brand-400 shrink-0 mt-0.5" />
+                      <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-5 leading-relaxed">
+                        <AlertCircle className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                         <div>
                           <p className="font-semibold text-white mb-1">Gabarits de prompts système</p>
                           <p>
@@ -940,8 +902,8 @@ export const Settings: React.FC = () => {
 
                       {/* inline form for template add/edit */}
                       {isTplFormOpen && (
-                        <div className="rounded-2xl border border-dark-900 bg-dark-900/60 p-6 space-y-5 shadow-2xl shadow-black/50 animate-slideDown">
-                          <div className="flex items-center justify-between border-b border-dark-900/60 pb-3">
+                        <div className="rounded-md border border-zinc-850 bg-dark-900/60 p-6 space-y-5 shadow-2xl shadow-black/50 animate-slideDown">
+                          <div className="flex items-center justify-between border-b border-zinc-850/60 pb-3">
                             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                               {editingTplId ? 'Modifier le gabarit' : 'Nouveau gabarit de rédaction'}
                             </h4>
@@ -964,7 +926,7 @@ export const Settings: React.FC = () => {
                                   value={tplName}
                                   onChange={(e) => setTplName(e.target.value)}
                                   placeholder="Ex: Professeur de Mathématiques, Tuteur de Code..."
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-brand-500 focus:outline-none transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all"
                                   required
                                 />
                               </div>
@@ -976,7 +938,7 @@ export const Settings: React.FC = () => {
                                   value={tplDescription}
                                   onChange={(e) => setTplDescription(e.target.value)}
                                   placeholder="Ex: Style académique rigoureux pour cours de fondation..."
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-brand-500 focus:outline-none transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all"
                                 />
                               </div>
                             </div>
@@ -995,23 +957,23 @@ export const Settings: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center gap-1 px-2.5 py-1 rounded bg-dark-950 border border-dark-800 text-[10px] font-bold text-dark-300 hover:text-white"
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-zinc-800 text-[10px] font-bold text-zinc-300 hover:text-white"
                                   >
-                                    <Upload className="h-2.5 w-2.5 text-brand-400" />
+                                    <Upload className="h-2.5 w-2.5 text-zinc-400" />
                                     Importer (.txt)
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => exportSystemPrompt(tplContent, `${tplName || 'system_prompt'}.txt`)}
-                                    className="flex items-center gap-1 px-2.5 py-1 rounded bg-dark-950 border border-dark-800 text-[10px] font-bold text-dark-300 hover:text-white"
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-zinc-800 text-[10px] font-bold text-zinc-300 hover:text-white"
                                     disabled={!tplContent}
                                   >
-                                    <Download className="h-2.5 w-2.5 text-brand-400" />
+                                    <Download className="h-2.5 w-2.5 text-zinc-400" />
                                     Exporter
                                   </button>
                                 </div>
                               </div>
-                              <div className="rounded-xl border border-dark-900 bg-dark-950 p-2 focus-within:border-brand-500/60 transition-colors">
+                              <div className="rounded-md border border-dark-900 bg-dark-950 p-2 focus-within:border-zinc-700 transition-colors">
                                 <textarea
                                   id="tplContent"
                                   value={tplContent}
@@ -1028,16 +990,16 @@ export const Settings: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={closeTplForm}
-                                className="rounded-xl border border-dark-900 bg-transparent px-4 py-2.5 text-xs font-bold text-dark-200 hover:bg-dark-800 transition-all cursor-pointer"
+                                className="rounded-md border border-zinc-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                               >
                                 Annuler
                               </button>
                               <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-600/10"
+                                className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2.5 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                               >
-                                {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                                {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-zinc-950/20 border-t-zinc-950 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                                 Enregistrer
                               </button>
                             </div>
@@ -1049,33 +1011,33 @@ export const Settings: React.FC = () => {
                       <div className="grid grid-cols-1 gap-4">
                         {loadingPrompt ? (
                           <div className="flex flex-col items-center justify-center py-20 space-y-3">
-                            <span className="h-6 w-6 rounded-full border-2 border-brand-500/10 border-t-brand-500 animate-spin" />
+                            <span className="h-6 w-6 rounded-full border-2 border-zinc-800/20 border-t-zinc-400 animate-spin" />
                             <p className="text-[11px] text-dark-500 font-mono">Chargement des gabarits...</p>
                           </div>
                         ) : (
                           Object.entries(templates).map(([id, tpl]) => (
                             <div
                               key={id}
-                              className="rounded-2xl border border-dark-900 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3.5 shadow-sm"
+                              className="rounded-md border border-zinc-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3.5 shadow-sm"
                             >
                               <div className="flex items-center justify-between flex-wrap gap-2">
                                 <div className="flex items-center gap-2.5">
-                                  <span className="text-sm font-extrabold text-white">{tpl.name}</span>
-                                  <span className="text-[9px] font-mono font-bold text-brand-400 bg-brand-500/10 border border-brand-500/25 px-2 py-0.5 rounded-lg">
+                                  <span className="text-xs font-bold text-white">{tpl.name}</span>
+                                  <span className="text-[9px] font-mono font-bold text-zinc-300 bg-zinc-800 border border-zinc-700/50 px-2 py-0.5 rounded">
                                     {id}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() => openEditTplForm(id, tpl)}
-                                    className="flex items-center justify-center h-8 w-8 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
+                                    className="flex items-center justify-center h-8 w-8 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
                                     title="Modifier"
                                   >
                                     <Edit3 className="h-3.5 w-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteTpl(id)}
-                                    className="flex items-center justify-center h-8 w-8 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
+                                    className="flex items-center justify-center h-8 w-8 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
                                     title="Supprimer"
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
@@ -1089,9 +1051,9 @@ export const Settings: React.FC = () => {
                                 </p>
                               )}
 
-                              <div className="rounded-xl bg-dark-950 border border-dark-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text max-h-40 overflow-y-auto shadow-inner relative">
-                                <span className="text-dark-500 select-none block border-b border-dark-900 pb-1.5 mb-2 font-bold">// Aperçu des directives du prompt :</span>
-                                <pre className="font-mono text-dark-200 whitespace-pre-wrap leading-normal font-medium">{tpl.content}</pre>
+                              <div className="rounded-md bg-dark-950 border border-zinc-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text max-h-40 overflow-y-auto shadow-inner relative">
+                                <span className="text-dark-500 select-none block border-b border-zinc-900 pb-1.5 mb-2 font-bold">// Aperçu des directives du prompt :</span>
+                                <pre className="font-mono text-zinc-200 whitespace-pre-wrap leading-normal font-medium">{tpl.content}</pre>
                               </div>
                             </div>
                           ))
@@ -1100,17 +1062,17 @@ export const Settings: React.FC = () => {
                     </div>
 
                     {/* Levels / prompt categories manager section */}
-                    <div className="pt-8 border-t border-dark-800 space-y-6">
+                    <div className="pt-8 border-t border-zinc-850 space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Layers className="h-4.5 w-4.5 text-brand-500" />
+                          <Layers className="h-4 w-4 text-white" />
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Directives par Niveau / Catégorie d'apprentissage</h3>
                         </div>
                         {!isCatFormOpen && (
                           <button
                             type="button"
                             onClick={openAddCatForm}
-                            className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-500 transition-all shadow-md shadow-brand-600/10 cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-3.5 py-2 text-xs font-semibold text-zinc-950 transition-all shadow-sm cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             Ajouter un niveau
@@ -1120,8 +1082,8 @@ export const Settings: React.FC = () => {
 
                       {/* inline form for category add/edit */}
                       {isCatFormOpen && (
-                        <div className="rounded-2xl border border-dark-900 bg-dark-900/60 p-6 space-y-4 shadow-2xl shadow-black/40 animate-slideDown">
-                          <div className="flex items-center justify-between border-b border-dark-900/60 pb-2.5">
+                        <div className="rounded-md border border-zinc-850 bg-dark-900/60 p-6 space-y-4 shadow-2xl shadow-black/40 animate-slideDown">
+                          <div className="flex items-center justify-between border-b border-zinc-850/60 pb-2.5">
                             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                               {editingCatId ? 'Modifier la catégorie' : 'Nouvelle catégorie de prompt'}
                             </h4>
@@ -1144,7 +1106,7 @@ export const Settings: React.FC = () => {
                                   value={catName}
                                   onChange={(e) => setCatName(e.target.value)}
                                   placeholder="Ex: Débutant, Master Spécialisé, Expert..."
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-brand-500 focus:outline-none transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all"
                                   required
                                 />
                               </div>
@@ -1156,14 +1118,14 @@ export const Settings: React.FC = () => {
                                   value={catDescription}
                                   onChange={(e) => setCatDescription(e.target.value)}
                                   placeholder="Ex: Pour les apprenants sans bases théoriques..."
-                                  className="w-full rounded-xl border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-brand-500 focus:outline-none transition-all"
+                                  className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all"
                                 />
                               </div>
                             </div>
 
                             <div className="space-y-1.5">
                               <label htmlFor="catDirective" className="text-xs font-semibold text-white">Directives d'apprentissage (Prompt additionnel)</label>
-                              <div className="rounded-xl border border-dark-900 bg-dark-950 p-2 focus-within:border-brand-500/60 transition-colors">
+                              <div className="rounded-md border border-dark-900 bg-dark-950 p-2 focus-within:border-zinc-700 transition-colors">
                                 <textarea
                                   id="catDirective"
                                   value={catDirective}
@@ -1180,16 +1142,16 @@ export const Settings: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={closeCatForm}
-                                className="rounded-xl border border-dark-900 bg-transparent px-4 py-2.5 text-xs font-bold text-dark-200 hover:bg-dark-800 transition-all cursor-pointer"
+                                className="rounded-md border border-zinc-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                               >
                                 Annuler
                               </button>
                               <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all disabled:opacity-50 cursor-pointer shadow-md shadow-brand-600/10"
+                                className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2.5 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                               >
-                                {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                                {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-zinc-950/20 border-t-zinc-950 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                                 Enregistrer
                               </button>
                             </div>
@@ -1202,26 +1164,26 @@ export const Settings: React.FC = () => {
                         {Object.entries(categories).map(([id, cat]) => (
                           <div
                             key={id}
-                            className="rounded-2xl border border-dark-900 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3 shadow-sm"
+                            className="rounded-md border border-zinc-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3 shadow-sm"
                           >
                             <div className="flex items-center justify-between flex-wrap gap-2">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-extrabold text-white">{cat.name}</span>
-                                <span className="text-[9px] font-mono font-bold text-brand-400 bg-brand-500/10 border border-brand-500/25 px-2 py-0.5 rounded-lg">
+                                <span className="text-xs font-bold text-white">{cat.name}</span>
+                                <span className="text-[9px] font-mono font-bold text-zinc-300 bg-zinc-800 border border-zinc-750/40 px-2 py-0.5 rounded">
                                   {id}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => openEditCatForm(id, cat)}
-                                  className="flex items-center justify-center h-8 w-8 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
+                                  className="flex items-center justify-center h-8 w-8 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-dark-800 text-dark-300 hover:text-white transition-all cursor-pointer"
                                   title="Modifier"
                                 >
                                   <Edit3 className="h-3.5 w-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteCat(id)}
-                                  className="flex items-center justify-center h-8 w-8 rounded-xl border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
+                                  className="flex items-center justify-center h-8 w-8 rounded-md border border-dark-900 bg-dark-800/40 hover:bg-rose-950/40 hover:border-rose-500/40 text-dark-400 hover:text-rose-400 transition-all cursor-pointer"
                                   title="Supprimer"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -1235,9 +1197,9 @@ export const Settings: React.FC = () => {
                               </p>
                             )}
 
-                            <div className="rounded-xl bg-dark-950 border border-dark-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text break-words shadow-inner">
+                            <div className="rounded-md bg-dark-950 border border-zinc-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text break-words shadow-inner">
                               <span className="text-dark-500 select-none font-bold block border-b border-dark-900 pb-1.5 mb-2">// Directives pédagogiques injectées :</span>
-                              <p className="mt-1 font-sans text-dark-200 leading-normal">{cat.directive}</p>
+                              <p className="mt-1 font-sans text-zinc-200 leading-normal">{cat.directive}</p>
                             </div>
                           </div>
                         ))}
@@ -1249,8 +1211,8 @@ export const Settings: React.FC = () => {
                 {activeSection === 'personalization' && (
                   <div className="space-y-8 animate-fadeIn">
                     {/* Intro Tip */}
-                    <div className="flex gap-3 items-start text-xs text-dark-300 bg-brand-500/5 border border-brand-500/25 rounded-2xl p-5 leading-relaxed">
-                      <Palette className="h-5 w-5 text-brand-400 shrink-0 mt-0.5" />
+                    <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-5 leading-relaxed">
+                      <Palette className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold text-white mb-1">Personnalisation esthétique de l'application</p>
                         <p>
@@ -1275,26 +1237,26 @@ export const Settings: React.FC = () => {
                             <div
                               key={tpl.id}
                               onClick={() => setThemePreset(tpl.id as any)}
-                              className={`group rounded-2xl border transition-all duration-300 p-4 flex flex-col justify-between gap-4 cursor-pointer ${
+                              className={`group rounded-md border transition-all duration-300 p-4 flex flex-col justify-between gap-4 cursor-pointer ${
                                 isActivePreset 
-                                  ? 'bg-brand-500/5 border-brand-500/50 shadow-[0_0_20px_rgba(99,102,241,0.08)]' 
+                                  ? 'bg-zinc-900 border-zinc-750/80 shadow-sm' 
                                   : 'bg-dark-900/40 border-dark-900 hover:bg-dark-900/60 hover:border-dark-850'
                               }`}
                             >
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs font-extrabold text-white">{tpl.name}</span>
+                                  <span className="text-xs font-semibold text-white">{tpl.name}</span>
                                   {isActivePreset && (
-                                    <span className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                                    <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                                   )}
                                 </div>
                                 <p className="text-[10px] text-dark-400 line-clamp-1 leading-normal">{tpl.desc}</p>
                               </div>
                               {/* Visual Color split preview block */}
-                              <div className="h-10 rounded-xl overflow-hidden flex border border-dark-850 bg-dark-950 p-0.5 select-none">
-                                <div className="flex-1 rounded-l-lg" style={{ backgroundColor: tpl.bg }} title="Main BG" />
+                              <div className="h-10 rounded-md overflow-hidden flex border border-dark-850 bg-dark-950 p-0.5 select-none">
+                                <div className="flex-1 rounded" style={{ backgroundColor: tpl.bg }} title="Main BG" />
                                 <div className="w-8" style={{ backgroundColor: tpl.sidebar }} title="Sidebar" />
-                                <div className="w-4 rounded-r-lg" style={{ backgroundColor: tpl.accent }} title="Accent" />
+                                <div className="w-4 rounded" style={{ backgroundColor: tpl.accent }} title="Accent" />
                               </div>
                             </div>
                           );
@@ -1308,7 +1270,7 @@ export const Settings: React.FC = () => {
                       {/* Left: Custom Color Pickers */}
                       <div className="lg:col-span-7 space-y-4">
                         <h3 className="text-xs font-bold text-white uppercase tracking-wider">Créateur de Thème Personnalisé</h3>
-                        <div className="rounded-2xl border border-dark-900 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                        <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                           <p className="text-[10px] text-dark-400 leading-relaxed">
                             Ajustez individuellement chaque variable chromatique de l'interface. Toute modification vous basculera instantanément en mode <strong>"Sur Mesure"</strong> et mettra à jour l'application en direct.
                           </p>
@@ -1324,12 +1286,12 @@ export const Settings: React.FC = () => {
                             ] as const).map((colorVar) => {
                               const val = themeProperties[colorVar.prop];
                               return (
-                                <div key={colorVar.prop} className="flex items-center justify-between p-2.5 rounded-xl bg-dark-950/60 border border-dark-850">
+                                <div key={colorVar.prop} className="flex items-center justify-between p-2.5 rounded-md bg-dark-950/60 border border-zinc-850">
                                   <div className="space-y-0.5 pr-2">
-                                    <span className="text-[10px] font-bold text-white block">{colorVar.label}</span>
-                                    <span className="text-[9px] font-mono text-dark-500 font-bold block">{val}</span>
+                                    <span className="text-[10px] font-semibold text-white block">{colorVar.label}</span>
+                                    <span className="text-[9px] font-mono text-zinc-500 font-bold block">{val}</span>
                                   </div>
-                                  <div className="relative h-9 w-9 rounded-lg overflow-hidden border border-dark-800 shrink-0 cursor-pointer flex items-center justify-center bg-dark-900 hover:bg-dark-800 transition-colors">
+                                  <div className="relative h-9 w-9 rounded-md overflow-hidden border border-zinc-800 shrink-0 cursor-pointer flex items-center justify-center bg-dark-900 hover:bg-dark-800 transition-colors">
                                     <input
                                       type="color"
                                       value={val.startsWith('#') && val.length === 7 ? val : '#3b82f6'}
@@ -1354,7 +1316,7 @@ export const Settings: React.FC = () => {
                             <div className="pt-2 flex justify-end">
                               <button
                                 onClick={() => setThemePreset('google_ai_studio')}
-                                className="text-[10px] font-bold text-rose-400 hover:text-white transition-colors bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 rounded-lg px-3 py-1.5 cursor-pointer uppercase font-mono tracking-wider"
+                                className="text-[10px] font-bold text-rose-400 hover:text-white transition-colors bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 rounded-md px-3 py-1.5 cursor-pointer uppercase font-mono tracking-wider"
                               >
                                 Réinitialiser le Thème
                               </button>
@@ -1369,7 +1331,7 @@ export const Settings: React.FC = () => {
                         {/* Wallpaper Settings */}
                         <div className="space-y-4">
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Fond d'écran et Ambiance</h3>
-                          <div className="rounded-2xl border border-dark-900 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                          <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                             
                             {/* URL Input */}
                             <div className="space-y-1.5">
@@ -1382,7 +1344,7 @@ export const Settings: React.FC = () => {
                                   const url = e.target.value.trim();
                                   updateThemeProperty('--bg-image', url || 'none');
                                 }}
-                                className="w-full rounded-xl border border-dark-900 bg-dark-950 px-3.5 py-2 text-xs text-white placeholder-dark-500 focus:border-brand-500 focus:outline-none transition-all font-sans"
+                                className="w-full rounded-md border border-zinc-800 bg-dark-950 px-3.5 py-2 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none transition-all font-sans"
                               />
                             </div>
 
@@ -1392,7 +1354,7 @@ export const Settings: React.FC = () => {
                                 <div className="space-y-1">
                                   <div className="flex items-center justify-between text-[10px] font-bold text-white">
                                     <span className="uppercase tracking-wider">Opacité de l'image</span>
-                                    <span className="font-mono text-brand-400">{Math.round(parseFloat(themeProperties['--bg-image-opacity']) * 100)}%</span>
+                                    <span className="font-mono text-zinc-300">{Math.round(parseFloat(themeProperties['--bg-image-opacity']) * 100)}%</span>
                                   </div>
                                   <input
                                     type="range"
@@ -1401,7 +1363,7 @@ export const Settings: React.FC = () => {
                                     step="0.05"
                                     value={parseFloat(themeProperties['--bg-image-opacity']) || 0.1}
                                     onChange={(e) => updateThemeProperty('--bg-image-opacity', e.target.value)}
-                                    className="w-full accent-brand-500 h-1 bg-dark-950 rounded-lg cursor-pointer select-none"
+                                    className="w-full accent-zinc-300 h-1 bg-dark-950 rounded-lg cursor-pointer select-none"
                                   />
                                 </div>
 
@@ -1409,7 +1371,7 @@ export const Settings: React.FC = () => {
                                 <div className="space-y-1">
                                   <div className="flex items-center justify-between text-[10px] font-bold text-white">
                                     <span className="uppercase tracking-wider">Flou d'arrière-plan (Blur)</span>
-                                    <span className="font-mono text-brand-400">{themeProperties['--bg-image-blur']}</span>
+                                    <span className="font-mono text-zinc-300">{themeProperties['--bg-image-blur']}</span>
                                   </div>
                                   <input
                                     type="range"
@@ -1418,7 +1380,7 @@ export const Settings: React.FC = () => {
                                     step="1"
                                     value={parseInt(themeProperties['--bg-image-blur']) || 0}
                                     onChange={(e) => updateThemeProperty('--bg-image-blur', e.target.value + 'px')}
-                                    className="w-full accent-brand-500 h-1 bg-dark-950 rounded-lg cursor-pointer select-none"
+                                    className="w-full accent-zinc-300 h-1 bg-dark-950 rounded-lg cursor-pointer select-none"
                                   />
                                 </div>
                               </>
@@ -1430,7 +1392,7 @@ export const Settings: React.FC = () => {
                         {/* Import/Export Theme */}
                         <div className="space-y-4">
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Partager mon Thème (JSON)</h3>
-                          <div className="rounded-2xl border border-dark-900 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                          <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                             <p className="text-[9px] text-dark-500 leading-normal">
                               Copiez le code JSON ci-dessous pour sauvegarder ou partager votre création, ou collez-en un ici pour l'importer immédiatement.
                             </p>
@@ -1440,7 +1402,7 @@ export const Settings: React.FC = () => {
                               readOnly
                               value={exportTheme()}
                               onClick={(e) => (e.target as any).select()}
-                              className="w-full rounded-xl border border-dark-900 bg-dark-950 p-3 text-[9px] font-mono text-brand-400 leading-relaxed focus:outline-none resize-none cursor-pointer"
+                              className="w-full rounded-md border border-dark-900 bg-dark-950 p-3 text-[9px] font-mono text-zinc-400 leading-relaxed focus:outline-none resize-none cursor-pointer"
                               title="Cliquez pour sélectionner tout"
                             />
 
@@ -1454,7 +1416,7 @@ export const Settings: React.FC = () => {
                                     addToast({ title: 'Erreur', description: 'Impossible de copier le code.', type: 'error' });
                                   }
                                 }}
-                                className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg border border-dark-900 hover:border-dark-800 bg-dark-950 text-[10px] font-bold text-dark-300 hover:text-white transition-colors"
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md border border-zinc-800 hover:border-zinc-700 bg-dark-950 text-[10px] font-bold text-zinc-300 hover:text-white transition-colors"
                               >
                                 <Copy className="h-3 w-3" />
                                 Copier le JSON
@@ -1472,7 +1434,7 @@ export const Settings: React.FC = () => {
                                     }
                                   }
                                 }}
-                                className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg border border-dark-900 hover:border-dark-800 bg-dark-950 text-[10px] font-bold text-dark-300 hover:text-white transition-colors"
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md border border-zinc-800 hover:border-zinc-700 bg-dark-950 text-[10px] font-bold text-zinc-300 hover:text-white transition-colors"
                               >
                                 <Upload className="h-3 w-3" />
                                 Importer un Thème

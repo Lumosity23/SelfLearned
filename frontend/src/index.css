@@ -67,145 +67,139 @@
   }
 }
 
-/* 📚 Custom Styles for Minimal Technical Markdown Viewer */
+/* Custom Styles for Minimal VSCode-like Markdown Viewer */
 .prose-custom {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.625;
-  font-size: 0.9375rem; /* 15px for optimum reading density */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  font-size: 15px; /* VSCode preview density */
+  color: #cccccc;  /* soft light grey */
 }
 
-/* Small, elegant typography inspired by Zed / Linear */
+/* VSCode-inspired minimalist typography */
 .prose-custom h1 {
-  font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 1.5rem; /* text-2xl */
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  color: #f4f4f5; /* zinc-100 */
-  letter-spacing: -0.02em;
-}
-
-.prose-custom h2 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 1.25rem; /* text-xl */
-  margin-top: 1.75rem;
-  margin-bottom: 0.625rem;
-  color: #e4e4e7; /* zinc-200 */
-  border-bottom: 1px solid #27272a; /* zinc-800 */
-  padding-bottom: 0.25rem;
+  font-size: 1.8em;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: #f0f0f0;
+  border-bottom: 1px solid #303030;
+  padding-bottom: 0.3em;
   letter-spacing: -0.015em;
 }
 
-.prose-custom h3 {
-  font-family: 'Inter', sans-serif;
+.prose-custom h2 {
   font-weight: 600;
-  font-size: 1.0625rem; /* ~17px */
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #e4e4e7; /* zinc-200 */
+  font-size: 1.35em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #f0f0f0;
+  border-bottom: 1px solid #303030;
+  padding-bottom: 0.25em;
   letter-spacing: -0.01em;
+}
+
+.prose-custom h3 {
+  font-weight: 600;
+  font-size: 1.15em;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  color: #f0f0f0;
 }
 
 .prose-custom p {
   margin-top: 0;
-  margin-bottom: 1rem;
-  color: #a1a1aa; /* zinc-400 for secondary body text */
+  margin-bottom: 16px;
+  color: #cccccc;
 }
 
 .prose-custom ul {
-  list-style-type: square;
-  padding-left: 1.25rem;
-  margin-bottom: 1rem;
-  color: #a1a1aa; /* zinc-400 */
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 16px;
+  color: #cccccc;
 }
 
 .prose-custom ol {
   list-style-type: decimal;
-  padding-left: 1.25rem;
-  margin-bottom: 1rem;
-  color: #a1a1aa; /* zinc-400 */
+  padding-left: 20px;
+  margin-bottom: 16px;
+  color: #cccccc;
 }
 
 .prose-custom li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px;
 }
 
 .prose-custom table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.25rem;
-  margin-bottom: 1.25rem;
-  font-size: 0.8125rem; /* text-xs/sm density */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 13px;
   text-align: left;
 }
 
 .prose-custom th {
-  border-bottom: 1px solid #3f3f46; /* zinc-700 */
-  padding: 0.5rem 0.75rem;
-  font-weight: 550;
-  color: #f4f4f5; /* zinc-100 */
-  background-color: #18181b; /* zinc-900 */
+  border-bottom: 1px solid #303030;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #f0f0f0;
+  background-color: #1e1e1e;
 }
 
 .prose-custom td {
-  border-bottom: 1px solid #27272a; /* zinc-800 */
-  padding: 0.5rem 0.75rem;
-  color: #a1a1aa; /* zinc-400 */
+  border-bottom: 1px solid #252526;
+  padding: 8px 12px;
+  color: #cccccc;
 }
 
 .prose-custom tr:hover td {
-  background-color: rgba(39, 39, 42, 0.3); /* zinc-800/30 */
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
-/* Technical Minimalist Accordion/Blockquote for Virtual Professor */
+/* VSCode Blockquote */
 .prose-custom blockquote {
-  border-left: 2px solid #71717a; /* zinc-500 */
-  padding: 0.75rem 1rem;
-  margin: 1.25rem 0;
-  color: #a1a1aa; /* zinc-400 */
-  background-color: rgba(24, 24, 27, 0.5); /* zinc-900/50 */
-  border-radius: 0 4px 4px 0;
+  border-left: 4px solid #424242;
+  padding: 0 15px;
+  margin: 0 0 16px 0;
+  color: #858585;
+  background-color: transparent;
 }
 
 .prose-custom a {
-  color: #e4e4e7; /* zinc-200 */
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-color: #3f3f46; /* zinc-700 */
-  transition: all 0.15s ease;
+  color: #3794ff; /* soft VSCode blue link */
+  text-decoration: none;
 }
 
 .prose-custom a:hover {
-  color: #ffffff;
-  text-decoration-color: #71717a; /* zinc-500 */
+  text-decoration: underline;
 }
 
 .prose-custom code {
-  background-color: #18181b; /* zinc-900 */
-  color: #e4e4e7; /* zinc-200 instead of flashy red */
-  padding: 0.15rem 0.3rem;
+  background-color: rgba(220, 220, 220, 0.08);
+  color: #d4d4d4;
+  padding: 0.2em 0.4em;
   border-radius: 3px;
-  font-size: 0.85em;
-  border: 1px solid #27272a; /* zinc-800 */
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 85%;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  border: none; /* NO BORDER AT ALL */
 }
 
 .prose-custom pre {
-  background-color: #18181b; /* zinc-900 */
-  border: 1px solid #27272a; /* zinc-800 */
+  background-color: #1e1e1e; /* matte granular dark grey */
   border-radius: 4px;
-  padding: 0.75rem;
+  padding: 16px;
   overflow-x: auto;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  border: none; /* NO BORDER AT ALL */
 }
 
 .prose-custom pre code {
   background-color: transparent;
-  color: #e4e4e7;
+  color: #d4d4d4;
   padding: 0;
   border-radius: 0;
-  font-size: 0.85rem;
+  font-size: 13px;
   border: none;
 }

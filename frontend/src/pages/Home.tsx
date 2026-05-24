@@ -405,19 +405,10 @@ export const Home: React.FC = () => {
                           <Pin className="h-3 w-3 fill-white text-white" />
                         </div>
                       )}
-                      {course.status !== 'generating' && course.total_submodules ? (
-                        <div className="h-5 px-1.5 flex items-center justify-center rounded bg-dark-800 text-white border border-dark-700/50 font-mono text-[9px] font-medium shadow-sm">
-                          {(() => {
-                            const total = course.total_submodules || 0;
-                            const completed = getCompletedCount(course.id);
-                            return total > 0 ? Math.round((completed / total) * 100) : 0;
-                          })()}%
-                        </div>
-                      ) : null}
                     </div>
 
                     <div className="space-y-2.5">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-dark-800 text-dark-300 shrink-0">
                           {course.status === 'generating' ? (
                             <Loader2 className="h-4.5 w-4.5 text-white animate-spin" />
@@ -425,15 +416,29 @@ export const Home: React.FC = () => {
                             <BookOpen className="h-4 w-4" />
                           )}
                         </div>
-                        {course.status === 'generating' ? (
-                          <span className="text-[9px] font-semibold text-white bg-dark-850 border border-dark-700 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide animate-pulse">
-                            Rédaction...
-                          </span>
-                        ) : course.partial && (
-                          <span className="text-[9px] font-semibold text-amber-500 bg-amber-950/20 border border-amber-900/30 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide">
-                            Génération Partielle
-                          </span>
-                        )}
+
+                        {/* Group status badges & progress percentages next to the icon */}
+                        <div className="flex items-center gap-1.5">
+                          {course.status === 'generating' ? (
+                            <span className="text-[9px] font-semibold text-white bg-dark-850 border border-dark-700 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide animate-pulse">
+                              Rédaction...
+                            </span>
+                          ) : course.partial ? (
+                            <span className="text-[9px] font-semibold text-amber-500 bg-amber-950/20 border border-amber-900/30 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide">
+                              Génération Partielle
+                            </span>
+                          ) : null}
+
+                          {course.status !== 'generating' && course.total_submodules ? (
+                            <div className="h-5 px-1.5 flex items-center justify-center rounded-sm bg-dark-800 text-zinc-300 border border-dark-700/50 font-mono text-[9px] font-medium shadow-sm">
+                              {(() => {
+                                const total = course.total_submodules || 0;
+                                const completed = getCompletedCount(course.id);
+                                return total > 0 ? Math.round((completed / total) * 100) : 0;
+                              })()}%
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                       
                       <div className="space-y-0.5">

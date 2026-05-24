@@ -86,25 +86,62 @@ export const MainSidebar: React.FC = () => {
         </Link>
 
         {/* Paramètres */}
-        <Link
-          to="/settings"
-          className={`group relative flex items-center rounded-md transition-all duration-150 ${
-            isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
-          } ${
-            isSettingsActive
-              ? 'bg-dark-800 text-white border border-dark-700/50 font-medium'
-              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
-          }`}
-          title={isCollapsed ? "Paramètres" : ""}
-        >
-          <Settings className={`h-4 w-4 shrink-0 ${isSettingsActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
-          {!isCollapsed && <span className="text-sm font-medium">Paramètres</span>}
-          {isCollapsed && (
-            <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
-              Paramètres
+        <div className="space-y-1">
+          <Link
+            to="/settings?tab=api_keys"
+            className={`group relative flex items-center rounded-md transition-all duration-150 ${
+              isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
+            } ${
+              isSettingsActive
+                ? 'bg-dark-800 text-white border border-dark-750/50 font-medium'
+                : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
+            }`}
+            title={isCollapsed ? "Paramètres" : ""}
+          >
+            <Settings className={`h-4 w-4 shrink-0 ${isSettingsActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
+            {!isCollapsed && <span className="text-sm font-medium">Paramètres</span>}
+            {isCollapsed && (
+              <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
+                Paramètres
+              </div>
+            )}
+          </Link>
+
+          {!isCollapsed && isSettingsActive && (
+            <div className="pl-9 pr-2 py-1 space-y-1 border-l border-zinc-800 ml-5 animate-fadeIn">
+              <Link
+                to="/settings?tab=api_keys"
+                className={`block text-xs py-1 transition-colors select-none ${
+                  new URLSearchParams(location.search).get('tab') === 'api_keys' || !new URLSearchParams(location.search).get('tab')
+                    ? 'text-zinc-100 font-semibold'
+                    : 'text-dark-400 hover:text-zinc-200'
+                }`}
+              >
+                Clés API & Profils
+              </Link>
+              <Link
+                to="/settings?tab=system_prompt"
+                className={`block text-xs py-1 transition-colors select-none ${
+                  new URLSearchParams(location.search).get('tab') === 'system_prompt'
+                    ? 'text-zinc-100 font-semibold'
+                    : 'text-dark-400 hover:text-zinc-200'
+                }`}
+              >
+                Prompts & Gabarits
+              </Link>
+              <Link
+                to="/settings?tab=personalization"
+                className={`block text-xs py-1 transition-colors select-none ${
+                  new URLSearchParams(location.search).get('tab') === 'personalization'
+                    ? 'text-zinc-100 font-semibold'
+                    : 'text-dark-400 hover:text-zinc-200'
+                }`}
+              >
+                Personnalisation
+              </Link>
             </div>
           )}
-        </Link>
+        </div>
       </nav>
 
       {/* Collapse Trigger Button */}
