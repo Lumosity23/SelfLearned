@@ -1,0 +1,29 @@
+# version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: selflearned-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Map host folder to backend data folder for permanent local storage
+      - ./SelfLearned_Data:/SelfLearned_Data
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATA_DIR=/SelfLearned_Data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: selflearned-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

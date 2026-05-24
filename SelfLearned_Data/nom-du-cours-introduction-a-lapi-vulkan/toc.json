@@ -1,0 +1,74 @@
+{
+  "title": "Nom du Cours : Introduction à l'API Vulkan",
+  "description": "Ce cours académique introduit les concepts fondamentaux de Vulkan, une API graphique et de calcul de bas niveau et haute performance. Les étudiants apprendront à initialiser l'API, configurer la pipeline graphique et afficher un premier triangle.",
+  "modules": [
+    {
+      "id": "module_01",
+      "title": "Fondations et Initialisation de Vulkan",
+      "submodules": [
+        {
+          "id": "module_1.1",
+          "title": "Architecture de Vulkan, Instance et Périphériques",
+          "file": "module_1.1.md"
+        },
+        {
+          "id": "module_1.2",
+          "title": "Familles de files d'attente (Queue Families) et Fenêtrage (WSI)",
+          "file": "module_1.2.md"
+        },
+        {
+          "id": "module_1.3",
+          "title": "Création et configuration de la Swapchain",
+          "file": "module_1.3.md"
+        }
+      ]
+    },
+    {
+      "id": "module_02",
+      "title": "Pipeline Graphique et Gestion des Ressources",
+      "submodules": [
+        {
+          "id": "module_2.1",
+          "title": "Shaders et compilation en bytecode SPIR-V",
+          "file": "module_2.1.md"
+        },
+        {
+          "id": "module_2.2",
+          "title": "Configuration des fonctions fixes de la Pipeline (PSO)",
+          "file": "module_2.2.md"
+        },
+        {
+          "id": "module_2.3",
+          "title": "Passes de rendu (Render Passes) et Framebuffers",
+          "file": "module_2.3.md"
+        }
+      ]
+    },
+    {
+      "id": "module_03",
+      "title": "Enregistrement des Commandes et Boucle de Rendu",
+      "submodules": [
+        {
+          "id": "module_3.1",
+          "title": "Tampons de commandes (Command Pools & Buffers)",
+          "file": "module_3.1.md"
+        },
+        {
+          "id": "module_3.2",
+          "title": "Synchronisation GPU-GPU et CPU-GPU (Semaphores & Fences)",
+          "file": "module_3.2.md"
+        },
+        {
+          "id": "module_3.3",
+          "title": "Boucle de rendu et affichage du premier triangle",
+          "file": "module_3.3.md"
+        }
+      ]
+    }
+  ],
+  "partial": false,
+  "status": "completed",
+  "job_id": "c465f925-38d0-4730-9206-c6528164b376",
+  "pinned": false,
+  "archived": false
+}

@@ -1,0 +1,30 @@
+**Rôle :** Tu es le développeur Full-Stack de l'application "SelfLearned" (FastAPI + React/Vite). Le projet tourne parfaitement, mais nous allons y ajouter des fonctionnalités avancées (LMS 2.0) et refondre intégralement le style visuel.
+
+**MISSION 1 : REFONTE VISUELLE (Design System)**
+Je veux que tu intègres les principes du "Technical UI" (façon Zed IDE, Shadcn UI, Linear).
+1. Lis attentivement les règles du design : [L'agent lira le design-system.md que tu lui donneras ou que tu mettras dans son contexte].
+2. Modifie `tailwind.config.js` et le CSS global pour ajuster les couleurs sur une base `zinc`.
+3. Réécris les composants UI (boutons, inputs, cartes, sidebar) pour qu'ils utilisent des polices plus petites (`text-sm`), des bordures fines (`border-zinc-800`), et supprime les grosses ombres (utilise `shadow-sm` ou pas d'ombre du tout).
+
+**MISSION 2 : LE PROFESSEUR VIRTUEL INLINE (Interactive Q&A)**
+L'utilisateur doit pouvoir surligner du texte ou cliquer sur un bouton sous un paragraphe pour poser une question de clarification. La réponse s'affichera sous forme de bloc déroulant (façon "Thinking model") inséré juste en dessous.
+*   **Backend (`main.py` & `llm.py`) :** Crée une route `POST /api/courses/{course_id}/{module_id}/ask`.
+    *   *Payload attendu :* `{ "context_paragraph": "...", "question": "..." }`
+    *   *Comportement :* Envoie à l'IA la TOC du cours, le texte entier du module actuel, le paragraphe ciblé, et la question.
+    *   *SYSTEM PROMPT À UTILISER :* "Tu es un professeur virtuel intégré à un cours. Ton but est d'éclaircir un point précis posé par l'élève. Utilise un ton pédagogique, concis et direct. Ne génère pas un nouveau cours. Fournis une explication courte (max 3 paragraphes) ou un exemple simple. Réponds en Markdown."
+*   **Frontend :** Dans `CourseReader.tsx` ou `MarkdownViewer.tsx`, ajoute une mécanique permettant d'ajouter un composant `InlineDiscussion` sous les paragraphes. Ce composant ressemblera à un accordéon : `<details>` avec une icône de cerveau/étincelle, bordure gauche accentuée, et contenu textuel plus petit et grisé.
+
+**MISSION 3 : GRAPHE DE CONNAISSANCES (Knowledge Graph)**
+Comme dans Obsidian, je veux une vue globale reliant mes cours.
+*   **Backend :** Modifie la route de génération pour qu'elle tagge automatiquement chaque cours (ex: `["physique", "quantique"]`) et les sauvegarde dans `toc.json`. Crée une route `GET /api/graph` qui scanne tous les dossiers de cours et génère des "nodes" (les cours) et des "links" (les liens basés sur des tags communs).
+*   **Frontend :** Ajoute une page `/graph` (accessible via un bouton dans la Sidebar). Utilise une librairie comme `react-force-graph-2d` ou similaire pour afficher un magnifique graphe interactif sur fond sombre.
+
+**MISSION 4 : GÉNÉRATION BASÉE SUR DOCUMENTS (Revision Flow)**
+*   **Backend :** Ajoute une route `POST /api/upload-docs` qui accepte des fichiers `.txt`, `.pdf` (utilise `PyPDF2` ou `pdfminer`) ou `.md`.
+*   **Logique :** Extrait le texte, envoie-le à l'IA pour qu'elle génère un plan de révision ciblé (format JSON compatible avec notre pipeline actuel). Ensuite, appelle la pipeline existante pour générer le cours en format Markdown sur la base de ce contexte privé.
+*   **Frontend :** Dans la modale "Make Your Own", ajoute un onglet "From Documents" permettant de glisser-déposer des fichiers.
+
+**Comment procéder :**
+Commence par la Mission 1 (Refonte du Design) fichier par fichier. Ensuite, valide avec moi avant de passer à la Mission 2, puis la 3, puis la 4. Ne me donne pas tout d'un coup, travaille méthodiquement.
+
+***

@@ -1,0 +1,115 @@
+{
+  "title": "Introduction à Rust et à la Sécurité Mémoire : Du Débutant à la Programmation Robuste",
+  "description": "Ce cours universitaire est conçu spécifiquement pour les personnes n'ayant aucune notion préalable de 'code sûr' (safe code) ou de gestion de la mémoire. Il introduit de manière progressive et pédagogique les concepts fondamentaux de la programmation, le système unique de propriété (ownership) de Rust, et explique comment ce langage élimine par construction les bugs informatiques les plus critiques sans sacrifier les performances.",
+  "modules": [
+    {
+      "id": "module_1",
+      "title": "Les Fondations de la Programmation et le Problème de la Mémoire",
+      "submodules": [
+        {
+          "id": "submodule_1_1",
+          "title": "Introduction à Rust et premier programme : Comprendre l'écosystème Cargo",
+          "file": "01_intro_ecosysteme_cargo.md"
+        },
+        {
+          "id": "submodule_1_2",
+          "title": "Variables, mutabilité et types de données de base",
+          "file": "02_variables_mutabilite_types.md"
+        },
+        {
+          "id": "submodule_1_3",
+          "title": "Qu'est-ce que la mémoire ? Comprendre la Pile (Stack), le Tas (Heap) et les dangers du code non sécurisé",
+          "file": "03_pile_tas_dangers_memoire.md"
+        }
+      ]
+    },
+    {
+      "id": "module_2",
+      "title": "Le Cœur de la Sécurité en Rust : L'Ownership (Propriété)",
+      "submodules": [
+        {
+          "id": "submodule_2_1",
+          "title": "Les trois règles d'or de l'Ownership : Qui possède quoi et pourquoi ?",
+          "file": "04_regles_or_ownership.md"
+        },
+        {
+          "id": "submodule_2_2",
+          "title": "L'Emprunt (Borrowing) et les Références : Partager des données sans les copier",
+          "file": "05_emprunt_et_references.md"
+        },
+        {
+          "id": "submodule_2_3",
+          "title": "Les Tranches (Slices) : Garantir des accès mémoire sécurisés et sans débordement",
+          "file": "06_slices_acces_securises.md"
+        }
+      ]
+    },
+    {
+      "id": "module_3",
+      "title": "Structurer ses Données et Éviter les Comportements Indéfinis",
+      "submodules": [
+        {
+          "id": "submodule_3_1",
+          "title": "Structures (Structs) : Organiser ses données proprement",
+          "file": "07_structures_donnees.md"
+        },
+        {
+          "id": "submodule_3_2",
+          "title": "Énumérations (Enums) et Pattern Matching : Le contrôle de flux infaillible",
+          "file": "08_enums_pattern_matching.md"
+        },
+        {
+          "id": "submodule_3_3",
+          "title": "Les Collections Standards (Vector, String) et leur gestion dynamique de la mémoire",
+          "file": "09_collections_dynamiques.md"
+        }
+      ]
+    },
+    {
+      "id": "module_4",
+      "title": "La Gestion des Erreurs et la Robustesse du Code",
+      "submodules": [
+        {
+          "id": "submodule_4_1",
+          "title": "Erreurs irrécupérables (panic!) vs Erreurs récupérables (le type Result)",
+          "file": "10_gestion_erreurs_result.md"
+        },
+        {
+          "id": "submodule_4_2",
+          "title": "L'absence de valeur : Dire adieu au pointeur nul avec le type Option",
+          "file": "11_option_type_securite.md"
+        },
+        {
+          "id": "submodule_4_3",
+          "title": "Propagation propre des erreurs avec l'opérateur '?'",
+          "file": "12_propagation_erreurs.md"
+        }
+      ]
+    },
+    {
+      "id": "module_5",
+      "title": "Concepts Avancés de Sécurité : Lifetimes et Concurrence",
+      "submodules": [
+        {
+          "id": "submodule_5_1",
+          "title": "Les Durées de Vie (Lifetimes) : Empêcher définitivement les références pendantes",
+          "file": "13_durees_de_vie_lifetimes.md"
+        },
+        {
+          "id": "submodule_5_2",
+          "title": "Introduction aux Traits : Définir des comportements sûrs et partagés",
+          "file": "14_traits_comportements.md"
+        },
+        {
+          "id": "submodule_5_3",
+          "title": "La Concurrence sans peur (Fearless Concurrency) : Partager des données entre threads en toute sécurité",
+          "file": "15_concurrence_securisee.md"
+        }
+      ]
+    }
+  ],
+  "partial": false,
+  "status": "completed",
+  "archived": false,
+  "pinned": false
+}

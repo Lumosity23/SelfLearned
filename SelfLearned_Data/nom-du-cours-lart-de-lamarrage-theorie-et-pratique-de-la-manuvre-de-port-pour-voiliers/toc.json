@@ -1,0 +1,124 @@
+{
+  "title": "Nom du Cours : L'Art de l'Amarrage : Théorie et Pratique de la Manœuvre de Port pour Voiliers",
+  "description": "Ce cours académique et pratique enseigne les principes physiques, les techniques de matelotage et les manœuvres de barre nécessaires pour amarrer un voilier au quai en toute sécurité, sous différentes conditions de vent et de courant.",
+  "modules": [
+    {
+      "id": "module_01",
+      "title": "Fondations Théoriques et Forces en Présence",
+      "submodules": [
+        {
+          "id": "module_1.1",
+          "title": "Inertie, Pivot et Pas d'Hélice : La Dynamique du Voilier",
+          "file": "module_1.1.md",
+          "generated": true,
+          "exercise_generated": true
+        },
+        {
+          "id": "module_1.2",
+          "title": "Effets de l'Aérodynamisme et de l'Hydrodynamisme (Vent et Courant)",
+          "file": "module_1.2.md",
+          "generated": true,
+          "exercise_generated": true
+        },
+        {
+          "id": "module_1.3",
+          "title": "Typologie des Quais et Configurations d'Amarrage",
+          "file": "module_1.3.md",
+          "generated": true,
+          "exercise_generated": true
+        }
+      ]
+    },
+    {
+      "id": "module_02",
+      "title": "Matelotage et Équipement d'Amarrage",
+      "submodules": [
+        {
+          "id": "module_2.1",
+          "title": "Les Cordages : Gardes, Pointes et Traversiers",
+          "file": "module_2.1.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_2.2",
+          "title": "Nœuds Essentiels et Tour Mort sur Taquet",
+          "file": "module_2.2.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_2.3",
+          "title": "Positionnement Stratégique et Réglage des Pare-battages",
+          "file": "module_2.3.md",
+          "generated": false,
+          "exercise_generated": false
+        }
+      ]
+    },
+    {
+      "id": "module_03",
+      "title": "Manœuvres d'Approche et d'Arrivée au Quai",
+      "submodules": [
+        {
+          "id": "module_3.1",
+          "title": "L'Amarrage de Longside (Le long du quai)",
+          "file": "module_3.1.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_3.2",
+          "title": "L'Amarrage en Arrière (Cul au quai)",
+          "file": "module_3.2.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_3.3",
+          "title": "L'Amarrage sur Catway ou Finger",
+          "file": "module_3.3.md",
+          "generated": false,
+          "exercise_generated": false
+        }
+      ]
+    },
+    {
+      "id": "module_04",
+      "title": "Gestion de l'Équipage et Situations d'Urgence",
+      "submodules": [
+        {
+          "id": "module_4.1",
+          "title": "Communication à Bord et Rôles lors de l'Accostage",
+          "file": "module_4.1.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_4.2",
+          "title": "La Manœuvre Avortée : Quand et Comment Renoncer",
+          "file": "module_4.2.md",
+          "generated": false,
+          "exercise_generated": false
+        },
+        {
+          "id": "module_4.3",
+          "title": "Amarrage par Mauvais Temps et Sécurisation à Long Terme",
+          "file": "module_4.3.md",
+          "generated": false,
+          "exercise_generated": false
+        }
+      ]
+    }
+  ],
+  "partial": true,
+  "status": "failed",
+  "job_id": "25347a44-c217-4e74-ad39-08a36ca255e3",
+  "avec_exercices": true,
+  "profile_id": "preset_gemini",
+  "model": "gemini-flash-latest",
+  "custom_instructions": "pour les exo fais de vrai ou faux\n",
+  "level": "intermédiaire",
+  "system_prompt_id": "universitaire",
+  "error": "Génération annulée par l'utilisateur."
+}

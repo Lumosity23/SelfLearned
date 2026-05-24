@@ -1,0 +1,45 @@
+# Node.js / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+backend/venv/
+.pytest_cache/
+backend/.pytest_cache/
+*.egg-info/
+*.egg
+
+# Secrets and Local Configurations
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+
+# OS / Editors
+.DS_Store
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+*.log

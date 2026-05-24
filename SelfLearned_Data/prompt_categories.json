@@ -1,0 +1,17 @@
+{
+  "débutant": {
+    "name": "Débutant",
+    "description": "Bases de zéro, analogies simples et explications détaillées.",
+    "directive": "Le public cible est débutant. Explique tous les concepts de base pas à pas, donne des analogies simples, évite les termes trop complexes sans définition claire, et apprends à partir de zéro."
+  },
+  "intermédiaire": {
+    "name": "Intermédiaire",
+    "description": "Consolidation des acquis, exemples réels et approfondissements pratiques.",
+    "directive": "Le public cible a un niveau intermédiaire. Il possède déjà les bases théoriques et pratiques du sujet. Concentre-toi sur le renforcement des compétences, les bonnes pratiques de développement/conception, et l'explication détaillée de techniques avancées avec des exemples concrets."
+  },
+  "professionnel": {
+    "name": "Professionnel",
+    "description": "Niveau expert de pointe, analyses techniques poussées sans introductions triviales.",
+    "directive": "Le public cible est un professionnel expérimenté. Il connaît déjà parfaitement le sujet et ses fondements. Ne perds pas de temps en explications d'introduction superficielles (pas de 'bla-bla' de découverte). Concentre-toi uniquement sur les points pointus du sujet, l'analyse approfondie de concepts experts, les cas d'utilisation haut de gamme, et des architectures/méthodologies complexes."
+  }
+}

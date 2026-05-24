@@ -1,0 +1,100 @@
+{
+  "title": "Nom du Cours : La base de Python : Cours initiatique à la programmation",
+  "description": "Un parcours structuré pour maîtriser les fondamentaux de la programmation avec Python, allant de la syntaxe de base à la manipulation de données et la résolution de problèmes algorithmiques.",
+  "modules": [
+    {
+      "id": "module_01",
+      "title": "Introduction à l'environnement et aux bases syntaxiques",
+      "submodules": [
+        {
+          "id": "module_1.1",
+          "title": "Installation et premier programme",
+          "file": "module_1.1.md",
+          "generated": true
+        },
+        {
+          "id": "module_1.2",
+          "title": "Variables, types de données et opérateurs",
+          "file": "module_1.2.md",
+          "generated": true
+        },
+        {
+          "id": "module_1.3",
+          "title": "Entrées et sorties standards",
+          "file": "module_1.3.md",
+          "generated": true
+        }
+      ]
+    },
+    {
+      "id": "module_02",
+      "title": "Structures de contrôle et logique algorithmique",
+      "submodules": [
+        {
+          "id": "module_2.1",
+          "title": "Structures conditionnelles (if, elif, else)",
+          "file": "module_2.1.md",
+          "generated": true
+        },
+        {
+          "id": "module_2.2",
+          "title": "Boucles et itérations (for, while)",
+          "file": "module_2.2.md",
+          "generated": true
+        }
+      ]
+    },
+    {
+      "id": "module_03",
+      "title": "Structures de données avancées",
+      "submodules": [
+        {
+          "id": "module_3.1",
+          "title": "Listes et tuples",
+          "file": "module_3.1.md",
+          "generated": true
+        },
+        {
+          "id": "module_3.2",
+          "title": "Dictionnaires et ensembles",
+          "file": "module_3.2.md",
+          "generated": true
+        }
+      ]
+    },
+    {
+      "id": "module_04",
+      "title": "Modularité et gestion des erreurs",
+      "submodules": [
+        {
+          "id": "module_4.1",
+          "title": "Définition et appel de fonctions",
+          "file": "module_4.1.md",
+          "generated": true
+        },
+        {
+          "id": "module_4.2",
+          "title": "Gestion des exceptions et débogage",
+          "file": "module_4.2.md",
+          "generated": true
+        },
+        {
+          "id": "module_4.3",
+          "title": "Lecture et écriture de fichiers",
+          "file": "module_4.3.md",
+          "generated": true
+        }
+      ]
+    }
+  ],
+  "partial": false,
+  "status": "completed",
+  "job_id": "87c57cd7-2f42-4fac-ab22-1f0b78b33bc5",
+  "error": "Erreur lors de la génération des exercices de 'Listes et tuples': Gemini API error (HTTP 503): {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+  "avec_exercices": false,
+  "profile_id": null,
+  "model": null,
+  "custom_instructions": null,
+  "level": "débutant",
+  "archived": false
+}
