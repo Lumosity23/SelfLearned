@@ -882,7 +882,7 @@ export const Settings: React.FC = () => {
                           <button
                             type="button"
                             onClick={openAddTplForm}
-                            className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-4 py-2 text-xs font-semibold text-zinc-950 transition-all shadow-sm cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-4 py-2 text-xs font-semibold transition-all shadow-sm cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             Créer un gabarit
@@ -890,7 +890,7 @@ export const Settings: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-5 leading-relaxed">
+                      <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-5 leading-relaxed">
                         <AlertCircle className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                         <div>
                           <p className="font-semibold text-white mb-1">Gabarits de prompts système</p>
@@ -902,7 +902,7 @@ export const Settings: React.FC = () => {
 
                       {/* inline form for template add/edit */}
                       {isTplFormOpen && (
-                        <div className="rounded-md border border-zinc-850 bg-dark-900/60 p-6 space-y-5 shadow-2xl shadow-black/50 animate-slideDown">
+                        <div className="rounded-md border border-dark-850 bg-dark-900/60 p-6 space-y-5 shadow-2xl shadow-black/50 animate-slideDown">
                           <div className="flex items-center justify-between border-b border-zinc-850/60 pb-3">
                             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                               {editingTplId ? 'Modifier le gabarit' : 'Nouveau gabarit de rédaction'}
@@ -957,7 +957,7 @@ export const Settings: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-zinc-800 text-[10px] font-bold text-zinc-300 hover:text-white"
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-dark-850 text-[10px] font-bold text-zinc-300 hover:text-white"
                                   >
                                     <Upload className="h-2.5 w-2.5 text-zinc-400" />
                                     Importer (.txt)
@@ -965,7 +965,7 @@ export const Settings: React.FC = () => {
                                   <button
                                     type="button"
                                     onClick={() => exportSystemPrompt(tplContent, `${tplName || 'system_prompt'}.txt`)}
-                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-zinc-800 text-[10px] font-bold text-zinc-300 hover:text-white"
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-dark-950 border border-dark-850 text-[10px] font-bold text-zinc-300 hover:text-white"
                                     disabled={!tplContent}
                                   >
                                     <Download className="h-2.5 w-2.5 text-zinc-400" />
@@ -990,14 +990,14 @@ export const Settings: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={closeTplForm}
-                                className="rounded-md border border-zinc-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
+                                className="rounded-md border border-dark-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                               >
                                 Annuler
                               </button>
                               <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2.5 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                                className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-2.5 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                               >
                                 {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-zinc-950/20 border-t-zinc-950 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                                 Enregistrer
@@ -1018,12 +1018,12 @@ export const Settings: React.FC = () => {
                           Object.entries(templates).map(([id, tpl]) => (
                             <div
                               key={id}
-                              className="rounded-md border border-zinc-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3.5 shadow-sm"
+                              className="rounded-md border border-dark-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3.5 shadow-sm"
                             >
                               <div className="flex items-center justify-between flex-wrap gap-2">
                                 <div className="flex items-center gap-2.5">
                                   <span className="text-xs font-bold text-white">{tpl.name}</span>
-                                  <span className="text-[9px] font-mono font-bold text-zinc-300 bg-zinc-800 border border-zinc-700/50 px-2 py-0.5 rounded">
+                                  <span className="text-[9px] font-mono font-bold text-zinc-300 bg-dark-800 border border-dark-850 px-2 py-0.5 rounded">
                                     {id}
                                   </span>
                                 </div>
@@ -1051,8 +1051,8 @@ export const Settings: React.FC = () => {
                                 </p>
                               )}
 
-                              <div className="rounded-md bg-dark-950 border border-zinc-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text max-h-40 overflow-y-auto shadow-inner relative">
-                                <span className="text-dark-500 select-none block border-b border-zinc-900 pb-1.5 mb-2 font-bold">// Aperçu des directives du prompt :</span>
+                              <div className="rounded-md bg-dark-950 border border-dark-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text max-h-40 overflow-y-auto shadow-inner relative">
+                                <span className="text-dark-500 select-none block border-b border-dark-900 pb-1.5 mb-2 font-bold">// Aperçu des directives du prompt :</span>
                                 <pre className="font-mono text-zinc-200 whitespace-pre-wrap leading-normal font-medium">{tpl.content}</pre>
                               </div>
                             </div>
@@ -1062,7 +1062,7 @@ export const Settings: React.FC = () => {
                     </div>
 
                     {/* Levels / prompt categories manager section */}
-                    <div className="pt-8 border-t border-zinc-850 space-y-6">
+                    <div className="pt-8 border-t border-dark-850 space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Layers className="h-4 w-4 text-white" />
@@ -1072,7 +1072,7 @@ export const Settings: React.FC = () => {
                           <button
                             type="button"
                             onClick={openAddCatForm}
-                            className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-3.5 py-2 text-xs font-semibold text-zinc-950 transition-all shadow-sm cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-3.5 py-2 text-xs font-semibold transition-all shadow-sm cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             Ajouter un niveau
@@ -1142,14 +1142,14 @@ export const Settings: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={closeCatForm}
-                                className="rounded-md border border-zinc-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
+                                className="rounded-md border border-dark-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                               >
                                 Annuler
                               </button>
                               <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2.5 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                                className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-2.5 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                               >
                                 {saving ? <span className="h-3.5 w-3.5 rounded-full border-2 border-zinc-950/20 border-t-zinc-950 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                                 Enregistrer
@@ -1164,12 +1164,12 @@ export const Settings: React.FC = () => {
                         {Object.entries(categories).map(([id, cat]) => (
                           <div
                             key={id}
-                            className="rounded-md border border-zinc-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3 shadow-sm"
+                            className="rounded-md border border-dark-850 bg-dark-900/40 hover:bg-dark-900/60 transition-all duration-300 p-5 flex flex-col gap-3 shadow-sm"
                           >
                             <div className="flex items-center justify-between flex-wrap gap-2">
                               <div className="flex items-center gap-2">
                                 <span className="text-xs font-bold text-white">{cat.name}</span>
-                                <span className="text-[9px] font-mono font-bold text-zinc-300 bg-zinc-800 border border-zinc-750/40 px-2 py-0.5 rounded">
+                                <span className="text-[9px] font-mono font-bold text-zinc-300 bg-dark-800 border border-dark-850 px-2 py-0.5 rounded">
                                   {id}
                                 </span>
                               </div>
@@ -1197,7 +1197,7 @@ export const Settings: React.FC = () => {
                               </p>
                             )}
 
-                            <div className="rounded-md bg-dark-950 border border-zinc-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text break-words shadow-inner">
+                            <div className="rounded-md bg-dark-950 border border-dark-850 p-4 font-mono text-[10px] leading-relaxed text-dark-300 select-text break-words shadow-inner">
                               <span className="text-dark-500 select-none font-bold block border-b border-dark-900 pb-1.5 mb-2">// Directives pédagogiques injectées :</span>
                               <p className="mt-1 font-sans text-zinc-200 leading-normal">{cat.directive}</p>
                             </div>
@@ -1211,7 +1211,7 @@ export const Settings: React.FC = () => {
                 {activeSection === 'personalization' && (
                   <div className="space-y-8 animate-fadeIn">
                     {/* Intro Tip */}
-                    <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-5 leading-relaxed">
+                    <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-5 leading-relaxed">
                       <Palette className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
                       <div>
                         <p className="font-semibold text-white mb-1">Personnalisation esthétique de l'application</p>
@@ -1239,7 +1239,7 @@ export const Settings: React.FC = () => {
                               onClick={() => setThemePreset(tpl.id as any)}
                               className={`group rounded-md border transition-all duration-300 p-4 flex flex-col justify-between gap-4 cursor-pointer ${
                                 isActivePreset 
-                                  ? 'bg-zinc-900 border-zinc-750/80 shadow-sm' 
+                                  ? 'bg-zinc-900 border-dark-750 shadow-sm' 
                                   : 'bg-dark-900/40 border-dark-900 hover:bg-dark-900/60 hover:border-dark-850'
                               }`}
                             >
@@ -1270,7 +1270,7 @@ export const Settings: React.FC = () => {
                       {/* Left: Custom Color Pickers */}
                       <div className="lg:col-span-7 space-y-4">
                         <h3 className="text-xs font-bold text-white uppercase tracking-wider">Créateur de Thème Personnalisé</h3>
-                        <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                        <div className="rounded-md border border-dark-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                           <p className="text-[10px] text-dark-400 leading-relaxed">
                             Ajustez individuellement chaque variable chromatique de l'interface. Toute modification vous basculera instantanément en mode <strong>"Sur Mesure"</strong> et mettra à jour l'application en direct.
                           </p>
@@ -1286,7 +1286,7 @@ export const Settings: React.FC = () => {
                             ] as const).map((colorVar) => {
                               const val = themeProperties[colorVar.prop];
                               return (
-                                <div key={colorVar.prop} className="flex items-center justify-between p-2.5 rounded-md bg-dark-950/60 border border-zinc-850">
+                                <div key={colorVar.prop} className="flex items-center justify-between p-2.5 rounded-md bg-dark-950/60 border border-dark-850">
                                   <div className="space-y-0.5 pr-2">
                                     <span className="text-[10px] font-semibold text-white block">{colorVar.label}</span>
                                     <span className="text-[9px] font-mono text-zinc-500 font-bold block">{val}</span>
@@ -1331,7 +1331,7 @@ export const Settings: React.FC = () => {
                         {/* Wallpaper Settings */}
                         <div className="space-y-4">
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Fond d'écran et Ambiance</h3>
-                          <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                          <div className="rounded-md border border-dark-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                             
                             {/* URL Input */}
                             <div className="space-y-1.5">
@@ -1392,7 +1392,7 @@ export const Settings: React.FC = () => {
                         {/* Import/Export Theme */}
                         <div className="space-y-4">
                           <h3 className="text-xs font-bold text-white uppercase tracking-wider">Partager mon Thème (JSON)</h3>
-                          <div className="rounded-md border border-zinc-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
+                          <div className="rounded-md border border-dark-850 bg-dark-900/40 p-5 space-y-4 shadow-sm backdrop-blur-sm">
                             <p className="text-[9px] text-dark-500 leading-normal">
                               Copiez le code JSON ci-dessous pour sauvegarder ou partager votre création, ou collez-en un ici pour l'importer immédiatement.
                             </p>

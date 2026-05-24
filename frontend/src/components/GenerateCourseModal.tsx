@@ -508,7 +508,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
   };
   const flatSubmodules = getSubmodulesList(jobTOC);
 
-  const isWide = (state === 'idle' && genMode === 'custom') || state === 'toc_planned';
+  const isWide = genMode === 'custom';
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${
@@ -521,8 +521,8 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       />
 
       {/* Modal Card */}
-      <div className={`relative w-full overflow-hidden rounded-md border border-zinc-850 bg-dark-950 shadow-2xl transition-all duration-300 transform flex flex-col ${
-        isWide ? 'max-w-6xl w-[95vw] h-[85vh]' : 'max-w-xl w-full max-h-[85vh]'
+      <div className={`relative w-full overflow-hidden rounded-md border border-dark-850 bg-dark-950 shadow-2xl transition-all duration-300 transform flex flex-col ${
+        isWide ? 'max-w-7xl w-[96vw] h-[90vh]' : 'max-w-xl w-full max-h-[85vh]'
       }`}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-dark-900/60 px-6 py-4 bg-dark-900/30 shrink-0">
@@ -662,8 +662,8 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   />
                 </div>
 
-                {/* Level & Personality Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Level & Personality Stacked Vertically */}
+                <div className="flex flex-col gap-4">
                   {/* Level */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -672,9 +672,9 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     </label>
                     <div className="relative">
                       <select
-                        value={selectedLevel}
-                        onChange={(e) => setSelectedLevel(e.target.value)}
-                        className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                         value={selectedLevel}
+                         onChange={(e) => setSelectedLevel(e.target.value)}
+                         className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
                       >
                         {levelCategories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
@@ -720,13 +720,13 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                 </div>
 
                 {/* include exercises */}
-                <div className="flex items-center space-x-3 rounded-md border border-zinc-850 bg-dark-900/20 p-3.5">
+                <div className="flex items-center space-x-3 rounded-md border border-dark-850 bg-dark-900/20 p-3.5">
                   <input
                     type="checkbox"
                     id="includeExercises"
                     checked={includeExercises}
                     onChange={(e) => setIncludeExercises(e.target.checked)}
-                    className="h-4 w-4 rounded border-zinc-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
+                    className="h-4 w-4 rounded border-dark-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
                   />
                   <div className="space-y-0.5">
                     <label htmlFor="includeExercises" className="text-xs font-semibold text-white cursor-pointer">
@@ -742,14 +742,14 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-md border border-zinc-800 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all select-none cursor-pointer"
+                    className="rounded-md border border-dark-850 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all select-none cursor-pointer"
                   >
                     Annuler
                   </button>
 
                   <button
                     type="submit"
-                    className="flex items-center gap-2 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-2 text-xs font-semibold text-zinc-950 transition-all shadow-sm select-none cursor-pointer"
+                    className="flex items-center gap-2 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-2 text-xs font-semibold transition-all shadow-sm select-none cursor-pointer"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     Générer le cours
@@ -889,8 +889,8 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       />
                     </div>
 
-                    {/* Level & Personality Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Level & Personality Stacked Vertically */}
+                    <div className="flex flex-col gap-4">
                       {/* Level */}
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -947,13 +947,13 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     </div>
 
                     {/* include exercises */}
-                    <div className="flex items-center space-x-3 rounded-md border border-zinc-850 bg-dark-900/20 p-3">
+                    <div className="flex items-center space-x-3 rounded-md border border-dark-850 bg-dark-900/20 p-3">
                       <input
                         type="checkbox"
                         id="includeExercises"
                         checked={includeExercises}
                         onChange={(e) => setIncludeExercises(e.target.checked)}
-                        className="h-4 w-4 rounded border-zinc-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
+                        className="h-4 w-4 rounded border-dark-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
                       />
                       <div className="space-y-0.5">
                         <label htmlFor="includeExercises" className="text-xs font-semibold text-white cursor-pointer">
@@ -968,7 +968,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-md border border-zinc-800 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all flex-1 select-none cursor-pointer"
+                    className="rounded-md border border-dark-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all flex-1 select-none cursor-pointer"
                   >
                     Annuler
                   </button>
@@ -976,7 +976,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     type="button"
                     onClick={handleGenerateTOC}
                     disabled={!subject.trim()}
-                    className="flex items-center justify-center gap-1.5 rounded-md bg-zinc-800 hover:bg-dark-850 px-5 py-2.5 text-xs font-semibold text-zinc-200 transition-all border border-zinc-750 disabled:opacity-50 flex-1 select-none cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-md bg-dark-800 hover:bg-dark-750 px-5 py-2.5 text-xs font-semibold text-zinc-200 transition-all border border-dark-750 disabled:opacity-50 flex-1 select-none cursor-pointer"
                   >
                     {tocMarkdown ? (
                       <>
@@ -994,10 +994,23 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
               </div>
 
               {/* Column 2: TOC Markdown Editor (w-5/12) */}
-              <div className="col-span-1 lg:col-span-5 flex flex-col justify-between overflow-hidden h-full min-h-0 border-r border-dark-800/60 pr-4">
-                <div className="flex-1 flex flex-col space-y-4 min-h-0">
+              <div className="col-span-1 lg:col-span-5 flex flex-col justify-between overflow-hidden h-full min-h-0 border-r border-dark-800/60 pr-4 relative">
+                <div className="flex-1 flex flex-col space-y-4 min-h-0 relative">
+                  {/* Glassmorphic Overlay Blur when generating TOC */}
+                  {state === 'planning_toc' && (
+                    <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center space-y-4 rounded-md animate-fadeIn">
+                      <Loader2 className="h-9 w-9 text-zinc-300 animate-spin" />
+                      <div className="text-center space-y-1">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Planification académique...</h4>
+                        <p className="text-[10px] text-dark-400 max-w-[220px] mx-auto leading-relaxed">
+                          L'IA structure le cours en modules et prépare la table des matières optimale pour votre sujet.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Banner */}
-                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-3 shrink-0 select-none">
+                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-3 shrink-0 select-none">
                     <Info className="h-4.5 w-4.5 text-zinc-400 shrink-0 mt-0.5" />
                     <p className="leading-relaxed text-[11px]">
                       {tocMarkdown 
@@ -1007,15 +1020,14 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   </div>
 
                   {/* TOC Editor Textarea */}
-                  <div className="flex-1 flex flex-col min-h-0 space-y-1.5">
-                    <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center justify-between shrink-0">
+                      <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center justify-between shrink-0">
                       <span>Plan du cours (Markdown modifiable)</span>
                       {tocMarkdown ? (
-                        <span className="text-[8px] text-zinc-300 font-mono font-bold select-none bg-zinc-900 border border-zinc-750/50 px-1 py-0.5 rounded uppercase">
+                        <span className="text-[8px] text-zinc-300 font-mono font-bold select-none bg-dark-900 border border-dark-850 px-1 py-0.5 rounded uppercase">
                           Prêt à éditer
                         </span>
                       ) : (
-                        <span className="text-[8px] text-zinc-500 font-mono font-bold select-none bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded uppercase">
+                        <span className="text-[8px] text-zinc-505 font-mono font-bold select-none bg-dark-900 border border-dark-800 px-1 py-0.5 rounded uppercase">
                           En attente
                         </span>
                       )}
@@ -1030,14 +1042,13 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       />
                     </div>
                   </div>
-                </div>
               </div>
 
               {/* Column 3: Comments & Style Directives Textarea (w-1/3) */}
               <div className="col-span-1 lg:col-span-4 flex flex-col justify-between overflow-hidden h-full min-h-0">
                 <div className="flex-1 flex flex-col space-y-4 min-h-0">
                   {/* Banner */}
-                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-zinc-850 rounded-md p-3 shrink-0 select-none">
+                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-3 shrink-0 select-none">
                     <Sparkles className="h-4.5 w-4.5 text-zinc-400 shrink-0 mt-0.5" />
                     <p className="leading-relaxed text-[11px]">
                       Ajoutez vos consignes spécifiques : technologies à imposer, style de rédaction ou ton pédagogique.
@@ -1070,7 +1081,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     type="button"
                     onClick={handleSubmit}
                     disabled={!tocMarkdown.trim()}
-                    className="w-full flex items-center justify-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 px-5 py-3 text-xs font-semibold text-zinc-950 transition-all disabled:opacity-50 shadow-sm select-none font-sans cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-3 text-xs font-semibold transition-all disabled:opacity-50 shadow-sm select-none font-sans cursor-pointer"
                   >
                     <Sparkles className="h-4 w-4" />
                     Lancer la génération du cours
@@ -1080,8 +1091,8 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
             </div>
           )}
 
-          {/* C. Planning TOC Loader state */}
-          {state === 'planning_toc' && (
+          {/* C. Planning TOC Loader state (Only used in Quick mode, since Custom Mode uses beautiful absolute overlay blur) */}
+          {state === 'planning_toc' && genMode === 'quick' && (
             <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center h-full">
               <Loader2 className="h-10 w-10 text-zinc-300 animate-spin" />
               <div className="space-y-1">
@@ -1099,7 +1110,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
               {/* Spinner & progress bar */}
               <div className="flex items-center gap-4 border-b border-dark-800 pb-4">
                 <div className="relative flex items-center justify-center h-12 w-12 shrink-0">
-                  <div className="absolute inset-0 rounded-md border border-zinc-800 border-t-zinc-300 animate-spin" />
+                  <div className="absolute inset-0 rounded-md border border-dark-800 border-t-zinc-300 animate-spin" />
                   <BookOpen className="h-5 w-5 text-zinc-300 animate-pulse" />
                 </div>
                 
@@ -1110,7 +1121,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   </div>
                   <div className="h-2 w-full bg-dark-900 border border-dark-800 rounded-md overflow-hidden">
                     <div 
-                      className="h-full bg-zinc-200 transition-all duration-500 rounded-md"
+                      className="h-full bg-dark-400 transition-all duration-500 rounded-md"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -1277,7 +1288,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
 
               <button
                 onClick={handleFinish}
-                className="w-full flex items-center justify-center gap-1.5 rounded-md bg-zinc-200 px-5 py-3 text-xs font-semibold text-zinc-950 hover:bg-zinc-300 transition-all shadow-sm cursor-pointer animate-pulse"
+                className="w-full flex items-center justify-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-3 text-xs font-semibold transition-all shadow-sm cursor-pointer animate-pulse"
               >
                 Découvrir le cours & étudier
                 <ChevronRight className="h-4 w-4" />
@@ -1302,13 +1313,13 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
               <div className="flex items-center gap-3 w-full border-t border-dark-800 pt-4">
                 <button
                   onClick={handleClose}
-                  className="flex-1 rounded-md border border-zinc-800 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
+                  className="flex-1 rounded-md border border-dark-850 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-dark-800/40 transition-all cursor-pointer"
                 >
                   Fermer
                 </button>
                 <button
                   onClick={() => setState('idle')}
-                  className="flex-1 rounded-md bg-zinc-200 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-zinc-300 transition-all cursor-pointer"
+                  className="flex-1 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-4 py-2 text-xs font-semibold transition-all cursor-pointer"
                 >
                   Réessayer
                 </button>

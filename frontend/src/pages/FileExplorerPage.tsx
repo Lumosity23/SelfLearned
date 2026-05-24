@@ -40,6 +40,9 @@ export const FileExplorerPage: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   // 1. Fetch available courses on mount
   const fetchCourses = async () => {
     try {
@@ -76,6 +79,7 @@ export const FileExplorerPage: React.FC = () => {
     setError(null);
     setSelectedFilePath(null);
     setFileContent(null);
+    setCopied(false);
     try {
       const res = await fetch(`/api/courses/${selectedCourseId}/files`);
       if (!res.ok) {
@@ -188,7 +192,7 @@ export const FileExplorerPage: React.FC = () => {
             <button
               onClick={() => toggleDirectory(node.path)}
               style={{ paddingLeft }}
-              className="w-full flex items-center gap-1.5 py-1.5 text-xs text-dark-300 hover:text-white hover:bg-dark-800/40 rounded-lg transition-all text-left cursor-pointer"
+              className="w-full flex items-center gap-1.5 py-1.5 text-xs text-dark-300 hover:text-white hover:bg-dark-800/40 rounded-md transition-all text-left cursor-pointer"
             >
               {isExpanded ? (
                 <ChevronDown className="h-3.5 w-3.5 text-dark-400 shrink-0" />
@@ -196,9 +200,9 @@ export const FileExplorerPage: React.FC = () => {
                 <ChevronRight className="h-3.5 w-3.5 text-dark-400 shrink-0" />
               )}
               {isExpanded ? (
-                <FolderOpen className="h-4 w-4 text-brand-400 shrink-0" />
+                <FolderOpen className="h-4 w-4 text-zinc-400 shrink-0" />
               ) : (
-                <Folder className="h-4 w-4 text-brand-500 shrink-0" />
+                <Folder className="h-4 w-4 text-zinc-500 shrink-0" />
               )}
               <span className="truncate font-semibold">{node.name}</span>
             </button>
@@ -217,19 +221,19 @@ export const FileExplorerPage: React.FC = () => {
             key={node.path}
             onClick={() => handleFileClick(node.path)}
             style={{ paddingLeft: `${depth * 12 + 22}px` }}
-            className={`w-full flex items-center justify-between py-1.5 pr-2.5 text-xs rounded-lg transition-all text-left cursor-pointer ${
+            className={`w-full flex items-center justify-between py-1.5 pr-2.5 text-xs rounded-md transition-all text-left cursor-pointer ${
               isSelected
-                ? 'bg-brand-500/10 text-white border-l-2 border-brand-500 font-bold pl-[20px]'
+                ? 'bg-dark-800 text-white border-l border-zinc-500 font-semibold pl-[20px]'
                 : 'text-dark-400 hover:text-dark-200 hover:bg-dark-800/20'
             }`}
           >
             <div className="flex items-center gap-1.5 truncate">
               {isJson ? (
-                <FileCode className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                <FileCode className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
               ) : isLog ? (
-                <FileText className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                <FileText className="h-3.5 w-3.5 text-zinc-450 shrink-0" />
               ) : (
-                <FileText className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+                <FileText className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
               )}
               <span className="truncate">{node.name}</span>
             </div>
@@ -249,45 +253,70 @@ export const FileExplorerPage: React.FC = () => {
 
       {/* 2. Main content container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Decorative background grid & radial glow */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1e_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[350px] w-[600px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
+        {/* Decorative background grid & neutral background glow */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#141417_1px,transparent_1px),linear-gradient(to_bottom,#141417_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-35 pointer-events-none" />
 
         {/* Top Header Bar */}
-        <header className="relative flex items-center justify-between border-b border-dark-800/60 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
+        <header className="relative flex items-center justify-between border-b border-dark-850 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight m-0 leading-none">
-              <FolderOpen className="inline-block h-5 w-5 text-brand-500 mr-2.5 -mt-1" />
+            <h1 className="text-sm font-semibold text-white tracking-tight m-0 leading-none flex items-center">
+              <FolderOpen className="inline-block h-4.5 w-4.5 text-zinc-400 mr-2" />
               Explorateur de fichiers RAW
             </h1>
-            <p className="text-[10px] text-dark-400 font-mono mt-1.5">Consultez en temps réel l'arborescence physique et le code source de vos cours</p>
+            <p className="text-[10px] text-dark-400 font-mono mt-1">Consultez en temps réel l'arborescence physique et le code source de vos cours</p>
           </div>
 
-          {/* Dynamic glassmorphic Course Selector */}
-          <div className="flex items-center gap-3">
+          {/* Custom ShadCN Dropdown Select Course Selector */}
+          <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider font-mono">Cursus :</span>
             {loadingCourses ? (
-              <div className="h-10 w-56 rounded-xl border border-dark-900 bg-dark-900/60 backdrop-blur-md flex items-center px-4 gap-2 text-xs text-dark-400">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-500" />
+              <div className="h-9 w-64 rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md flex items-center px-4 gap-2 text-xs text-dark-400">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-500" />
                 Chargement...
               </div>
             ) : (
               <div className="relative">
-                <select
-                  value={selectedCourseId}
-                  onChange={(e) => setSelectedCourseId(e.target.value)}
-                  className="h-10 w-64 appearance-none rounded-xl border border-dark-900 bg-dark-900/60 backdrop-blur-md px-4 pr-10 text-xs text-white focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500/30 transition-all font-sans cursor-pointer shadow-lg shadow-black/25"
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="h-9 w-64 flex items-center justify-between rounded-md border border-dark-800 bg-dark-900 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-dark-850 hover:border-dark-750 transition-all font-sans cursor-pointer shadow-sm select-none"
                 >
-                  {courses.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.title}
-                    </option>
-                  ))}
-                  {courses.length === 0 && (
-                    <option value="">Aucun manuel disponible</option>
-                  )}
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                  <span className="truncate">
+                    {courses.find(c => c.id === selectedCourseId)?.title || "Aucun manuel disponible"}
+                  </span>
+                  <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isDropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-20" 
+                      onClick={() => setIsDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-1 w-64 rounded-md border border-dark-800 bg-dark-900 py-1 shadow-xl z-30 animate-in fade-in slide-in-from-top-1 duration-150">
+                      {courses.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedCourseId(c.id);
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full px-3.5 py-2.5 text-left text-xs transition-all font-sans truncate cursor-pointer hover:bg-dark-800 hover:text-white ${
+                            selectedCourseId === c.id ? 'bg-dark-850 text-white font-semibold' : 'text-dark-300'
+                          }`}
+                        >
+                          {c.title}
+                        </button>
+                      ))}
+                      {courses.length === 0 && (
+                        <div className="px-3.5 py-2.5 text-xs text-dark-500 italic">
+                          Aucun manuel disponible
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -313,7 +342,7 @@ export const FileExplorerPage: React.FC = () => {
                 <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
                   {loadingTree && filesTree.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-48 space-y-2 text-dark-500 text-xs">
-                      <Loader2 className="h-5 w-5 animate-spin text-brand-500" />
+                      <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
                       <span className="font-mono">Indexation disque...</span>
                     </div>
                   ) : error ? (
@@ -337,7 +366,7 @@ export const FileExplorerPage: React.FC = () => {
                         <span className="truncate text-white font-bold text-[11px] font-mono">{selectedFilePath}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-[9px] uppercase font-extrabold text-brand-500 bg-brand-500/10 border border-brand-500/20 px-2 py-0.5 rounded-lg select-none">
+                        <span className="text-[9px] uppercase font-semibold text-zinc-400 bg-dark-900 border border-dark-800 px-2 py-0.5 rounded select-none">
                           {getLanguage(selectedFilePath)}
                         </span>
                         <button
@@ -347,7 +376,7 @@ export const FileExplorerPage: React.FC = () => {
                         >
                           {copied ? (
                             <>
-                              <Check className="h-3.5 w-3.5 text-emerald-500" />
+                              <Check className="h-3.5 w-3.5 text-zinc-400" />
                               <span>Copié</span>
                             </>
                           ) : (
@@ -364,7 +393,7 @@ export const FileExplorerPage: React.FC = () => {
                     <div className="flex-1 overflow-auto bg-dark-950/60 p-5 font-mono text-xs select-text custom-scrollbar">
                       {loadingFile ? (
                         <div className="flex flex-col items-center justify-center h-full space-y-2 text-dark-500">
-                          <Loader2 className="h-6 w-6 animate-spin text-brand-500" />
+                          <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
                           <span>Chargement de la ressource...</span>
                         </div>
                       ) : fileContent !== null ? (
@@ -393,7 +422,7 @@ export const FileExplorerPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-center p-8 space-y-4 select-none animate-fadeIn">
-                    <div className="h-12 w-12 rounded-2xl bg-dark-900/60 flex items-center justify-center border border-dark-800 shadow-lg shadow-black/10 text-brand-500">
+                    <div className="h-12 w-12 rounded-md bg-dark-900/60 flex items-center justify-center border border-dark-800 shadow-lg shadow-black/10 text-zinc-400">
                       <FileText className="h-6 w-6" />
                     </div>
                     <div className="space-y-1.5 max-w-sm">

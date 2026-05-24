@@ -194,7 +194,7 @@ export const CoursePresentation: React.FC = () => {
       <div className="flex h-screen w-screen bg-dark-950 text-dark-200 overflow-hidden font-sans">
         <MainSidebar />
         <div className="flex-1 flex flex-col items-center justify-center">
-          <Loader2 className="h-10 w-10 text-brand-500 animate-spin" />
+          <Loader2 className="h-10 w-10 text-zinc-500 animate-spin" />
           <p className="text-xs text-dark-400 font-mono mt-4">Chargement du cursus...</p>
         </div>
       </div>
@@ -211,7 +211,7 @@ export const CoursePresentation: React.FC = () => {
           <p className="text-sm text-dark-400 font-sans max-w-sm">{error || 'Le cours demandé est introuvable.'}</p>
           <Link 
             to="/" 
-            className="flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all cursor-pointer"
+            className="flex items-center gap-2 rounded-xl bg-dark-800 border border-dark-750 px-4 py-2.5 text-xs font-bold text-zinc-200 hover:bg-dark-750 hover:text-white transition-all cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour à l'accueil
@@ -236,7 +236,7 @@ export const CoursePresentation: React.FC = () => {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Decorative background grid & radial glow */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1e_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[350px] w-[600px] bg-brand-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[350px] w-[600px] bg-dark-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         {/* Top Header Bar */}
         <header className="relative flex items-center justify-between border-b border-dark-800/60 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
@@ -249,7 +249,7 @@ export const CoursePresentation: React.FC = () => {
             </Link>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight m-0 leading-none">
-                <BookOpen className="inline-block h-5 w-5 text-brand-500 mr-2.5 -mt-1" />
+                <BookOpen className="inline-block h-5 w-5 text-zinc-400 mr-2.5 -mt-1" />
                 Cursus Académique
               </h1>
               <p className="text-[10px] text-dark-400 font-mono mt-1.5">Consultez le syllabus, étudiez les chapitres et enregistrez vos notes de cours</p>
@@ -260,7 +260,7 @@ export const CoursePresentation: React.FC = () => {
             {nextChapterUrl && (
               <Link
                 to={nextChapterUrl}
-                className="flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-brand-500 transition-all shadow-lg shadow-brand-600/10 cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-dark-800 border border-dark-750 px-5 py-2.5 text-xs font-bold text-zinc-200 hover:bg-dark-750 hover:text-white transition-all shadow-lg cursor-pointer"
               >
                 <BookOpen className="h-4 w-4" />
                 {completedCount === 0 ? "Commencer le cours" : "Continuer l'apprentissage"}
@@ -300,11 +300,11 @@ export const CoursePresentation: React.FC = () => {
               <div className="space-y-4 flex-1">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-brand-500/10 text-brand-400 border border-brand-500/25">
+                    <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-dark-800 text-zinc-300 border border-dark-750">
                       Manuel Planifié
                     </span>
                     {toc.level && (
-                      <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
+                      <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-dark-800 text-zinc-300 border border-dark-750">
                         Niveau {toc.level}
                       </span>
                     )}
@@ -343,7 +343,7 @@ export const CoursePresentation: React.FC = () => {
                       cx="48"
                       cy="48"
                       r="40"
-                      className="stroke-brand-500 fill-transparent transition-all duration-500"
+                      className="stroke-zinc-500 fill-transparent transition-all duration-500"
                       strokeWidth="5.5"
                       strokeDasharray={`${2 * Math.PI * 40}`}
                       strokeDashoffset={`${2 * Math.PI * 40 * (1 - progressPercent / 100)}`}
@@ -366,7 +366,7 @@ export const CoursePresentation: React.FC = () => {
               {/* Left Pane: Detailed Curriculum Structure (Syllabus) */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex items-center gap-2 border-b border-dark-800 pb-2 mb-3">
-                  <GraduationCap className="h-4.5 w-4.5 text-brand-500" />
+                  <GraduationCap className="h-4.5 w-4.5 text-zinc-400" />
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider">Plan d'étude et chapitres</h3>
                 </div>
 
@@ -374,7 +374,7 @@ export const CoursePresentation: React.FC = () => {
                   {toc.modules.map((module, mIdx) => (
                     <div key={module.id} className="rounded-xl border border-dark-900 bg-dark-900/10 p-4 space-y-3">
                       <h4 className="text-xs font-extrabold text-dark-300 uppercase tracking-wider flex items-center gap-2 select-none">
-                        <span className="text-[10px] font-mono text-brand-400">Module {mIdx + 1}</span>
+                        <span className="text-[10px] font-mono text-zinc-400">Module {mIdx + 1}</span>
                         <span className="h-1 w-1 bg-dark-600 rounded-full" />
                         <span className="truncate text-white">{module.title}</span>
                       </h4>
@@ -386,7 +386,7 @@ export const CoursePresentation: React.FC = () => {
                             <div
                               key={submodule.id}
                               onClick={() => navigate(`/course/${courseId}/read/${submodule.id}`)}
-                              className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-dark-800/40 hover:border-brand-500/20 bg-dark-950/20 hover:bg-dark-800/30 cursor-pointer transition-all duration-200"
+                              className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-dark-800/40 hover:border-dark-700 bg-dark-950/20 hover:bg-dark-800/30 cursor-pointer transition-all duration-200"
                             >
                               <span className="text-xs font-semibold text-dark-300 group-hover:text-white transition-colors line-clamp-2">
                                 {submodule.title}
@@ -413,14 +413,14 @@ export const CoursePresentation: React.FC = () => {
               <div className="lg:col-span-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-dark-800 pb-2 mb-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="h-4.5 w-4.5 text-brand-500" />
+                    <FileText className="h-4.5 w-4.5 text-zinc-400" />
                     <h3 className="text-xs font-bold text-white uppercase tracking-wider">Notes d'étude personnelles</h3>
                   </div>
                   
                   <button
                     onClick={handleSaveNotes}
                     disabled={savingNotes}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-[10px] font-bold text-white transition-all disabled:opacity-50 cursor-pointer select-none shadow-md shadow-brand-600/10"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-dark-800 border border-dark-750 hover:bg-dark-750 text-[10px] font-bold text-zinc-200 transition-all disabled:opacity-50 cursor-pointer select-none shadow-md"
                   >
                     {savingNotes ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
                     Sauvegarder
@@ -432,7 +432,7 @@ export const CoursePresentation: React.FC = () => {
                     Ce cahier d'étude vous permet de prendre des notes, de résumer des chapitres ou de noter vos questions. Les informations sont sauvegardées dans votre espace disque pour rester disponibles à chaque séance.
                   </p>
                   
-                  <div className="rounded-xl border border-dark-800 bg-dark-950 p-1.5 focus-within:border-brand-500/50 transition-colors">
+                  <div className="rounded-xl border border-dark-800 bg-dark-950 p-1.5 focus-within:border-zinc-700 transition-colors">
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}

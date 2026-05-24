@@ -254,7 +254,7 @@ export const CourseReader: React.FC = () => {
           <p className="text-xs text-dark-400 leading-relaxed">{error || 'Le cours demandé est introuvable.'}</p>
           <Link 
             to="/" 
-            className="flex items-center gap-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 px-3.5 py-1.5 text-xs font-semibold text-zinc-950 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Retour à l'accueil
@@ -443,7 +443,7 @@ export const CourseReader: React.FC = () => {
                   ) : (
                     <Link
                       to="/"
-                      className="flex items-center gap-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 px-4 py-1.5 text-xs font-semibold text-zinc-950 transition-all shadow-sm"
+                      className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-4 py-1.5 text-xs font-semibold transition-all shadow-sm"
                     >
                       Terminer le cours
                       <CheckCircle2 className="h-4 w-4" />
