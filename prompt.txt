@@ -1,0 +1,59 @@
+prompt 1 :
+
+ok plusieur a encore changer avant de vriament pourvoir confirmer ce premier point. 
+il faut aussi refaire les modals de creation de cours, car elle sont encore dans l'ancienne version de dans
+j'aimerai ne plus avoir aucun ligne blanche car comme le text est deja en blanc il ne faut pas que de bordure de modal, vignette ou carte le soit aussi car si non elle font mal ua yeux comme les text est aussi en blanc.
+j'aimeria ne pas avoir de cadre fin autout des section de code car comme le code a deja son contour cela est redondnat et 
+en parlant de cadre j'aimeria savoir si on peux jusrte pas recuprer l'interpreter markdown de Vscode car il est superbe est a tout a fais la couleur que je veux grsi grannuleux et a un police 
+de bonne taille et interpret tres bient toute la syntaxe du md.
+explem pour le contour blanc a evite tout la section API, enelver tout le blan juste le tetxt dois l'etre.
+et aussi au lieu de metre la section des sous parametre dans le coin droit le metre diremnt comme sous choix dans la side bar principal ( main side bar )
+et pour la DA il faut que une seul couluer soit viasible en plus du gris principal alors que dans les parametre on peux encore voir du mauve ou qqch comme ca il faut fixer cela
+ou encore dans les differnes chapitre du cours eviter aussi les contou balnc si non on ne sais plus lire correcmten le nom quand on est dans le menu du cour.
+et pour finir avec les disgne metre le statu du cours plus a gauche si non pour le soucrs qui sont encore en mode Raw car non terminer le status est recouvert par le option rapide quand on passe la souris dessus.
+ON EVITE LES COULEURS juste de gradient de gris pas plus et du balnc style RAYWHITE donc un truc blanc mais leger moi fort ( ref Raylibrary )
+
+
+prompt 2 :
+
+Ok c'est bien a certain endroit mais a d'autre moin bien .....
+Deja dans la section paramtres/prompt-gabarit j'aimerai ne plus avoir les bordure qui n'etais pas la juste avant pas de bordure blanche INTERDIT LES BORDURE BLANCHE !!!!!
+idem pour la section personalistion de theme dans les paramtres pas de BORDURE BLANCHE
+dans les mennu de cours pas de couelur parasite mauve ou autre tout dois rester terne gris dans le theme principal donc les logo oules qql bouton qui rest change leurs COULEURS
+le bounton pour changer de cours dans le explorateur RAW ne dois pas etre blanc comme ca on ne sais pas lire le text et le menu deroule qui s'affiche apres dois etre en arondis comme un ShadCN component...
+pour la section modal de creation de cours idem pas de bouton blanc comm ca tout blanc avec le text ilisible et pas de bordure blanche... pas une seul donc track tout le code css ou style et enelve tout ca !!!
+et alonge la modal de custom de creation de cours elle est trop petite, et pour le choix du niveau et du prompt met les l'un apres l'autre et pas sur la meme ligne ca peremt d'acoir qqchde plus omogene.
+bref on evite le blanc pour la selection ou le sgrand ligne dans les section pour delimter qqch ou autre...
+et la modal qui est afihcer quand on genere le TOC/plan du cours fais en cote que ce soit juste la patie du cours qui soit flouter mais que la modal de base de custom rest, et pas qu'on change de modal..
+evite vraiemnt les couleur claire, on rest dans des gris terne et un peu sombre...
+
+
+prompt 3 :
+
+Ok on va en finir avec le bordure blanche et les bouton mal dessine, je vais avec toit t'ennocer tout les elemtn qui ne vont pas par page :
+Enfaite juste ne met pas de bordure, si mais tout d'une couluer qui est vraiment usper propche de la couleur du composnat de base.
+ensuite dans la section Explorateur, ton glass je sais pas qui ne fonctionne pas du tout fais juste un menu deoutluer simple pas debsoi de flou ou quoi juste qu'il soit un peu arrondi et pas juste carre moche.
+La section GenereCours dois refaire ses modals car les choix reourlent sont pas dans la vonne couleur, fais tout en gris zinc comme le reste de l'app.
+la bar de reche dans le menu enlever sa bordure pour un qqch de gris proche du fond.
+dans les module de la page menu des cours les sous modules ne doisvent pas avoir de bordure blache mais bine un gris zinc pour rester dans le bon theme.
+idem pour le bouton commencer le cours en haut a droite et le bouton plannifer, enelver la separation qu'on veux voir sur certain page en haut de page comme dans les menus
+et agrandire la modals de creation de cours pour que;;e remplisse 90% de la page.
+et pour les icone sur les vigneett des cours, enelver aussi les bordure blanche
+En gors fais vraiment la DA de AI Studio de google DeepMind, le meme theme mais faut que tout soit raccord tout dois etre dans ce theme, il faut q'on est l'impression qu'on a vole le theme de AI STUDIO tellemt c'est proche.
+
+
+prompt 4 :
+
+Ok c'est vraiment super, merci bcp
+juste remet une bordure au chose qui n'en non plus mais qqch de super leger comme tu a fais pour la section API dans les parametre ( TU DOIS T"EN INSPIRER )
+evite la couleur noire pour le petite icon sur les vignette des cours, remet la bordure tres legere sur les sous section de moduel des cours dans le le menu des cours.
+enleve la grill en fon pour l'explorateur raw, et enelve la couluer noir pour les modals de creation de cours
+et si tu sais enlever le carre de couluer derieir les section de code dans le rendere mardown mais que pour le code si c'est du ASCII laisse le.
+
+
+prompt 5 :
+
+Ok super on y presque, je voudrais juste que tu change la couleur des contour de vignette de cours avec la meme de le countour que le bouton ouvrire fermer de la side bar.
+dans la modal creation de cours, pour le section a choix reoulemt meme le meme que dans le Raw explorer. et enleve aussi la grille derier en fond dans le menu principale.
+remet aussi le contour pour la search bar comme pour le vignette, remet le hightlithing pour les element mais avec un couleur tres supbtile et pas noir 
+et pour le bloc de code, remet comme avant juste les bloc avec la section copier le code et le nom du code qui est englober, comme un Markdown le ferai.

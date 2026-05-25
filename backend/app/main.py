@@ -528,7 +528,8 @@ def get_settings():
         "llm_model": active.model,
         "data_dir": str(settings.get_data_dir()),
         "profiles": [p.to_dict() for p in settings_manager.profiles],
-        "active_profile_id": active.id
+        "active_profile_id": active.id,
+        "mecaprof": settings_manager.mecaprof_settings
     }
 
 @app.post("/api/settings/profile")
@@ -879,4 +880,173 @@ def resume_course_generation(course_id: str, background_tasks: BackgroundTasks):
         "message": "La génération du cours a été relancée.",
         "status": "starting"
     }
+
+
+class AskRequest(BaseModel):
+    context_paragraph: str
+    question: str
+    selected_text: Optional[str] = ""
+
+@app.post("/api/courses/{course_id}/{module_id}/ask")
+def ask_virtual_teacher_route(course_id: str, module_id: str, payload: AskRequest):
+    """
+    POST /api/courses/{course_id}/{module_id}/ask
+    Sends context paragraph, course TOC, module contents, and student question to the virtual teacher.
+    Saves the QA session into course questions.json for persistence.
+    """
+    data_dir = settings.get_data_dir()
+    course_dir = data_dir / course_id
+    
+    if not course_dir.exists() or not course_dir.is_dir():
+        raise HTTPException(status_code=404, detail="Cours introuvable.")
+        
+    toc_path = course_dir / "toc.json"
+    if not toc_path.exists():
+        raise HTTPException(status_code=404, detail="Plan de cours introuvable.")
+        
+    try:
+        with open(toc_path, "r", encoding="utf-8") as f:
+            toc = json.load(f)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de lecture de toc.json: {e}")
+        
+    course_title = toc.get("title", course_id)
+    
+    # Try to find module file contents
+    module_content = ""
+    filename = module_id
+    if not filename.endswith(".md"):
+        filename += ".md"
+        
+    found_file = None
+    for md_file in course_dir.glob("**/*.md"):
+        if md_file.name == filename or md_file.stem == module_id:
+            found_file = md_file
+            break
+            
+    if not found_file:
+        raise HTTPException(status_code=404, detail=f"Module {module_id} introuvable.")
+        
+    try:
+        with open(found_file, "r", encoding="utf-8") as f:
+            module_content = f.read()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de lecture du module: {e}")
+        
+    # Get MecaProf LLM settings
+    mecaprof = settings_manager.mecaprof_settings
+    
+    # Extract profile and model
+    profile_id = mecaprof.get("profile_id") or toc.get("profile_id")
+    model = mecaprof.get("model") or toc.get("model")
+    
+    api_profile = None
+    if profile_id:
+        for p in settings_manager.profiles:
+            if p.id == profile_id:
+                api_profile = p
+                break
+    if not api_profile:
+        api_profile = settings_manager.get_active_profile()
+        
+    chosen_model = model or api_profile.model or "gemini-flash-latest"
+    system_prompt = mecaprof.get("system_prompt")
+    temperature = mecaprof.get("temperature", 0.3)
+    
+    from app.llm import ask_virtual_teacher
+    
+    try:
+        answer, usage = ask_virtual_teacher(
+            course_title=course_title,
+            toc=toc,
+            module_content=module_content,
+            context_paragraph=payload.context_paragraph,
+            question=payload.question,
+            api_profile=api_profile,
+            override_model=chosen_model,
+            system_prompt=system_prompt,
+            temperature=temperature
+        )
+        
+        # Persist this Q&A into questions.json
+        questions_path = course_dir / "questions.json"
+        all_questions = {}
+        if questions_path.exists():
+            try:
+                with open(questions_path, "r", encoding="utf-8") as f:
+                    all_questions = json.load(f)
+            except Exception:
+                pass
+                
+        if module_id not in all_questions:
+            all_questions[module_id] = {}
+            
+        para_key = payload.context_paragraph
+        if para_key not in all_questions[module_id]:
+            all_questions[module_id][para_key] = []
+            
+        all_questions[module_id][para_key].append({
+            "q": payload.question,
+            "a": answer,
+            "selected_text": payload.selected_text or ""
+        })
+        
+        try:
+            with open(questions_path, "w", encoding="utf-8") as f:
+                json.dump(all_questions, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            logger.error(f"Failed to save questions.json: {e}")
+            
+        return {
+            "success": True,
+            "answer": answer,
+            "usage": usage
+        }
+    except Exception as e:
+        logger.exception("Error in ask_virtual_teacher_route")
+        raise HTTPException(status_code=500, detail=f"Échec de l'appel au professeur virtuel : {str(e)}")
+
+@app.get("/api/courses/{course_id}/{module_id}/questions")
+def get_module_questions(course_id: str, module_id: str):
+    """
+    GET /api/courses/{course_id}/{module_id}/questions
+    Retrieves all Q&As stored in questions.json for the specified module.
+    """
+    data_dir = settings.get_data_dir()
+    questions_path = data_dir / course_id / "questions.json"
+    if not questions_path.exists():
+        return {}
+        
+    try:
+        with open(questions_path, "r", encoding="utf-8") as f:
+            all_questions = json.load(f)
+        return all_questions.get(module_id, {})
+    except Exception as e:
+        logger.error(f"Error loading questions.json for {course_id}: {e}")
+        return {}
+
+class MecaProfSettingsPayload(BaseModel):
+    profile_id: str
+    model: str
+    system_prompt: str
+    temperature: float
+
+@app.post("/api/settings/mecaprof")
+def update_mecaprof_settings(payload: MecaProfSettingsPayload):
+    """
+    POST /api/settings/mecaprof
+    Updates MecaProf teacher settings in the global settings_manager.
+    """
+    try:
+        settings_manager.mecaprof_settings.update({
+            "profile_id": payload.profile_id.strip(),
+            "model": payload.model.strip(),
+            "system_prompt": payload.system_prompt.strip(),
+            "temperature": payload.temperature
+        })
+        settings_manager.save_profiles()
+        return {"success": True, "message": "Paramètres de MecaProf mis à jour avec succès !", "mecaprof": settings_manager.mecaprof_settings}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 

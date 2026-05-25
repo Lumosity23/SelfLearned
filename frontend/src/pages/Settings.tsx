@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { 
   Save, Eye, EyeOff, Cpu, Database, Sparkles, Copy, Check,
   Plus, Trash2, Edit3, CheckCircle2, Power, X, Layers, FileText, Download, Upload, AlertCircle,
-  Palette, Settings as SettingsIcon
+  Palette, Settings as SettingsIcon, Loader2
 } from 'lucide-react';
 import { MainSidebar } from '../components/MainSidebar';
 import { useToast } from '../components/ToastProvider';
@@ -33,7 +33,7 @@ export const Settings: React.FC = () => {
   const { preset, themeProperties, setThemePreset, updateThemeProperty, importTheme, exportTheme } = useTheme();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get('tab') || 'api_keys';
-  const activeSection = (tab === 'system_prompt' || tab === 'api_keys' || tab === 'personalization') ? tab : 'api_keys';
+  const activeSection = (tab === 'system_prompt' || tab === 'api_keys' || tab === 'personalization' || tab === 'mecaprof') ? tab : 'api_keys';
 
   // API profiles states
   const [profiles, setProfiles] = useState<LLMProfile[]>([]);
@@ -42,6 +42,12 @@ export const Settings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // MecaProf settings states
+  const [mecaprofProfileId, setMecaprofProfileId] = useState('');
+  const [mecaprofModel, setMecaprofModel] = useState('');
+  const [mecaprofSystemPrompt, setMecaprofSystemPrompt] = useState('');
+  const [mecaprofTemperature, setMecaprofTemperature] = useState(0.3);
 
   // Form states for creating/editing profile
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -89,10 +95,16 @@ export const Settings: React.FC = () => {
       setLoading(true);
       const res = await fetch('/api/settings');
       if (res.ok) {
-        const data: SettingsResponse = await res.json();
+        const data: SettingsResponse & { mecaprof?: any } = await res.json();
         setProfiles(data.profiles || []);
         setActiveProfileId(data.active_profile_id || '');
         setDataDir(data.data_dir || '');
+        if (data.mecaprof) {
+          setMecaprofProfileId(data.mecaprof.profile_id || '');
+          setMecaprofModel(data.mecaprof.model || '');
+          setMecaprofSystemPrompt(data.mecaprof.system_prompt || '');
+          setMecaprofTemperature(data.mecaprof.temperature ?? 0.3);
+        }
       } else {
         throw new Error('Erreur lors du chargement des paramètres');
       }
@@ -525,6 +537,41 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const handleSaveMecaProf = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setStatus(null);
+    try {
+      const res = await fetch('/api/settings/mecaprof', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          profile_id: mecaprofProfileId,
+          model: mecaprofModel,
+          system_prompt: mecaprofSystemPrompt,
+          temperature: mecaprofTemperature
+        })
+      });
+      if (res.ok) {
+        addToast({
+          title: 'Paramètres mis à jour',
+          description: 'La configuration globale du MecaProf a été enregistrée avec succès.',
+          type: 'success'
+        });
+      } else {
+        const data = await res.json();
+        throw new Error(data.detail || 'Erreur lors de la sauvegarde.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setStatus({ type: 'error', message: err.message || 'Impossible de sauvegarder les paramètres.' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const getProviderBadge = (type: string) => {
     const baseStyle = "text-[9px] px-2 py-0.5 rounded font-bold uppercase tracking-wide shrink-0 bg-dark-800 text-zinc-300 border border-zinc-750/40 ";
     switch (type) {
@@ -558,9 +605,19 @@ export const Settings: React.FC = () => {
           <div>
             <h1 className="text-sm font-semibold text-white tracking-tight m-0 leading-none">
               <SettingsIcon className="inline-block h-4 w-4 text-white mr-2.5 -mt-0.5" />
-              {activeSection === 'api_keys' ? 'Clés API & Profils' : activeSection === 'system_prompt' ? 'Prompts & Gabarits' : 'Personnalisation'}
+              {activeSection === 'api_keys' 
+                ? 'Clés API & Profils' 
+                : activeSection === 'system_prompt' 
+                ? 'Prompts & Gabarits' 
+                : activeSection === 'mecaprof'
+                ? 'Professeur Virtuel (MecaProf)'
+                : 'Personnalisation'}
             </h1>
-            <p className="text-[10px] text-dark-400 font-mono mt-1.5">Configurez vos clés API et personnalisez la structure de vos cours</p>
+            <p className="text-[10px] text-dark-400 font-mono mt-1.5">
+              {activeSection === 'mecaprof'
+                ? 'Configurez le modèle d’IA et l’instruction de guidage pédagogique du professeur virtuel'
+                : 'Configurez vos clés API et personnalisez la structure de vos cours'}
+            </p>
           </div>
 
           <div className="flex items-center gap-6">
@@ -1448,6 +1505,109 @@ export const Settings: React.FC = () => {
                     </div>
 
                   </div>
+                )}
+
+                {activeSection === 'mecaprof' && (
+                  <form onSubmit={handleSaveMecaProf} className="space-y-8 animate-fadeIn max-w-4xl">
+                    {/* Intro Tip */}
+                    <div className="flex gap-3 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-5 leading-relaxed font-sans">
+                      <Sparkles className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white mb-1 font-sans">Configuration du MecaProf (Professeur Virtuel)</p>
+                        <p>
+                          Personnalisez les directives pédagogiques, le modèle d'intelligence artificielle et la température créative de votre professeur virtuel. Ces paramètres s'appliquent globalement lorsque vous posez des questions de clarification ou demandez des explications de concepts.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6 bg-dark-900/30 border border-dark-850 rounded-lg p-6">
+                      {/* Profile Selection */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-zinc-350 uppercase tracking-wider font-sans">Profil de Clé API & Fournisseur</label>
+                        <p className="text-[10px] text-dark-400 font-mono">Sélectionnez la clé API active et le fournisseur de services à utiliser pour le professeur virtuel.</p>
+                        <select
+                          value={mecaprofProfileId}
+                          onChange={(e) => setMecaprofProfileId(e.target.value)}
+                          className="w-full sm:w-80 rounded-md border border-dark-800 bg-dark-950 px-3 py-2 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all cursor-pointer font-sans"
+                        >
+                          <option value="">Profil actif global (par défaut)</option>
+                          {profiles.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} ({p.type.toUpperCase()})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Model Override */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-zinc-355 uppercase tracking-wider font-sans">Modèle d'IA</label>
+                        <p className="text-[10px] text-dark-400 font-mono">Laissez vide pour utiliser le modèle par défaut du profil sélectionné, ou forcez un modèle spécifique (ex: <code>gemini-2.5-flash</code> ou <code>gpt-4o-mini</code>).</p>
+                        <input
+                          type="text"
+                          value={mecaprofModel}
+                          onChange={(e) => setMecaprofModel(e.target.value)}
+                          placeholder="Ex: gemini-2.5-flash"
+                          className="w-full sm:w-80 rounded-md border border-dark-800 bg-dark-950 px-3 py-2 text-xs text-white placeholder-zinc-650 focus:border-zinc-700 focus:outline-none transition-all font-sans"
+                        />
+                      </div>
+
+                      {/* System Instruction */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-bold text-zinc-350 uppercase tracking-wider font-sans">Instruction Système (System Prompt)</label>
+                        <p className="text-[10px] text-dark-400 font-mono">Définissez le rôle, le ton et les directives de formatage du MecaProf.</p>
+                        <textarea
+                          rows={6}
+                          value={mecaprofSystemPrompt}
+                          onChange={(e) => setMecaprofSystemPrompt(e.target.value)}
+                          placeholder="Tu es un professeur virtuel..."
+                          className="w-full rounded-md border border-dark-800 bg-dark-950 p-3.5 text-xs text-white leading-relaxed focus:border-zinc-700 focus:outline-none font-sans"
+                        />
+                      </div>
+
+                      {/* Temperature Slider */}
+                      <div className="space-y-2.5">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-xs font-bold text-zinc-350 uppercase tracking-wider font-sans">Température de Créativité</label>
+                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800/80 text-zinc-300 font-sans">{mecaprofTemperature}</span>
+                        </div>
+                        <p className="text-[10px] text-dark-400 font-mono">Une valeur basse (0.1 - 0.3) produit des explications factuelles et stables. Une valeur haute (0.7 - 0.9) favorise la variété des métaphores et exemples.</p>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] text-dark-500 font-semibold font-sans">Strict / Précis</span>
+                          <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={mecaprofTemperature}
+                            onChange={(e) => setMecaprofTemperature(parseFloat(e.target.value))}
+                            className="flex-1 accent-zinc-400 bg-dark-950 h-1.5 rounded-lg cursor-pointer"
+                          />
+                          <span className="text-[10px] text-dark-500 font-semibold font-sans">Créatif / Varié</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-dark-850/60">
+                      <button
+                        type="submit"
+                        disabled={saving}
+                        className="flex items-center gap-1.5 rounded-md bg-zinc-200 hover:bg-zinc-300 disabled:opacity-55 px-5 py-2.5 text-xs font-semibold text-zinc-950 transition-all cursor-pointer shadow-sm font-sans"
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            Sauvegarde...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="h-3.5 w-3.5" />
+                            Enregistrer la Configuration
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
                 )}
               </>
             )}

@@ -285,16 +285,16 @@ export const CourseReader: React.FC = () => {
       {/* 2. Main Reader Area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Header Bar */}
-        <header className="flex items-center justify-between border-b border-dark-850 px-6 py-3 bg-dark-900/40 backdrop-blur-md shrink-0">
+        <header className="flex items-center justify-between px-6 py-3 shrink-0">
           <div className="flex items-center gap-3">
             <Link
               to={`/course/${courseId}`}
-              className="flex items-center gap-1.5 text-[11px] text-dark-400 hover:text-white transition-colors bg-dark-800/50 px-2.5 py-1.5 rounded-md border border-dark-850 font-medium"
+              className="flex items-center gap-1.5 text-[11px] text-zinc-300 hover:text-white transition-colors bg-zinc-900 px-2.5 py-1.5 rounded-xl border border-zinc-900 font-medium"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Syllabus
             </Link>
-            <div className="h-3.5 w-px bg-dark-800" />
+            <div className="h-3.5 w-px bg-zinc-900" />
             <span className="text-xs font-mono text-dark-400 font-medium truncate max-w-[150px] sm:max-w-[300px]">
               {toc.title}
             </span>
@@ -303,7 +303,7 @@ export const CourseReader: React.FC = () => {
           <button
             onClick={handleExportPDF}
             disabled={exportingPDF}
-            className="flex items-center gap-1.5 rounded-md border border-dark-800 bg-dark-900 hover:bg-dark-800 px-3 py-1.5 text-xs font-medium text-white transition-all disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-200 transition-all disabled:opacity-50 whitespace-nowrap shrink-0 cursor-pointer"
           >
             {exportingPDF ? (
               <Loader2 className="h-3.5 w-3.5 text-white animate-spin shrink-0" />
@@ -368,7 +368,7 @@ export const CourseReader: React.FC = () => {
 
                   {/* Tabs Selector (Theory vs Exercises ONLY, RAW is in sidebar) */}
                   {hasExercises && (
-                    <div className="flex border-b border-dark-850 pt-3 gap-4 select-none">
+                    <div className="flex border-b border-zinc-900/50 pt-3 gap-4 select-none">
                       <button
                         onClick={() => setActiveTab('theory')}
                         className={`flex items-center gap-1.5 pb-2 text-xs font-semibold transition-all relative ${
@@ -415,14 +415,22 @@ export const CourseReader: React.FC = () => {
                       </div>
                     </div>
                   ) : activeTab === 'theory' ? (
-                    <MarkdownViewer content={theoryContent} />
+                    <MarkdownViewer 
+                      content={theoryContent} 
+                      courseId={courseId} 
+                      moduleId={activeSubmodule?.file || activeSubmodule?.id} 
+                    />
                   ) : (
-                    <MarkdownViewer content={exerciseContent} />
+                    <MarkdownViewer 
+                      content={exerciseContent} 
+                      courseId={courseId} 
+                      moduleId={activeSubmodule?.file ? activeSubmodule.file.replace('.md', '_exercises.md') : undefined} 
+                    />
                   )}
                 </div>
 
                 {/* Footer Navigation Bar */}
-                <div className="flex items-center justify-between border-t border-dark-850 pt-6 mt-8 pb-12">
+                <div className="flex items-center justify-between border-t border-zinc-900/40 pt-6 mt-8 pb-12">
                   <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
@@ -435,7 +443,7 @@ export const CourseReader: React.FC = () => {
                   {currentIndex < submodulesList.length - 1 ? (
                     <button
                       onClick={handleNext}
-                      className="flex items-center gap-1 rounded-md bg-dark-800 border border-dark-700/60 hover:bg-dark-700 px-3.5 py-1.5 text-xs font-medium text-white transition-all cursor-pointer"
+                      className="flex items-center gap-1 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-white transition-all cursor-pointer"
                     >
                       Suivant
                       <ChevronRight className="h-4.5 w-4.5" />
@@ -443,7 +451,7 @@ export const CourseReader: React.FC = () => {
                   ) : (
                     <Link
                       to="/"
-                      className="flex items-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-4 py-1.5 text-xs font-semibold transition-all shadow-sm"
+                      className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 text-zinc-200 hover:bg-zinc-800 hover:text-white px-4 py-1.5 text-xs font-semibold transition-all shadow-sm"
                     >
                       Terminer le cours
                       <CheckCircle2 className="h-4 w-4" />

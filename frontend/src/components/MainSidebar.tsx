@@ -139,6 +139,16 @@ export const MainSidebar: React.FC = () => {
               >
                 Personnalisation
               </Link>
+              <Link
+                to="/settings?tab=mecaprof"
+                className={`block text-xs py-1 transition-colors select-none ${
+                  new URLSearchParams(location.search).get('tab') === 'mecaprof'
+                    ? 'text-zinc-100 font-semibold'
+                    : 'text-dark-400 hover:text-zinc-200'
+                }`}
+              >
+                Professeur Virtuel (MecaProf)
+              </Link>
             </div>
           )}
         </div>

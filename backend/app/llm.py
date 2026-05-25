@@ -708,3 +708,88 @@ def fetch_available_models(api_profile: Any) -> List[str]:
         logger.warning(f"Failed to dynamically query models list for provider {provider_type}: {e}")
         
     return fallbacks.get(provider_type, ["custom"])
+
+
+def ask_virtual_teacher(
+    course_title: str,
+    toc: Dict[str, Any],
+    module_content: str,
+    context_paragraph: str,
+    question: str,
+    api_profile: Optional[Any] = None,
+    override_model: Optional[str] = None,
+    system_prompt: Optional[str] = None,
+    temperature: float = 0.3
+) -> tuple[str, dict[str, int]]:
+    """
+    Asks the virtual teacher a question regarding a specific context paragraph inside a module.
+    """
+    active_profile = api_profile or settings_manager.get_active_profile()
+    profile_model = override_model or active_profile.model or "gemini-flash-latest"
+    
+    sys_prompt = system_prompt or "Tu es un professeur virtuel intégré à un cours. Ton but est d'éclaircir un point précis posé par l'élève. Utilise un ton pédagogique, concis et direct. Ne génère pas un nouveau cours. Fournis une explication courte (max 3 paragraphes) ou un exemple simple. Réponds en Markdown."
+    
+    user_prompt = f"""Voici les informations pour répondre à la question de l'élève dans son contexte d'apprentissage :
+
+[TITRE DU COURS] :
+{course_title}
+
+[TABLE DES MATIÈRES DU COURS] :
+{json.dumps(toc, indent=2, ensure_ascii=False)}
+
+[CONTENU DU MODULE ENTIER] :
+{module_content}
+
+[PARAGRAPHE CIBLÉ CONCERNÉ] :
+{context_paragraph}
+
+[QUESTION DE L'ÉLÈVE] :
+{question}
+
+Fournis une réponse claire, directe et concise qui résout la question par rapport au paragraphe ciblé.
+"""
+
+    if active_profile.type == "gemini":
+        logger.info(f"Asking virtual teacher using Gemini API with model {profile_model}")
+        return call_gemini_api(
+            api_key=active_profile.api_key,
+            model=profile_model,
+            system_prompt=sys_prompt,
+            user_prompt=user_prompt,
+            temperature=temperature
+        )
+
+    elif active_profile.type == "aws_bedrock":
+        logger.info(f"Asking virtual teacher using Amazon Bedrock with model {profile_model}")
+        return call_bedrock_api(
+            api_key=active_profile.api_key,
+            base_url=active_profile.base_url,
+            model=profile_model,
+            system_prompt=sys_prompt,
+            user_prompt=user_prompt,
+            temperature=temperature
+        )
+
+    client = get_llm_client(active_profile)
+    response = client.chat.completions.create(
+        model=profile_model,
+        messages=[
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=temperature
+    )
+    
+    content = response.choices[0].message.content
+    if not content:
+        raise ValueError("Le LLM a renvoyé une réponse vide.")
+        
+    usage_dict = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+    if response.usage:
+        usage_dict = {
+            "prompt_tokens": response.usage.prompt_tokens,
+            "completion_tokens": response.usage.completion_tokens,
+            "total_tokens": response.usage.total_tokens
+        }
+    return content.strip(), usage_dict
+

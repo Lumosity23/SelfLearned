@@ -31,6 +31,12 @@ class SettingsManager:
     def __init__(self):
         self.profiles_path = settings.get_data_dir() / "settings.json"
         self.profiles: List[LLMProfile] = []
+        self.mecaprof_settings: Dict[str, Any] = {
+            "profile_id": "",
+            "model": "",
+            "system_prompt": "Tu es un professeur virtuel intégré à un cours. Ton but est d'éclaircir un point précis posé par l'élève. Utilise un ton pédagogique, concis et direct. Ne génère pas un nouveau cours. Fournis une explication courte (max 3 paragraphes) ou un exemple simple. Réponds en Markdown.",
+            "temperature": 0.3
+        }
         self.load_profiles()
 
     def load_profiles(self):
@@ -50,6 +56,8 @@ class SettingsManager:
                         )
                         for p in data.get("profiles", [])
                     ]
+                    if "mecaprof" in data:
+                        self.mecaprof_settings.update(data["mecaprof"])
                 logger.info(f"Loaded {len(self.profiles)} LLM profiles from settings.json")
             except Exception as e:
                 logger.error(f"Error loading settings.json: {e}")
@@ -94,7 +102,8 @@ class SettingsManager:
         try:
             with open(self.profiles_path, "w", encoding="utf-8") as f:
                 json.dump({
-                    "profiles": [p.to_dict() for p in self.profiles]
+                    "profiles": [p.to_dict() for p in self.profiles],
+                    "mecaprof": self.mecaprof_settings
                 }, f, indent=2, ensure_ascii=False)
             logger.info("Saved LLM profiles to settings.json")
         except Exception as e:

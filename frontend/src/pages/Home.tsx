@@ -231,24 +231,22 @@ export const Home: React.FC = () => {
 
       {/* 2. Main content container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-dark-950">
-        {/* Decorative background grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30 pointer-events-none" />
 
         <div className="flex-1 overflow-y-auto px-6 py-8 relative custom-scrollbar">
           <div className="max-w-5xl mx-auto space-y-8">
             
             {/* Top Navbar */}
-            <header className="flex items-center justify-between border-b border-dark-850 pb-4 shrink-0">
+            <header className="flex items-center justify-between pb-4 shrink-0">
               <div>
                 <h1 className="text-base font-semibold text-white tracking-tight flex items-center m-0">
                   <GraduationCap className="h-4.5 w-4.5 text-white mr-2" />
                   Mes Cursus Académiques
                 </h1>
-                <p className="text-[10px] text-dark-400 font-mono mt-0.5">Gérez vos manuels planifiés et rédigés par l'IA</p>
+                <p className="text-[10px] text-dark-400 font-mono mt-0.5">Gérer vos manuels planifiés et rédigés par l'IA</p>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <label className="flex items-center gap-1.5 rounded-md border border-dark-800 bg-dark-900/60 hover:bg-dark-800 px-3 py-1.5 text-xs font-medium text-dark-300 hover:text-white transition-all cursor-pointer">
+                <label className="flex items-center gap-1.5 rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-zinc-850 px-3 py-1.5 text-xs font-medium text-dark-300 hover:text-white transition-all cursor-pointer">
                   {importing ? (
                     <Loader2 className="h-3.5 w-3.5 text-white animate-spin" />
                   ) : (
@@ -266,7 +264,7 @@ export const Home: React.FC = () => {
 
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 px-3.5 py-1.5 text-xs font-semibold text-zinc-950 transition-all cursor-pointer shadow-sm"
+                  className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:bg-zinc-850 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 transition-all cursor-pointer shadow-sm"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Nouveau cours</span>
@@ -275,7 +273,7 @@ export const Home: React.FC = () => {
             </header>
 
             {/* Compact Header Pitch instead of giant Hero */}
-            <div className="bg-dark-900/40 border border-dark-850 rounded-md p-4 max-w-3xl">
+            <div className="bg-zinc-900/10 border border-zinc-900/60 rounded-xl p-4 max-w-3xl">
               <h2 className="text-sm font-semibold text-zinc-100 mb-1 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-white animate-pulse" />
                 Créateur de Cursus Académique Local
@@ -286,7 +284,7 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Action & Filter Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-dark-900/20 p-2.5 rounded-md border border-dark-850/40">
+            <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-dark-900/20 p-2.5 rounded-xl border border-zinc-900/40">
               <div className="relative w-full sm:max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-dark-500" />
                 <input
@@ -294,7 +292,7 @@ export const Home: React.FC = () => {
                   placeholder="Rechercher un manuel..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-md border border-dark-800 bg-dark-950 pl-8 pr-3 py-1 text-xs text-white placeholder-dark-500 focus:border-dark-700 focus:outline-none transition-all"
+                  className="w-full rounded-xl border border-dark-800 bg-zinc-900 pl-8 pr-3 py-1.5 text-xs text-white placeholder-dark-500 focus:bg-zinc-900 focus:border-dark-700/80 focus:outline-none transition-all"
                 />
               </div>
               
@@ -304,7 +302,7 @@ export const Home: React.FC = () => {
             </div>
 
             {/* Tab Selector (Active vs Archived) */}
-            <div className="flex border-b border-dark-850 gap-4 select-none">
+            <div className="flex border-b border-zinc-900/50 gap-4 select-none">
               <button
                 onClick={() => setCurrentTab('all')}
                 className={`pb-2 text-xs font-semibold relative transition-colors ${
@@ -329,13 +327,13 @@ export const Home: React.FC = () => {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className="rounded-md border border-dark-850 bg-dark-900/40 p-4 space-y-3 animate-pulse">
+                  <div key={n} className="rounded-xl border border-zinc-900 bg-zinc-900/10 p-4 space-y-3 animate-pulse">
                     <div className="h-4 w-2/3 bg-dark-800 rounded" />
                     <div className="space-y-1.5">
                       <div className="h-3 w-full bg-dark-800 rounded" />
                       <div className="h-3 w-5/6 bg-dark-800 rounded" />
                     </div>
-                    <div className="pt-3 flex items-center justify-between border-t border-dark-850/60">
+                    <div className="pt-3 flex items-center justify-between border-t border-zinc-900/40">
                       <div className="h-3 w-1/3 bg-dark-800 rounded" />
                       <div className="h-3 w-1/4 bg-dark-800 rounded" />
                     </div>
@@ -355,14 +353,14 @@ export const Home: React.FC = () => {
                         navigate(`/course/${course.id}`);
                       }
                     }}
-                    className="group relative flex flex-col justify-between rounded-md border border-dark-850 bg-dark-900/50 p-4 hover:border-dark-700 cursor-pointer overflow-hidden transition-all duration-200"
+                    className="group relative flex flex-col justify-between rounded-xl border border-dark-800 bg-zinc-900/10 p-4 hover:border-dark-700/80 hover:bg-dark-800/25 cursor-pointer overflow-hidden transition-all duration-200"
                   >
                     {/* Quick Action Buttons */}
                     <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10">
                       {course.partial && (
                         <button
                           onClick={(e) => handleResume(e, course)}
-                          className="p-1 rounded bg-dark-800 border border-dark-700/60 text-dark-300 hover:text-white transition-all"
+                          className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-white transition-all"
                           title="Reprendre la génération"
                         >
                           <Sparkles className="h-3.5 w-3.5" />
@@ -370,28 +368,28 @@ export const Home: React.FC = () => {
                       )}
                       <button
                         onClick={(e) => handlePinToggle(e, course)}
-                        className="p-1 rounded bg-dark-800 border border-dark-700/60 text-dark-300 hover:text-white transition-all"
+                        className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-white transition-all"
                         title={course.pinned ? "Désépingler" : "Épingler"}
                       >
                         <Pin className={`h-3.5 w-3.5 ${course.pinned ? 'fill-white text-white' : ''}`} />
                       </button>
                       <button
                         onClick={(e) => handleArchiveToggle(e, course)}
-                        className="p-1 rounded bg-dark-800 border border-dark-700/60 text-dark-300 hover:text-white transition-all"
+                        className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-white transition-all"
                         title={course.archived ? "Désarchiver" : "Archiver"}
                       >
                         <Archive className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={(e) => handleExport(e, course)}
-                        className="p-1 rounded bg-dark-800 border border-dark-700/60 text-dark-300 hover:text-white transition-all"
+                        className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-white transition-all"
                         title="Exporter (.zip)"
                       >
                         <Download className="h-3.5 w-3.5" />
                       </button>
                       <button
                         onClick={(e) => handleDeleteClick(e, course)}
-                        className="p-1 rounded bg-dark-800 border border-dark-700/60 text-dark-300 hover:text-rose-500 transition-all"
+                        className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-rose-500 transition-all"
                         title="Supprimer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -401,7 +399,7 @@ export const Home: React.FC = () => {
                     {/* Status Indicators when not hovered */}
                     <div className="absolute top-3 right-3 flex items-center gap-1 group-hover:opacity-0 transition-opacity duration-150 select-none z-10">
                       {course.pinned && (
-                        <div className="h-5 w-5 flex items-center justify-center rounded bg-dark-800 text-white border border-dark-700/50 shadow-sm">
+                        <div className="h-5 w-5 flex items-center justify-center rounded-lg bg-zinc-900 text-white border border-zinc-800/80 shadow-sm">
                           <Pin className="h-3 w-3 fill-white text-white" />
                         </div>
                       )}
@@ -409,7 +407,7 @@ export const Home: React.FC = () => {
 
                     <div className="space-y-2.5">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-dark-800 text-dark-300 shrink-0">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800/60 text-zinc-300 shrink-0">
                           {course.status === 'generating' ? (
                             <Loader2 className="h-4.5 w-4.5 text-white animate-spin" />
                           ) : (
@@ -420,17 +418,17 @@ export const Home: React.FC = () => {
                         {/* Group status badges & progress percentages next to the icon */}
                         <div className="flex items-center gap-1.5">
                           {course.status === 'generating' ? (
-                            <span className="text-[9px] font-semibold text-white bg-dark-850 border border-dark-700 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide animate-pulse">
+                            <span className="text-[9px] font-semibold text-white bg-zinc-900 border border-zinc-800/80 rounded px-2 py-0.5 font-mono select-none tracking-wide animate-pulse">
                               Rédaction...
                             </span>
                           ) : course.partial ? (
-                            <span className="text-[9px] font-semibold text-amber-500 bg-amber-950/20 border border-amber-900/30 rounded-sm px-2 py-0.5 font-mono select-none tracking-wide">
+                            <span className="text-[9px] font-semibold text-amber-500 bg-amber-950/20 border border-amber-900/30 rounded px-2 py-0.5 font-mono select-none tracking-wide">
                               Génération Partielle
                             </span>
                           ) : null}
 
                           {course.status !== 'generating' && course.total_submodules ? (
-                            <div className="h-5 px-1.5 flex items-center justify-center rounded-sm bg-dark-800 text-zinc-300 border border-dark-700/50 font-mono text-[9px] font-medium shadow-sm">
+                            <div className="h-5 px-1.5 flex items-center justify-center rounded bg-zinc-900 text-zinc-300 border border-zinc-800/80 font-mono text-[9px] font-medium shadow-sm">
                               {(() => {
                                 const total = course.total_submodules || 0;
                                 const completed = getCompletedCount(course.id);
@@ -455,12 +453,12 @@ export const Home: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="pt-4 mt-4 border-t border-dark-850/60 flex items-center justify-between text-[10px] text-dark-400 font-mono">
+                    <div className="pt-4 mt-4 border-t border-zinc-900/40 flex items-center justify-between text-[10px] text-dark-500 font-mono">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         <span>{formatDate(course.created_at)}</span>
                       </div>
-                      <div className="flex items-center gap-0.5 text-white font-medium">
+                      <div className="flex items-center gap-0.5 text-zinc-300 font-medium group-hover:text-white transition-colors">
                         {course.status === 'generating' ? (
                           <>
                             Suivre
@@ -479,8 +477,8 @@ export const Home: React.FC = () => {
               </div>
             ) : (
               /* Empty State */
-              <div className="flex flex-col items-center justify-center border border-dashed border-dark-800 rounded-md bg-dark-900/10 py-12 px-4 text-center max-w-md mx-auto">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-dark-800 text-dark-300 mb-3">
+              <div className="flex flex-col items-center justify-center border border-dashed border-zinc-900 rounded-xl bg-zinc-900/10 py-12 px-4 text-center max-w-md mx-auto animate-in fade-in">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-dark-300 mb-3">
                   <Sparkles className="h-5 w-5" />
                 </div>
                 
@@ -497,14 +495,14 @@ export const Home: React.FC = () => {
                 {searchQuery ? (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="rounded-md border border-dark-800 bg-transparent px-3 py-1 text-xs font-medium text-white hover:bg-dark-800 transition-all cursor-pointer"
+                    className="rounded-xl border border-zinc-900 bg-zinc-900 hover:bg-zinc-800 px-3.5 py-1.5 text-xs font-medium text-zinc-300 transition-all cursor-pointer"
                   >
                     Réinitialiser la recherche
                   </button>
                 ) : (
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-1.5 rounded-md bg-zinc-100 px-4 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-zinc-200 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 px-4 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Générer mon premier cours
@@ -531,10 +529,10 @@ export const Home: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {courseToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-sm rounded-md border border-dark-800 bg-dark-900 p-5 shadow-xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-900 bg-zinc-900/90 backdrop-blur-md p-5 shadow-xl animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => setCourseToDelete(null)}
-              className="absolute top-3 right-3 h-6 w-6 flex items-center justify-center rounded-md border border-dark-800 bg-dark-950/40 text-dark-400 hover:text-white hover:bg-dark-800 transition-all cursor-pointer"
+              className="absolute top-3 right-3 h-6 w-6 flex items-center justify-center rounded-xl border border-zinc-900 bg-zinc-950 text-zinc-400 hover:text-white hover:bg-zinc-850 transition-all cursor-pointer"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -560,21 +558,21 @@ export const Home: React.FC = () => {
                   placeholder="Tapez SUPPRIMER..."
                   value={deleteConfirmText}
                   onChange={(e) => setDeleteConfirmText(e.target.value)}
-                  className="w-full rounded-md border border-dark-800 bg-dark-950 px-3 py-1.5 text-xs text-white placeholder-dark-500 focus:border-rose-500 focus:outline-none transition-all font-mono uppercase"
+                  className="w-full rounded-xl border border-zinc-900 bg-zinc-950 px-3 py-1.5 text-xs text-white placeholder-dark-505 focus:border-rose-500 focus:outline-none transition-all font-mono uppercase"
                 />
               </div>
 
               <div className="flex gap-2.5 w-full pt-3">
                 <button
                   onClick={() => setCourseToDelete(null)}
-                  className="flex-1 rounded-md border border-dark-800 bg-transparent py-1.5 text-xs font-semibold text-dark-300 hover:bg-dark-800 hover:text-white transition-all cursor-pointer"
+                  className="flex-1 rounded-xl border border-zinc-900 bg-zinc-900 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={handleConfirmDelete}
                   disabled={deleteConfirmText !== 'SUPPRIMER'}
-                  className="flex-1 rounded-md bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:hover:bg-rose-600 disabled:cursor-not-allowed py-1.5 text-xs font-semibold text-white transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
+                  className="flex-1 rounded-xl bg-rose-950/40 hover:bg-rose-900 border border-rose-900/50 hover:border-rose-800 disabled:opacity-40 disabled:hover:bg-rose-950/40 disabled:cursor-not-allowed py-1.5 text-xs font-semibold text-rose-200 transition-all shadow-md flex items-center justify-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Supprimer

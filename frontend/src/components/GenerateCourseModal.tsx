@@ -143,6 +143,12 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
   const [isCustomModel, setIsCustomModel] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
 
+  // Custom dropdown open states (ShadCN style)
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
+  const [isLevelDropdownOpen, setIsLevelDropdownOpen] = useState(false);
+  const [isPromptDropdownOpen, setIsPromptDropdownOpen] = useState(false);
+
   // SSE tracking states
   const [progress, setProgress] = useState(0);
   const [currentTask, setCurrentTask] = useState('');
@@ -521,15 +527,13 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       />
 
       {/* Modal Card */}
-      <div className={`relative w-full overflow-hidden rounded-md border border-dark-850 bg-dark-950 shadow-2xl transition-all duration-300 transform flex flex-col ${
-        isWide ? 'max-w-7xl w-[96vw] h-[90vh]' : 'max-w-xl w-full max-h-[85vh]'
-      }`}>
+      <div className="relative w-[92vw] max-w-[92vw] h-[90vh] max-h-[90vh] overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl transition-all duration-300 transform flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-dark-900/60 px-6 py-4 bg-dark-900/30 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 shrink-0">
           <div className="flex items-center gap-2 animate-fadeIn">
             <Sparkles className="h-4 w-4 text-white animate-pulse" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              {isWide ? "Conception du Cours sur Mesure" : "Générer un cours"}
+              Conception du Cours Académique
             </h3>
           </div>
           {state !== 'generating' && state !== 'submitting' && state !== 'planning_toc' && (
@@ -548,7 +552,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
           {state === 'idle' && genMode === 'quick' && (
             <div className="space-y-6 animate-fadeIn">
               {/* Quick vs Custom Tab Selector */}
-              <div className="flex border-b border-dark-900/60 gap-4 shrink-0">
+              <div className="flex border-b border-zinc-900/60 gap-4 shrink-0">
                 <button
                   type="button"
                   onClick={() => setGenMode('quick')}
@@ -575,21 +579,53 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       Clé d'API / Profil
                     </label>
                     <div className="relative">
-                      <select
-                        value={selectedProfileId}
-                        onChange={(e) => handleProfileChange(e.target.value)}
-                        className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                      <button
+                        type="button"
+                        onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                        className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                       >
-                        {profiles.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name} ({p.type})
-                          </option>
-                        ))}
-                        {profiles.length === 0 && (
-                          <option value="">Aucun profil (par défaut)</option>
-                        )}
-                      </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                        <span className="truncate">
+                          {profiles.find(p => p.id === selectedProfileId)?.name 
+                            ? `${profiles.find(p => p.id === selectedProfileId)?.name} (${profiles.find(p => p.id === selectedProfileId)?.type})`
+                            : "Aucun profil (par défaut)"}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isProfileDropdownOpen && (
+                        <>
+                          <div className="fixed inset-0 z-20" onClick={() => setIsProfileDropdownOpen(false)} />
+                          <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                            {profiles.map((p) => (
+                              <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => {
+                                  handleProfileChange(p.id);
+                                  setIsProfileDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                  selectedProfileId === p.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                }`}
+                              >
+                                {p.name} ({p.type})
+                              </button>
+                            ))}
+                            {profiles.length === 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleProfileChange('');
+                                  setIsProfileDropdownOpen(false);
+                                }}
+                                className="w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white text-zinc-300 bg-zinc-800/60 font-semibold"
+                              >
+                                Aucun profil (par défaut)
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-1.5">
@@ -598,33 +634,59 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       Modèle IA
                     </label>
                     {loadingModels ? (
-                      <div className="w-full rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 text-xs text-dark-400 flex items-center gap-1.5 font-sans">
+                      <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-xs text-dark-400 flex items-center gap-1.5 font-sans">
                         <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-500" />
                         Chargement des modèles...
                       </div>
                     ) : (
                       <div className="relative">
-                        <select
-                          value={isCustomModel ? 'custom_input' : selectedModel}
-                          onChange={(e) => {
-                            if (e.target.value === 'custom_input') {
-                               setIsCustomModel(true);
-                               setSelectedModel('');
-                            } else {
-                               setIsCustomModel(false);
-                               setSelectedModel(e.target.value);
-                            }
-                          }}
-                          className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                        <button
+                          type="button"
+                          onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                          className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                         >
-                          {availableModels.map((m) => (
-                            <option key={m} value={m}>
-                              {m}
-                            </option>
-                          ))}
-                          <option value="custom_input">Autre modèle (Saisie libre)...</option>
-                        </select>
-                        <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                          <span className="truncate">
+                            {isCustomModel ? `Autre modèle: ${selectedModel || '(saisir)'}` : selectedModel || 'Sélectionner un modèle'}
+                          </span>
+                          <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isModelDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {isModelDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-20" onClick={() => setIsModelDropdownOpen(false)} />
+                            <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                              {availableModels.map((m) => (
+                                <button
+                                  key={m}
+                                  type="button"
+                                  onClick={() => {
+                                    setIsCustomModel(false);
+                                    setSelectedModel(m);
+                                    setIsModelDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                    !isCustomModel && selectedModel === m ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                  }`}
+                                >
+                                  {m}
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsCustomModel(true);
+                                  setSelectedModel('');
+                                  setIsModelDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                  isCustomModel ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-350'
+                                }`}
+                              >
+                                Autre modèle (Saisie libre)...
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
@@ -640,7 +702,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       value={selectedModel}
                       onChange={(e) => setSelectedModel(e.target.value)}
                       placeholder="Ex: gemini-1.5-pro-exp-0827, ft:gpt-4o-mini:..."
-                      className="w-full rounded-md border border-dark-900 bg-dark-950 px-3.5 py-2 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none font-mono transition-all"
+                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3.5 py-2 text-xs text-white placeholder-dark-505 focus:border-zinc-700/80 focus:outline-none font-mono transition-all"
                       required
                     />
                   </div>
@@ -657,7 +719,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Ex: Architecture de Microservices, Algorithmique en C, CSS Grid & Flexbox..."
-                    className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none transition-all font-sans"
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-2.5 text-xs text-white placeholder-dark-505 focus:border-zinc-700/80 focus:outline-none transition-all font-sans"
                     required
                   />
                 </div>
@@ -671,25 +733,87 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       Niveau d'apprentissage cible
                     </label>
                     <div className="relative">
-                      <select
-                         value={selectedLevel}
-                         onChange={(e) => setSelectedLevel(e.target.value)}
-                         className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                      <button
+                        type="button"
+                        onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
+                        className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                       >
-                        {levelCategories.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.name} ({cat.description || cat.id})
-                          </option>
-                        ))}
-                        {levelCategories.length === 0 && (
-                          <>
-                            <option value="débutant">Débutant (Introduction complète, analogies simples)</option>
-                            <option value="intermédiaire">Intermédiaire (Consolidation, exemples approfondis)</option>
-                            <option value="professionnel">Professionnel (Concepts avancés, orienté expert, sans blabla)</option>
-                          </>
-                        )}
-                      </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                        <span className="truncate">
+                          {levelCategories.find(cat => cat.id === selectedLevel)?.name 
+                            ? `${levelCategories.find(cat => cat.id === selectedLevel)?.name} (${levelCategories.find(cat => cat.id === selectedLevel)?.description || levelCategories.find(cat => cat.id === selectedLevel)?.id})`
+                            : selectedLevel === 'débutant'
+                            ? 'Débutant (Introduction complète)'
+                            : selectedLevel === 'intermédiaire'
+                            ? 'Intermédiaire (Consolidation)'
+                            : selectedLevel === 'professionnel'
+                            ? 'Professionnel (Concepts avancés)'
+                            : selectedLevel}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isLevelDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isLevelDropdownOpen && (
+                        <>
+                          <div className="fixed inset-0 z-20" onClick={() => setIsLevelDropdownOpen(false)} />
+                          <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                            {levelCategories.map((cat) => (
+                              <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedLevel(cat.id);
+                                  setIsLevelDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                  selectedLevel === cat.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                }`}
+                              >
+                                {cat.name} ({cat.description || cat.id})
+                              </button>
+                            ))}
+                            {levelCategories.length === 0 && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedLevel('débutant');
+                                    setIsLevelDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                    selectedLevel === 'débutant' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                  }`}
+                                >
+                                  Débutant (Introduction complète, analogies simples)
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedLevel('intermédiaire');
+                                    setIsLevelDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                    selectedLevel === 'intermédiaire' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                  }`}
+                                >
+                                  Intermédiaire (Consolidation, exemples approfondis)
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedLevel('professionnel');
+                                    setIsLevelDropdownOpen(false);
+                                  }}
+                                  className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                    selectedLevel === 'professionnel' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                  }`}
+                                >
+                                  Professionnel (Concepts avancés, orienté expert, sans blabla)
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -700,33 +824,63 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       Gabarit de Personnalité
                     </label>
                     <div className="relative">
-                      <select
-                        value={selectedSystemPromptId}
-                        onChange={(e) => setSelectedSystemPromptId(e.target.value)}
-                        className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                      <button
+                        type="button"
+                        onClick={() => setIsPromptDropdownOpen(!isPromptDropdownOpen)}
+                        className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                       >
-                        {systemPromptTemplates.map((tpl) => (
-                          <option key={tpl.id} value={tpl.id}>
-                            {tpl.name}
-                          </option>
-                        ))}
-                        {systemPromptTemplates.length === 0 && (
-                          <option value="">Gabarit standard (Professeur)</option>
-                        )}
-                      </select>
-                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                        <span className="truncate">
+                          {systemPromptTemplates.find(tpl => tpl.id === selectedSystemPromptId)?.name || "Gabarit standard (Professeur)"}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isPromptDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isPromptDropdownOpen && (
+                        <>
+                          <div className="fixed inset-0 z-20" onClick={() => setIsPromptDropdownOpen(false)} />
+                          <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                            {systemPromptTemplates.map((tpl) => (
+                              <button
+                                key={tpl.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSystemPromptId(tpl.id);
+                                  setIsPromptDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white ${
+                                  selectedSystemPromptId === tpl.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                }`}
+                              >
+                                {tpl.name}
+                              </button>
+                            ))}
+                            {systemPromptTemplates.length === 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSystemPromptId('');
+                                  setIsPromptDropdownOpen(false);
+                                }}
+                                className="w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white text-zinc-300 bg-zinc-800/60 font-semibold"
+                              >
+                                Gabarit standard (Professeur)
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* include exercises */}
-                <div className="flex items-center space-x-3 rounded-md border border-dark-850 bg-dark-900/20 p-3.5">
+                <div className="flex items-center space-x-3 rounded-xl border border-zinc-800 bg-zinc-900/20 p-3.5">
                   <input
                     type="checkbox"
                     id="includeExercises"
                     checked={includeExercises}
                     onChange={(e) => setIncludeExercises(e.target.checked)}
-                    className="h-4 w-4 rounded border-dark-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
+                    className="h-4 w-4 rounded border-zinc-800 bg-zinc-905 text-zinc-300 focus:ring-zinc-800 focus:ring-offset-dark-950 accent-zinc-300"
                   />
                   <div className="space-y-0.5">
                     <label htmlFor="includeExercises" className="text-xs font-semibold text-white cursor-pointer">
@@ -742,14 +896,14 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-md border border-dark-850 bg-transparent px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all select-none cursor-pointer"
+                    className="rounded-xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-300 transition-all select-none cursor-pointer"
                   >
                     Annuler
                   </button>
 
                   <button
                     type="submit"
-                    className="flex items-center gap-2 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-2 text-xs font-semibold transition-all shadow-sm select-none cursor-pointer"
+                    className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800/80 text-zinc-200 hover:bg-zinc-850 hover:text-white px-5 py-2 text-xs font-semibold transition-all shadow-sm select-none cursor-pointer"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     Générer le cours
@@ -763,10 +917,10 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
           {isWide && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden h-full min-h-0 animate-fadeIn">
               {/* Column 1: Settings & Parameters (w-1/4) */}
-              <div className="col-span-1 lg:col-span-3 flex flex-col justify-between overflow-y-auto pr-2 custom-scrollbar space-y-4 h-full border-r border-dark-800/60 pr-4">
+              <div className="col-span-1 lg:col-span-3 flex flex-col justify-between overflow-y-auto pr-2 custom-scrollbar space-y-4 h-full border-r border-zinc-800/40 pr-4">
                 <div className="space-y-4">
                   {/* Mode Tab Selector */}
-                  <div className="flex border-b border-dark-900/60 gap-4 shrink-0">
+                  <div className="flex border-b border-zinc-800/60 gap-4 shrink-0">
                     <button
                       type="button"
                       onClick={() => {
@@ -801,21 +955,53 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                           Clé d'API / Profil
                         </label>
                         <div className="relative">
-                          <select
-                            value={selectedProfileId}
-                            onChange={(e) => handleProfileChange(e.target.value)}
-                            className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                          <button
+                            type="button"
+                            onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                            className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                           >
-                            {profiles.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                {p.name} ({p.type})
-                              </option>
-                            ))}
-                            {profiles.length === 0 && (
-                              <option value="">Aucun profil (par défaut)</option>
-                            )}
-                          </select>
-                          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                            <span className="truncate">
+                              {profiles.find(p => p.id === selectedProfileId)?.name 
+                                ? `${profiles.find(p => p.id === selectedProfileId)?.name} (${profiles.find(p => p.id === selectedProfileId)?.type})`
+                                : "Aucun profil (par défaut)"}
+                            </span>
+                            <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          {isProfileDropdownOpen && (
+                            <>
+                              <div className="fixed inset-0 z-20" onClick={() => setIsProfileDropdownOpen(false)} />
+                              <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                                {profiles.map((p) => (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => {
+                                      handleProfileChange(p.id);
+                                      setIsProfileDropdownOpen(false);
+                                    }}
+                                    className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                      selectedProfileId === p.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                    }`}
+                                  >
+                                    {p.name} ({p.type})
+                                  </button>
+                                ))}
+                                {profiles.length === 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      handleProfileChange('');
+                                      setIsProfileDropdownOpen(false);
+                                    }}
+                                    className="w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white text-zinc-300 bg-zinc-800/60 font-semibold"
+                                  >
+                                    Aucun profil (par défaut)
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                       
@@ -825,33 +1011,59 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                           Modèle IA
                         </label>
                         {loadingModels ? (
-                          <div className="w-full rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 text-xs text-dark-400 flex items-center gap-1.5 font-sans">
+                          <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-xs text-dark-400 flex items-center gap-1.5 font-sans">
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-550" />
                             Chargement des modèles...
                           </div>
                         ) : (
                           <div className="relative">
-                            <select
-                              value={isCustomModel ? 'custom_input' : selectedModel}
-                              onChange={(e) => {
-                                if (e.target.value === 'custom_input') {
-                                  setIsCustomModel(true);
-                                  setSelectedModel('');
-                                } else {
-                                  setIsCustomModel(false);
-                                  setSelectedModel(e.target.value);
-                                }
-                              }}
-                              className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                            <button
+                              type="button"
+                              onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                              className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                             >
-                              {availableModels.map((m) => (
-                                <option key={m} value={m}>
-                                  {m}
-                                </option>
-                              ))}
-                              <option value="custom_input">Autre modèle (Saisie libre)...</option>
-                            </select>
-                            <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                              <span className="truncate">
+                                {isCustomModel ? `Autre modèle: ${selectedModel || '(saisir)'}` : selectedModel || 'Sélectionner un modèle'}
+                              </span>
+                              <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isModelDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {isModelDropdownOpen && (
+                              <>
+                                <div className="fixed inset-0 z-20" onClick={() => setIsModelDropdownOpen(false)} />
+                                <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                                  {availableModels.map((m) => (
+                                    <button
+                                      key={m}
+                                      type="button"
+                                      onClick={() => {
+                                        setIsCustomModel(false);
+                                        setSelectedModel(m);
+                                        setIsModelDropdownOpen(false);
+                                      }}
+                                      className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white ${
+                                        !isCustomModel && selectedModel === m ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                      }`}
+                                    >
+                                      {m}
+                                    </button>
+                                  ))}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setIsCustomModel(true);
+                                      setSelectedModel('');
+                                      setIsModelDropdownOpen(false);
+                                    }}
+                                    className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white ${
+                                      isCustomModel ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-350'
+                                    }`}
+                                  >
+                                    Autre modèle (Saisie libre)...
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         )}
                       </div>
@@ -867,7 +1079,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                           value={selectedModel}
                           onChange={(e) => setSelectedModel(e.target.value)}
                           placeholder="Ex: gemini-1.5-pro..."
-                          className="w-full rounded-md border border-dark-900 bg-dark-950 px-3.5 py-2 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none font-mono transition-all"
+                          className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3.5 py-2 text-xs text-white placeholder-dark-505 focus:border-zinc-700/80 focus:outline-none font-mono transition-all"
                           required
                         />
                       </div>
@@ -884,7 +1096,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                         placeholder="Ex: Architecture de Microservices, Algorithmique..."
-                        className="w-full rounded-md border border-dark-900 bg-dark-950 px-4 py-2.5 text-xs text-white placeholder-dark-500 focus:border-zinc-700 focus:outline-none transition-all font-sans"
+                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-2.5 text-xs text-white placeholder-dark-505 focus:border-zinc-700/80 focus:outline-none transition-all font-sans"
                         required
                       />
                     </div>
@@ -898,25 +1110,87 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                           Niveau cible
                         </label>
                         <div className="relative">
-                          <select
-                            value={selectedLevel}
-                            onChange={(e) => setSelectedLevel(e.target.value)}
-                            className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                          <button
+                            type="button"
+                            onClick={() => setIsLevelDropdownOpen(!isLevelDropdownOpen)}
+                            className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                           >
-                            {levelCategories.map((cat) => (
-                              <option key={cat.id} value={cat.id}>
-                                {cat.name} ({cat.description || cat.id})
-                              </option>
-                            ))}
-                            {levelCategories.length === 0 && (
-                              <>
-                                <option value="débutant">Débutant (Introduction complète, analogies simples)</option>
-                                <option value="intermédiaire">Intermédiaire (Consolidation, exemples approfondis)</option>
-                                <option value="professionnel">Professionnel (Concepts avancés, orienté expert, sans blabla)</option>
-                              </>
-                            )}
-                          </select>
-                          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                            <span className="truncate">
+                              {levelCategories.find(cat => cat.id === selectedLevel)?.name 
+                                ? `${levelCategories.find(cat => cat.id === selectedLevel)?.name} (${levelCategories.find(cat => cat.id === selectedLevel)?.description || levelCategories.find(cat => cat.id === selectedLevel)?.id})`
+                                : selectedLevel === 'débutant'
+                                ? 'Débutant (Introduction complète)'
+                                : selectedLevel === 'intermédiaire'
+                                ? 'Intermédiaire (Consolidation)'
+                                : selectedLevel === 'professionnel'
+                                ? 'Professionnel (Concepts avancés)'
+                                : selectedLevel}
+                            </span>
+                            <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isLevelDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          {isLevelDropdownOpen && (
+                            <>
+                              <div className="fixed inset-0 z-20" onClick={() => setIsLevelDropdownOpen(false)} />
+                              <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                                {levelCategories.map((cat) => (
+                                  <button
+                                    key={cat.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedLevel(cat.id);
+                                      setIsLevelDropdownOpen(false);
+                                    }}
+                                    className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                      selectedLevel === cat.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                    }`}
+                                  >
+                                    {cat.name} ({cat.description || cat.id})
+                                  </button>
+                                ))}
+                                {levelCategories.length === 0 && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedLevel('débutant');
+                                        setIsLevelDropdownOpen(false);
+                                      }}
+                                      className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                        selectedLevel === 'débutant' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                      }`}
+                                    >
+                                      Débutant (Introduction complète, analogies simples)
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedLevel('intermédiaire');
+                                        setIsLevelDropdownOpen(false);
+                                      }}
+                                      className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                        selectedLevel === 'intermédiaire' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                      }`}
+                                    >
+                                      Intermédiaire (Consolidation, exemples approfondis)
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedLevel('professionnel');
+                                        setIsLevelDropdownOpen(false);
+                                      }}
+                                      className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                        selectedLevel === 'professionnel' ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                      }`}
+                                    >
+                                      Professionnel (Concepts avancés, orienté expert, sans blabla)
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
 
@@ -927,33 +1201,63 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                           Gabarit de Personnalité
                         </label>
                         <div className="relative">
-                          <select
-                            value={selectedSystemPromptId}
-                            onChange={(e) => setSelectedSystemPromptId(e.target.value)}
-                            className="w-full appearance-none rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md px-3.5 py-2.5 pr-10 text-xs text-white focus:border-zinc-700 focus:outline-none transition-all font-sans cursor-pointer"
+                          <button
+                            type="button"
+                            onClick={() => setIsPromptDropdownOpen(!isPromptDropdownOpen)}
+                            className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                           >
-                            {systemPromptTemplates.map((tpl) => (
-                              <option key={tpl.id} value={tpl.id}>
-                                {tpl.name}
-                              </option>
-                            ))}
-                            {systemPromptTemplates.length === 0 && (
-                              <option value="">Gabarit standard (Professeur)</option>
-                            )}
-                          </select>
-                          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+                            <span className="truncate">
+                              {systemPromptTemplates.find(tpl => tpl.id === selectedSystemPromptId)?.name || "Gabarit standard (Professeur)"}
+                            </span>
+                            <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isPromptDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          {isPromptDropdownOpen && (
+                            <>
+                              <div className="fixed inset-0 z-20" onClick={() => setIsPromptDropdownOpen(false)} />
+                              <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                                {systemPromptTemplates.map((tpl) => (
+                                  <button
+                                    key={tpl.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedSystemPromptId(tpl.id);
+                                      setIsPromptDropdownOpen(false);
+                                    }}
+                                    className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white ${
+                                      selectedSystemPromptId === tpl.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                    }`}
+                                  >
+                                    {tpl.name}
+                                  </button>
+                                ))}
+                                {systemPromptTemplates.length === 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedSystemPromptId('');
+                                      setIsPromptDropdownOpen(false);
+                                    }}
+                                    className="w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-855 hover:text-white text-zinc-300 bg-zinc-800/60 font-semibold"
+                                  >
+                                    Gabarit standard (Professeur)
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
 
                     {/* include exercises */}
-                    <div className="flex items-center space-x-3 rounded-md border border-dark-850 bg-dark-900/20 p-3">
+                    <div className="flex items-center space-x-3 rounded-xl border border-zinc-800 bg-zinc-900/20 p-3">
                       <input
                         type="checkbox"
                         id="includeExercises"
                         checked={includeExercises}
                         onChange={(e) => setIncludeExercises(e.target.checked)}
-                        className="h-4 w-4 rounded border-dark-800 bg-dark-900 text-zinc-300 focus:ring-zinc-700 focus:ring-offset-dark-950 accent-zinc-300"
+                        className="h-4 w-4 rounded border-zinc-800 bg-zinc-905 text-zinc-300 focus:ring-zinc-800 focus:ring-offset-dark-950 accent-zinc-300"
                       />
                       <div className="space-y-0.5">
                         <label htmlFor="includeExercises" className="text-xs font-semibold text-white cursor-pointer">
@@ -964,11 +1268,11 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   </form>
                 </div>
 
-                <div className="flex items-center gap-3 pt-4 border-t border-dark-800/85 shrink-0">
+                <div className="flex items-center gap-3 pt-4 border-t border-zinc-800/40 shrink-0">
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-md border border-dark-850 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-dark-800 transition-all flex-1 select-none cursor-pointer"
+                    className="rounded-xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2.5 text-xs font-semibold text-zinc-300 transition-all flex-1 select-none cursor-pointer"
                   >
                     Annuler
                   </button>
@@ -976,7 +1280,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     type="button"
                     onClick={handleGenerateTOC}
                     disabled={!subject.trim()}
-                    className="flex items-center justify-center gap-1.5 rounded-md bg-dark-800 hover:bg-dark-750 px-5 py-2.5 text-xs font-semibold text-zinc-200 transition-all border border-dark-750 disabled:opacity-50 flex-1 select-none cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 px-5 py-2.5 text-xs font-semibold text-zinc-200 transition-all border border-zinc-800/80 disabled:opacity-50 flex-1 select-none cursor-pointer"
                   >
                     {tocMarkdown ? (
                       <>
@@ -994,11 +1298,11 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
               </div>
 
               {/* Column 2: TOC Markdown Editor (w-5/12) */}
-              <div className="col-span-1 lg:col-span-5 flex flex-col justify-between overflow-hidden h-full min-h-0 border-r border-dark-800/60 pr-4 relative">
+              <div className="col-span-1 lg:col-span-5 flex flex-col justify-between overflow-hidden h-full min-h-0 border-r border-zinc-800/40 pr-4 relative">
                 <div className="flex-1 flex flex-col space-y-4 min-h-0 relative">
                   {/* Glassmorphic Overlay Blur when generating TOC */}
                   {state === 'planning_toc' && (
-                    <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center space-y-4 rounded-md animate-fadeIn">
+                    <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-md z-30 flex flex-col items-center justify-center space-y-4 rounded-xl animate-fadeIn">
                       <Loader2 className="h-9 w-9 text-zinc-300 animate-spin" />
                       <div className="text-center space-y-1">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider">Planification académique...</h4>
@@ -1010,7 +1314,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   )}
 
                   {/* Banner */}
-                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-3 shrink-0 select-none">
+                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/20 border border-zinc-800 rounded-xl p-3 shrink-0 select-none">
                     <Info className="h-4.5 w-4.5 text-zinc-400 shrink-0 mt-0.5" />
                     <p className="leading-relaxed text-[11px]">
                       {tocMarkdown 
@@ -1023,16 +1327,16 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                       <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center justify-between shrink-0">
                       <span>Plan du cours (Markdown modifiable)</span>
                       {tocMarkdown ? (
-                        <span className="text-[8px] text-zinc-300 font-mono font-bold select-none bg-dark-900 border border-dark-850 px-1 py-0.5 rounded uppercase">
+                        <span className="text-[8px] text-zinc-300 font-mono font-bold select-none bg-zinc-900 border border-zinc-800 rounded-lg px-1.5 py-0.5 uppercase">
                           Prêt à éditer
                         </span>
                       ) : (
-                        <span className="text-[8px] text-zinc-505 font-mono font-bold select-none bg-dark-900 border border-dark-800 px-1 py-0.5 rounded uppercase">
+                        <span className="text-[8px] text-zinc-505 font-mono font-bold select-none bg-zinc-900 border border-zinc-800 rounded-lg px-1.5 py-0.5 uppercase">
                           En attente
                         </span>
                       )}
                     </label>
-                    <div className="flex-1 rounded-md border border-dark-900 bg-dark-950 p-2 overflow-hidden shadow-inner focus-within:border-zinc-700 transition-colors flex flex-col min-h-0">
+                    <div className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 overflow-hidden focus-within:border-zinc-700/80 transition-colors flex flex-col min-h-0">
                       <textarea
                         value={tocMarkdown}
                         onChange={(e) => setTocMarkdown(e.target.value)}
@@ -1048,7 +1352,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
               <div className="col-span-1 lg:col-span-4 flex flex-col justify-between overflow-hidden h-full min-h-0">
                 <div className="flex-1 flex flex-col space-y-4 min-h-0">
                   {/* Banner */}
-                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/40 border border-dark-850 rounded-md p-3 shrink-0 select-none">
+                  <div className="flex gap-2.5 items-start text-xs text-zinc-300 bg-zinc-900/20 border border-zinc-800 rounded-xl p-3 shrink-0 select-none">
                     <Sparkles className="h-4.5 w-4.5 text-zinc-400 shrink-0 mt-0.5" />
                     <p className="leading-relaxed text-[11px]">
                       Ajoutez vos consignes spécifiques : technologies à imposer, style de rédaction ou ton pédagogique.
@@ -1062,9 +1366,9 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                         <Sparkles className="h-3 w-3 text-zinc-400" />
                         Commentaires & consignes de style
                       </label>
-                      <span className="text-[8px] text-dark-500 font-mono">Facultatif</span>
+                      <span className="text-[8px] text-dark-505 font-mono">Facultatif</span>
                     </div>
-                    <div className="flex-1 rounded-md border border-dark-900 bg-dark-950 p-2 overflow-hidden shadow-inner focus-within:border-zinc-700 transition-colors flex flex-col min-h-0">
+                    <div className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 overflow-hidden focus-within:border-zinc-700/80 transition-colors flex flex-col min-h-0">
                       <textarea
                         value={customInstructions}
                         onChange={(e) => setCustomInstructions(e.target.value)}
@@ -1076,12 +1380,12 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                 </div>
 
                 {/* Launch generator action */}
-                <div className="pt-4 mt-4 border-t border-dark-800 flex justify-end shrink-0">
+                <div className="pt-4 mt-4 border-t border-zinc-800/40 flex justify-end shrink-0">
                   <button
                     type="button"
                     onClick={handleSubmit}
                     disabled={!tocMarkdown.trim()}
-                    className="w-full flex items-center justify-center gap-1.5 rounded-md bg-dark-800 border border-dark-750 text-zinc-200 hover:bg-dark-750 hover:text-white px-5 py-3 text-xs font-semibold transition-all disabled:opacity-50 shadow-sm select-none font-sans cursor-pointer"
+                    className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 text-zinc-200 hover:bg-zinc-850 hover:text-white px-5 py-3 text-xs font-semibold transition-all disabled:opacity-50 shadow-sm select-none font-sans cursor-pointer"
                   >
                     <Sparkles className="h-4 w-4" />
                     Lancer la génération du cours

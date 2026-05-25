@@ -253,11 +253,9 @@ export const FileExplorerPage: React.FC = () => {
 
       {/* 2. Main content container */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Decorative background grid & neutral background glow */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#141417_1px,transparent_1px),linear-gradient(to_bottom,#141417_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-35 pointer-events-none" />
 
         {/* Top Header Bar */}
-        <header className="relative flex items-center justify-between border-b border-dark-850 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
+        <header className="relative flex items-center justify-between px-8 py-5 bg-dark-950/20 shrink-0">
           <div>
             <h1 className="text-sm font-semibold text-white tracking-tight m-0 leading-none flex items-center">
               <FolderOpen className="inline-block h-4.5 w-4.5 text-zinc-400 mr-2" />
@@ -270,7 +268,7 @@ export const FileExplorerPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider font-mono">Cursus :</span>
             {loadingCourses ? (
-              <div className="h-9 w-64 rounded-md border border-dark-900 bg-dark-900/60 backdrop-blur-md flex items-center px-4 gap-2 text-xs text-dark-400">
+              <div className="h-9 w-64 rounded-xl border border-zinc-900 bg-zinc-900 flex items-center px-4 gap-2 text-xs text-dark-400">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-500" />
                 Chargement...
               </div>
@@ -279,7 +277,7 @@ export const FileExplorerPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="h-9 w-64 flex items-center justify-between rounded-md border border-dark-800 bg-dark-900 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-dark-850 hover:border-dark-750 transition-all font-sans cursor-pointer shadow-sm select-none"
+                  className="h-9 w-64 flex items-center justify-between rounded-xl border border-zinc-900 bg-zinc-900 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
                 >
                   <span className="truncate">
                     {courses.find(c => c.id === selectedCourseId)?.title || "Aucun manuel disponible"}
@@ -293,7 +291,7 @@ export const FileExplorerPage: React.FC = () => {
                       className="fixed inset-0 z-20" 
                       onClick={() => setIsDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-1 w-64 rounded-md border border-dark-800 bg-dark-900 py-1 shadow-xl z-30 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="absolute right-0 mt-1.5 w-64 rounded-xl border border-zinc-900 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in slide-in-from-top-1 duration-150">
                       {courses.map((c) => (
                         <button
                           key={c.id}
@@ -302,15 +300,15 @@ export const FileExplorerPage: React.FC = () => {
                             setSelectedCourseId(c.id);
                             setIsDropdownOpen(false);
                           }}
-                          className={`w-full px-3.5 py-2.5 text-left text-xs transition-all font-sans truncate cursor-pointer hover:bg-dark-800 hover:text-white ${
-                            selectedCourseId === c.id ? 'bg-dark-850 text-white font-semibold' : 'text-dark-300'
+                          className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-800 hover:text-white ${
+                            selectedCourseId === c.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
                           }`}
                         >
                           {c.title}
                         </button>
                       ))}
                       {courses.length === 0 && (
-                        <div className="px-3.5 py-2.5 text-xs text-dark-500 italic">
+                        <div className="px-3 py-2 text-xs text-dark-500 italic">
                           Aucun manuel disponible
                         </div>
                       )}
@@ -325,10 +323,10 @@ export const FileExplorerPage: React.FC = () => {
         {/* Dual Pane File Explorer Layout */}
         <div className="flex-1 p-6 overflow-hidden">
           {selectedCourseId ? (
-            <div className="flex border border-dark-800 bg-dark-900/25 rounded-2xl overflow-hidden h-[calc(100vh-170px)] shadow-2xl backdrop-blur-md">
+            <div className="flex border border-zinc-900/45 bg-dark-900/10 rounded-2xl overflow-hidden h-[calc(100vh-170px)] shadow-2xl">
               {/* Left Pane: Directory Tree */}
-              <div className="w-80 border-r border-dark-800 flex flex-col bg-dark-950/40 select-none">
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-dark-850 bg-dark-950/20 shrink-0">
+              <div className="w-80 border-r border-zinc-900/45 flex flex-col bg-dark-950/40 select-none">
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-900/45 bg-dark-950/20 shrink-0">
                   <span className="text-[10px] font-extrabold text-white uppercase tracking-wider">Arborescence physique</span>
                   <button 
                     onClick={fetchFilesTree}
@@ -360,9 +358,9 @@ export const FileExplorerPage: React.FC = () => {
                 {selectedFilePath ? (
                   <div className="flex flex-col h-full overflow-hidden">
                     {/* File Header Bar */}
-                    <div className="flex items-center justify-between px-6 py-3 border-b border-dark-850 bg-dark-950/40 font-mono text-[10px] text-dark-400 shrink-0 select-none">
+                    <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-900/45 bg-dark-950/40 font-mono text-[10px] text-dark-400 shrink-0 select-none">
                       <div className="flex items-center gap-2.5 truncate pr-4">
-                        <span className="text-dark-500 font-bold uppercase select-none font-mono text-[8px] bg-dark-900 border border-dark-800 px-1.5 py-0.5 rounded">PATH</span>
+                        <span className="text-dark-500 font-bold uppercase select-none font-mono text-[8px] bg-dark-900 border border-zinc-900/40 px-1.5 py-0.5 rounded">PATH</span>
                         <span className="truncate text-white font-bold text-[11px] font-mono">{selectedFilePath}</span>
                       </div>
                       <div className="flex items-center gap-3">

@@ -239,11 +239,11 @@ export const CoursePresentation: React.FC = () => {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[350px] w-[600px] bg-dark-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         {/* Top Header Bar */}
-        <header className="relative flex items-center justify-between border-b border-dark-800/60 px-8 py-5 bg-dark-900/20 backdrop-blur-md shrink-0">
+        <header className="relative flex items-center justify-between px-8 py-5 shrink-0">
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="flex items-center justify-center h-9 w-9 rounded-xl border border-dark-900 bg-dark-950/40 text-dark-400 hover:text-white hover:bg-dark-800 transition-all cursor-pointer shadow"
+              className="flex items-center justify-center h-9 w-9 rounded-xl border border-zinc-900 bg-zinc-900/40 text-dark-400 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer shadow"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -260,9 +260,9 @@ export const CoursePresentation: React.FC = () => {
             {nextChapterUrl && (
               <Link
                 to={nextChapterUrl}
-                className="flex items-center gap-2 rounded-xl bg-dark-800 border border-dark-750 px-5 py-2.5 text-xs font-bold text-zinc-200 hover:bg-dark-750 hover:text-white transition-all shadow-lg cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800/80 px-5 py-2.5 text-xs font-bold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all shadow-lg cursor-pointer animate-in fade-in"
               >
-                <BookOpen className="h-4 w-4" />
+                <BookOpen className="h-4 w-4 text-zinc-400" />
                 {completedCount === 0 ? "Commencer le cours" : "Continuer l'apprentissage"}
               </Link>
             )}
@@ -296,15 +296,15 @@ export const CoursePresentation: React.FC = () => {
             )}
 
             {/* Course presentation card */}
-            <div className="rounded-2xl border border-dark-900 bg-dark-900/40 p-6 flex flex-col md:flex-row justify-between gap-6 shadow-md backdrop-blur-sm relative">
+            <div className="rounded-2xl border border-zinc-900 bg-zinc-900/10 p-6 flex flex-col md:flex-row justify-between gap-6 shadow-md relative">
               <div className="space-y-4 flex-1">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-dark-800 text-zinc-300 border border-dark-750">
+                    <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-800/80">
                       Manuel Planifié
                     </span>
                     {toc.level && (
-                      <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-dark-800 text-zinc-300 border border-dark-750">
+                      <span className="text-[9px] px-2 py-0.5 rounded-lg font-extrabold uppercase tracking-wider bg-zinc-900 text-zinc-300 border border-zinc-800/80">
                         Niveau {toc.level}
                       </span>
                     )}
@@ -365,28 +365,28 @@ export const CoursePresentation: React.FC = () => {
               
               {/* Left Pane: Detailed Curriculum Structure (Syllabus) */}
               <div className="lg:col-span-7 space-y-4">
-                <div className="flex items-center gap-2 border-b border-dark-800 pb-2 mb-3">
+                <div className="flex items-center gap-2 border-b border-zinc-900/60 pb-2 mb-3">
                   <GraduationCap className="h-4.5 w-4.5 text-zinc-400" />
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider">Plan d'étude et chapitres</h3>
                 </div>
 
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {toc.modules.map((module, mIdx) => (
-                    <div key={module.id} className="rounded-xl border border-dark-900 bg-dark-900/10 p-4 space-y-3">
+                    <div key={module.id} className="rounded-xl border border-zinc-800/60 bg-zinc-900/10 p-4 space-y-3">
                       <h4 className="text-xs font-extrabold text-dark-300 uppercase tracking-wider flex items-center gap-2 select-none">
                         <span className="text-[10px] font-mono text-zinc-400">Module {mIdx + 1}</span>
-                        <span className="h-1 w-1 bg-dark-600 rounded-full" />
+                        <span className="h-1 w-1 bg-zinc-700 rounded-full" />
                         <span className="truncate text-white">{module.title}</span>
                       </h4>
 
-                      <div className="space-y-1.5 pl-2 border-l border-dark-850">
+                      <div className="space-y-1.5 pl-2 border-l border-zinc-900/40">
                         {module.submodules.map((submodule) => {
                           const isCompleted = completedIds.includes(submodule.id);
                           return (
                             <div
                               key={submodule.id}
                               onClick={() => navigate(`/course/${courseId}/read/${submodule.id}`)}
-                              className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-dark-800/40 hover:border-dark-700 bg-dark-950/20 hover:bg-dark-800/30 cursor-pointer transition-all duration-200"
+                              className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-zinc-800/80 hover:border-zinc-700/80 bg-zinc-900/10 hover:bg-zinc-900/30 cursor-pointer transition-all duration-200"
                             >
                               <span className="text-xs font-semibold text-dark-300 group-hover:text-white transition-colors line-clamp-2">
                                 {submodule.title}
@@ -411,7 +411,7 @@ export const CoursePresentation: React.FC = () => {
 
               {/* Right Pane: Personal Study Notes (Scratchpad) */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-dark-800 pb-2 mb-3">
+                <div className="flex items-center justify-between border-b border-zinc-900/60 pb-2 mb-3">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4.5 w-4.5 text-zinc-400" />
                     <h3 className="text-xs font-bold text-white uppercase tracking-wider">Notes d'étude personnelles</h3>
@@ -420,19 +420,19 @@ export const CoursePresentation: React.FC = () => {
                   <button
                     onClick={handleSaveNotes}
                     disabled={savingNotes}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-dark-800 border border-dark-750 hover:bg-dark-750 text-[10px] font-bold text-zinc-200 transition-all disabled:opacity-50 cursor-pointer select-none shadow-md"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:bg-zinc-800 text-[10px] font-bold text-zinc-300 transition-all disabled:opacity-50 cursor-pointer select-none shadow-md"
                   >
                     {savingNotes ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
                     Sauvegarder
                   </button>
                 </div>
 
-                <div className="rounded-xl border border-dark-900 bg-dark-900/40 p-4 space-y-3.5 shadow-sm backdrop-blur-sm">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/10 p-4 space-y-3.5 shadow-sm">
                   <p className="text-[10px] text-dark-400 leading-relaxed font-sans select-none">
-                    Ce cahier d'étude vous permet de prendre des notes, de résumer des chapitres ou de noter vos questions. Les informations sont sauvegardées dans votre espace disque pour rester disponibles à chaque séance.
+                    Ce cahier d'étude vous permet de prendre des notes, de résumer des chapitres ou de noter vos questions. Les notes sont sauvegardées dans votre espace disque pour rester disponibles à chaque séance.
                   </p>
                   
-                  <div className="rounded-xl border border-dark-800 bg-dark-950 p-1.5 focus-within:border-zinc-700 transition-colors">
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-1.5 focus-within:border-zinc-700 transition-colors">
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
