@@ -377,10 +377,18 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       // Transition to Custom Mode so they can edit it in wide screen!
       setGenMode('custom');
       setState('idle');
-      addToast("Plan de révision généré à partir de vos documents avec succès ! Vous pouvez maintenant le modifier ou lancer la génération complète.", 'success');
+      addToast({
+        title: "Plan généré",
+        description: "Plan de révision généré à partir de vos documents avec succès ! Vous pouvez maintenant le modifier ou lancer la génération complète.",
+        type: 'success'
+      });
     } catch (err: any) {
       console.error(err);
-      addToast(`Erreur lors de l'analyse : ${err.message}`, 'error');
+      addToast({
+        title: "Erreur lors de l'analyse",
+        description: err.message || "Impossible d'analyser vos documents.",
+        type: 'error'
+      });
       setState('idle');
     } finally {
       setUploadingDocs(false);
@@ -651,31 +659,31 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   type="button"
                   onClick={() => setGenMode('quick')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Mode Rapide (Quick)
-                  {genMode === 'quick' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
+                  {(genMode as string) === 'quick' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
                 <button
                   type="button"
                   onClick={() => setGenMode('custom')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Personnalisé (Custom)
-                  {genMode === 'custom' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
+                  {(genMode as string) === 'custom' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
                 <button
                   type="button"
                   onClick={() => setGenMode('documents')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Depuis Documents
-                  {genMode === 'documents' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
+                  {(genMode as string) === 'documents' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
               </div>
 
@@ -1030,7 +1038,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   type="button"
                   onClick={() => setGenMode('quick')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Mode Rapide (Quick)
@@ -1039,7 +1047,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   type="button"
                   onClick={() => setGenMode('custom')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Personnalisé (Custom)
@@ -1048,11 +1056,11 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                   type="button"
                   onClick={() => setGenMode('documents')}
                   className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
-                    genMode === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                    (genMode as string) === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Depuis Documents
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />
+                  {(genMode as string) === 'documents' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
               </div>
 
