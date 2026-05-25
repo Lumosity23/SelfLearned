@@ -29,6 +29,7 @@ backend/.pytest_cache/
 .env.*.local
 backend/.env
 frontend/.env
+SelfLearned_Data/settings.json
 
 # OS / Editors
 .DS_Store
