@@ -37,11 +37,23 @@ class SettingsManager:
             "system_prompt": "Tu es un professeur virtuel intégré à un cours. Ton but est d'éclaircir un point précis posé par l'élève. Utilise un ton pédagogique, concis et direct. Ne génère pas un nouveau cours. Fournis une explication courte (max 3 paragraphes) ou un exemple simple. Réponds en Markdown.",
             "temperature": 0.3
         }
+        self._last_mtime = 0
         self.load_profiles()
+
+    def check_and_reload(self):
+        if self.profiles_path.exists():
+            try:
+                current_mtime = self.profiles_path.stat().st_mtime
+                if not hasattr(self, "_last_mtime") or current_mtime != self._last_mtime:
+                    logger.info("settings.json modification or mount update detected. Reloading profiles from disk...")
+                    self.load_profiles()
+            except Exception as e:
+                logger.error(f"Error checking/reloading settings.json: {e}")
 
     def load_profiles(self):
         if self.profiles_path.exists():
             try:
+                self._last_mtime = self.profiles_path.stat().st_mtime
                 with open(self.profiles_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     self.profiles = [
@@ -59,10 +71,14 @@ class SettingsManager:
                     if "mecaprof" in data:
                         self.mecaprof_settings.update(data["mecaprof"])
                 logger.info(f"Loaded {len(self.profiles)} LLM profiles from settings.json")
+            except PermissionError as pe:
+                logger.error(f"Permission denied when loading settings.json at {self.profiles_path}: {pe}. Please check filesystem permissions (e.g. chmod 666 settings.json).")
+                self.create_default_profiles()
             except Exception as e:
                 logger.error(f"Error loading settings.json: {e}")
                 self.create_default_profiles()
         else:
+            logger.warning(f"settings.json not found at {self.profiles_path}. Creating default profiles.")
             self.create_default_profiles()
 
     def create_default_profiles(self):
@@ -105,11 +121,17 @@ class SettingsManager:
                     "profiles": [p.to_dict() for p in self.profiles],
                     "mecaprof": self.mecaprof_settings
                 }, f, indent=2, ensure_ascii=False)
+            # Update _last_mtime after saving to prevent immediate reload
+            if self.profiles_path.exists():
+                self._last_mtime = self.profiles_path.stat().st_mtime
             logger.info("Saved LLM profiles to settings.json")
+        except PermissionError as pe:
+            logger.error(f"Permission denied when saving settings.json at {self.profiles_path}: {pe}. Please check filesystem permissions (e.g. chmod 666 settings.json).")
         except Exception as e:
             logger.error(f"Error saving settings.json: {e}")
 
     def get_active_profile(self) -> LLMProfile:
+        self.check_and_reload()
         for p in self.profiles:
             if p.is_active:
                 return p
@@ -121,6 +143,7 @@ class SettingsManager:
         return LLMProfile("fallback", "Fallback", "openai", "", "", "")
 
     def set_active_profile(self, profile_id: str):
+        self.check_and_reload()
         found = False
         for p in self.profiles:
             if p.id == profile_id:
@@ -132,6 +155,7 @@ class SettingsManager:
             self.save_profiles()
             
     def add_profile(self, name: str, type: str, api_key: str, base_url: str, model: str) -> LLMProfile:
+        self.check_and_reload()
         import uuid
         profile_id = f"profile_{str(uuid.uuid4())[:8]}"
         new_profile = LLMProfile(
@@ -148,6 +172,7 @@ class SettingsManager:
         return new_profile
 
     def update_profile(self, profile_id: str, name: str, type: str, api_key: str, base_url: str, model: str):
+        self.check_and_reload()
         for p in self.profiles:
             if p.id == profile_id:
                 p.name = name
@@ -159,6 +184,7 @@ class SettingsManager:
         self.save_profiles()
 
     def delete_profile(self, profile_id: str):
+        self.check_and_reload()
         # Prevent deleting the active profile without selecting another
         active_deleted = False
         for p in self.profiles:

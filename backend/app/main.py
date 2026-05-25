@@ -5,6 +5,10 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 import asyncio
 
+# Setup logging before importing custom modules to ensure startup logs are captured
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Response, UploadFile, File
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,10 +23,6 @@ from app.config import settings
 from app.settings_manager import settings_manager
 from app.pipeline import run_generation_pipeline, jobs_status
 from app.pdf import compile_course_to_pdf
-
-# Setup logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="SelfLearned API",
