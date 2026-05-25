@@ -8,6 +8,7 @@ interface GenerateCourseModalProps {
   onSuccess: (courseId: string) => void;
   reconnectJobId?: string | null;
   preloadedCourseId?: string | null;
+  initialGenMode?: 'quick' | 'custom' | 'documents';
 }
 
 interface Submodule {
@@ -56,6 +57,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
   onSuccess,
   reconnectJobId,
   preloadedCourseId,
+  initialGenMode,
 }) => {
   const { addToast } = useToast();
 
@@ -245,6 +247,14 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       startProgressStream(reconnectJobId);
     }
   }, [reconnectJobId]);
+
+  // Synchronize initial mode when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      setGenMode(initialGenMode || 'quick');
+      setUploadedFiles([]);
+    }
+  }, [isOpen, initialGenMode]);
 
   // Preloaded course plan structure handling
   useEffect(() => {

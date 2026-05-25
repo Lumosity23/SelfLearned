@@ -28,6 +28,7 @@ export const Home: React.FC = () => {
   const [importing, setImporting] = useState(false);
   const [reconnectJobId, setReconnectJobId] = useState<string | null>(null);
   const [preloadedCourseId, setPreloadedCourseId] = useState<string | null>(null);
+  const [modalGenMode, setModalGenMode] = useState<'quick' | 'custom' | 'documents'>('quick');
   
   const [currentTab, setCurrentTab] = useState<'all' | 'archived'>('all');
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
@@ -264,11 +265,26 @@ export const Home: React.FC = () => {
                 </label>
 
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    setModalGenMode('quick');
+                    setIsModalOpen(true);
+                  }}
                   className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:bg-zinc-850 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 transition-all cursor-pointer shadow-sm"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Nouveau cours</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setModalGenMode('documents');
+                    setIsModalOpen(true);
+                  }}
+                  className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:bg-zinc-850 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 transition-all cursor-pointer shadow-sm"
+                  title="Générer un cours ou plan personnalisé à partir de PDF, PNG, JPEG, TXT, MD, etc."
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>NotebookLM Flow</span>
                 </button>
               </div>
             </header>
@@ -524,7 +540,10 @@ export const Home: React.FC = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                      setModalGenMode('quick');
+                      setIsModalOpen(true);
+                    }}
                     className="flex items-center gap-1.5 rounded-xl bg-zinc-900 border border-zinc-800/80 px-4 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -549,6 +568,7 @@ export const Home: React.FC = () => {
         onSuccess={handleGenerationSuccess}
         reconnectJobId={reconnectJobId}
         preloadedCourseId={preloadedCourseId}
+        initialGenMode={modalGenMode}
       />
 
       {/* Delete Confirmation Modal */}
