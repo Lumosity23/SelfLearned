@@ -39,6 +39,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def clean_title(title: str) -> str:
+    if not title:
+        return ""
+    import re
+    # Remove case-insensitive prefix "Nom du cours :" or variations
+    cleaned = re.sub(r'^(?i)nom\s+du\s+cours\s*[:-]\s*', '', title)
+    return cleaned.strip()
+
 class GenerateRequest(BaseModel):
     sujet: str = ""
     avec_exercices: bool = False
@@ -73,7 +81,7 @@ def list_courses():
                         
                     courses.append({
                         "id": course_path.name,
-                        "title": toc_data.get("title", course_path.name),
+                        "title": clean_title(toc_data.get("title", course_path.name)),
                         "description": toc_data.get("description", ""),
                         "created_at": course_path.stat().st_mtime,
                         "partial": toc_data.get("partial", False),
@@ -114,7 +122,7 @@ def get_knowledge_graph():
                         toc = json.load(f)
                     
                     course_id = entry.name
-                    title = toc.get("title", course_id)
+                    title = clean_title(toc.get("title", course_id))
                     description = toc.get("description", "")
                     
                     # Read or heuristically compute tags if missing
@@ -179,9 +187,13 @@ def get_knowledge_graph():
                     
     # 2. Build nodes list
     for course in courses:
+        title = clean_title(course["title"])
+        words = title.split()
+        label = " ".join(words[:2]) + "..." if len(words) > 2 else title
         nodes.append({
             "id": course["id"],
-            "label": course["title"],
+            "label": label,
+            "fullTitle": title,
             "description": course["description"],
             "tags": course["tags"],
             "group": course["tags"][0] if course["tags"] else "général"
@@ -227,7 +239,10 @@ def get_course_toc(course_id: str):
         
     try:
         with open(toc_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            toc = json.load(f)
+        if "title" in toc:
+            toc["title"] = clean_title(toc["title"])
+        return toc
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la lecture de la TOC: {e}")
 

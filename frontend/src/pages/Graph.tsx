@@ -7,6 +7,7 @@ import { useToast } from '../components/ToastProvider';
 interface GraphNode {
   id: string;
   label: string;
+  fullTitle?: string;
   description: string;
   tags: string[];
   group: string;
@@ -590,7 +591,7 @@ export const Graph: React.FC = () => {
           <div className="absolute right-8 top-28 bottom-8 w-80 bg-dark-900/90 border border-dark-850 backdrop-blur-lg rounded-2xl p-5 shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-200 select-text">
             <div className="flex-1 overflow-y-auto space-y-4">
               <div className="flex items-start justify-between border-b border-dark-850 pb-3">
-                <h3 className="text-sm font-bold text-white leading-snug">{selectedNode.label}</h3>
+                <h3 className="text-sm font-bold text-white leading-snug">{selectedNode.fullTitle || selectedNode.label}</h3>
                 <button
                   onClick={() => setSelectedNode(null)}
                   className="text-dark-400 hover:text-white transition-colors cursor-pointer text-xs font-mono font-bold"
