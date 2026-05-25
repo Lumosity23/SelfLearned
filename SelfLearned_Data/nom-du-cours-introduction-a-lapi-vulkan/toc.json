@@ -70,5 +70,9 @@
   "status": "completed",
   "job_id": "c465f925-38d0-4730-9206-c6528164b376",
   "pinned": false,
-  "archived": false
+  "archived": false,
+  "tags": [
+    "vulkan",
+    "intelligence artificielle"
+  ]
 }

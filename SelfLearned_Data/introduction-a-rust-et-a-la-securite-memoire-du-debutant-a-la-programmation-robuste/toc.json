@@ -111,5 +111,9 @@
   "partial": false,
   "status": "completed",
   "archived": false,
-  "pinned": false
+  "pinned": false,
+  "tags": [
+    "rust",
+    "programmation"
+  ]
 }

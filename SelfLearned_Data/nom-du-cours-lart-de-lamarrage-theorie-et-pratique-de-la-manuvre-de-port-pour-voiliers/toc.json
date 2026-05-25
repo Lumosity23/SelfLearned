@@ -121,5 +121,8 @@
   "level": "intermédiaire",
   "system_prompt_id": "universitaire",
   "error": "Génération annulée par l'utilisateur.",
-  "archived": true
+  "archived": true,
+  "tags": [
+    "physique"
+  ]
 }

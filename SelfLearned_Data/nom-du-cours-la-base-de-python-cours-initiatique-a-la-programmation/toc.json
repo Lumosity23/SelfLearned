@@ -96,5 +96,10 @@
   "model": null,
   "custom_instructions": null,
   "level": "débutant",
-  "archived": false
+  "archived": false,
+  "tags": [
+    "python",
+    "programmation",
+    "intelligence artificielle"
+  ]
 }
