@@ -11,20 +11,22 @@ interface MarkdownViewerProps {
   moduleId?: string;
 }
 
-interface InteractiveParagraphProps {
+interface InteractiveBlockProps {
   children: React.ReactNode;
   courseId?: string;
   moduleId?: string;
   savedQuestions?: Array<{ q: string; a: string; selected_text?: string }>;
   onNewQuestionSaved?: (paragraphText: string, question: string, answer: string, selectedText: string) => void;
+  className?: string;
 }
 
-export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({ 
+export const InteractiveBlock: React.FC<InteractiveBlockProps> = ({ 
   children, 
   courseId, 
   moduleId,
   savedQuestions = [],
-  onNewQuestionSaved
+  onNewQuestionSaved,
+  className = ""
 }) => {
   const [showInput, setShowInput] = React.useState(false);
   const [question, setQuestion] = React.useState('');
@@ -57,16 +59,17 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
   }, [children]);
 
   // If the paragraph is empty or too short, don't show the button
-  const isValidParagraph = paragraphText.length > 5;
+  const isValidParagraph = paragraphText.length > 3;
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
     if (!courseId || !moduleId || !isValidParagraph) return;
     const selection = window.getSelection();
     if (!selection) return;
     const text = selection.toString().trim();
     
-    // Only capture if selection is within this paragraph and is of a reasonable size
+    // Only capture if selection is within this block and is of a reasonable size
     if (text.length > 2 && paragraphText.includes(text)) {
+      e.stopPropagation();
       setSelectedText(text);
       setError(null);
       setShowInput(true);
@@ -124,7 +127,7 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
     }
   };
 
-  // Replaces selection texts inside paragraphs with clickable highlight markers
+  // Replaces selection texts inside block with clickable highlight markers
   const renderParagraphContent = () => {
     if (answers.length === 0) {
       return children;
@@ -168,7 +171,7 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
           }}
           className={`cursor-pointer transition-all font-medium font-sans select-none inline px-1 py-0.5 rounded border-b ${
             openQAIndex === idx 
-              ? 'bg-zinc-700/80 border-zinc-550 text-white shadow-sm' 
+              ? 'bg-zinc-700/85 border-zinc-550 text-white shadow-sm' 
               : 'bg-zinc-800/60 border-zinc-700/60 text-zinc-200 hover:bg-zinc-750/90 hover:text-white'
           }`}
           title="Cliquez pour afficher l'explication du professeur"
@@ -190,11 +193,11 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
 
   return (
     <div 
-      className="group/p relative my-4 space-y-2 select-text"
+      className={`group/block relative select-text ${className}`}
       onMouseUp={handleMouseUp}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="leading-relaxed text-zinc-300 text-[14.5px] flex-1 font-sans">
+        <div className="flex-1 min-w-0">
           {renderParagraphContent()}
         </div>
         
@@ -206,10 +209,10 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
               setError(null);
               setShowInput(!showInput);
             }}
-            className={`shrink-0 p-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:text-white hover:bg-zinc-805 hover:border-zinc-700 transition-all cursor-pointer opacity-0 group-hover/p:opacity-100 shadow-sm flex items-center gap-1 ${
-              showInput ? 'opacity-100 border-zinc-700 bg-zinc-800 text-white' : ''
+            className={`shrink-0 p-1.5 rounded-lg border border-zinc-800 bg-zinc-900/85 text-zinc-400 hover:text-white hover:bg-zinc-805 hover:border-zinc-700 transition-all cursor-pointer opacity-0 group-hover/block:opacity-100 shadow-sm flex items-center gap-1 ${
+              showInput ? 'opacity-100 border-zinc-700 bg-zinc-805 text-white' : ''
             }`}
-            title="Poser une question générale sur ce paragraphe"
+            title="Poser une question générale"
           >
             <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
             <span className="text-[10px] font-mono px-0.5">Expliquer</span>
@@ -222,14 +225,14 @@ export const InteractiveParagraph: React.FC<InteractiveParagraphProps> = ({
           <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono select-none uppercase tracking-wider">
             <div className="flex items-center gap-1.5">
               <Brain className="h-3.5 w-3.5 text-zinc-500 animate-pulse" />
-              <span>{selectedText ? 'Clarifier la sélection' : 'Clarifier le paragraphe'}</span>
+              <span>{selectedText ? 'Clarifier la sélection' : 'Clarifier cet élément'}</span>
             </div>
             {selectedText && (
               <button 
                 onClick={() => setSelectedText('')}
                 className="text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
               >
-                (Tout le paragraphe)
+                (Tout le bloc)
               </button>
             )}
           </div>
@@ -358,6 +361,19 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, courseI
     });
   };
 
+  const getBlockProps = (children: React.ReactNode) => {
+    const getText = (node: any): string => {
+      if (!node) return '';
+      if (typeof node === 'string') return node;
+      if (Array.isArray(node)) return node.map(getText).join('');
+      if (node.props && node.props.children) return getText(node.props.children);
+      return '';
+    };
+    const pText = getText(children).trim();
+    const savedList = allSavedQuestions[pText] || [];
+    return { savedQuestions: savedList, pText };
+  };
+
   return (
     <div className="prose-custom max-w-none text-zinc-200">
       <ReactMarkdown
@@ -382,32 +398,41 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, courseI
             };
 
             if (!isInline) {
+              const { savedQuestions } = getBlockProps(codeString);
               return (
-                <div className="my-6 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-lg">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800/80 bg-zinc-950/40 text-xs text-zinc-400 font-mono select-none">
-                    <span className="font-semibold text-zinc-300">{language.toLowerCase() || 'code'}</span>
-                    <button
-                      onClick={handleCopy}
-                      className="hover:text-zinc-100 transition-colors bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800/80 text-xs text-zinc-300 cursor-pointer"
+                <InteractiveBlock 
+                  courseId={courseId} 
+                  moduleId={moduleId}
+                  savedQuestions={savedQuestions}
+                  onNewQuestionSaved={handleNewQuestionSaved}
+                  className="my-6"
+                >
+                  <div className="rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-lg select-text">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800/80 bg-zinc-950/40 text-xs text-zinc-400 font-mono select-none">
+                      <span className="font-semibold text-zinc-300">{language.toLowerCase() || 'code'}</span>
+                      <button
+                        onClick={handleCopy}
+                        className="hover:text-zinc-100 transition-colors bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800/80 text-xs text-zinc-300 cursor-pointer animate-none"
+                      >
+                        {copied ? 'Copié !' : 'Copier'}
+                      </button>
+                    </div>
+                    <SyntaxHighlighter
+                      style={vscDarkPlus as any}
+                      language={language}
+                      PreTag="div"
+                      customStyle={{
+                        margin: 0,
+                        padding: '1.25rem',
+                        background: 'transparent',
+                        fontSize: '0.85rem',
+                        fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                      }}
                     >
-                      {copied ? 'Copié !' : 'Copier'}
-                    </button>
+                      {codeString}
+                    </SyntaxHighlighter>
                   </div>
-                  <SyntaxHighlighter
-                    style={vscDarkPlus as any}
-                    language={language}
-                    PreTag="div"
-                    customStyle={{
-                      margin: 0,
-                      padding: '1.25rem',
-                      background: 'transparent',
-                      fontSize: '0.85rem',
-                      fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                    }}
-                  >
-                    {codeString}
-                  </SyntaxHighlighter>
-                </div>
+                </InteractiveBlock>
               );
             }
 
@@ -418,26 +443,73 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, courseI
             );
           },
           p({ children }) {
-            // Retrieve plaintext context matching para to load exact Q&As
-            const getText = (node: any): string => {
-              if (!node) return '';
-              if (typeof node === 'string') return node;
-              if (Array.isArray(node)) return node.map(getText).join('');
-              if (node.props && node.props.children) return getText(node.props.children);
-              return '';
-            };
-            const pText = getText(children).trim();
-            const savedList = allSavedQuestions[pText] || [];
-
+            const { savedQuestions } = getBlockProps(children);
             return (
-              <InteractiveParagraph 
+              <InteractiveBlock 
                 courseId={courseId} 
                 moduleId={moduleId}
-                savedQuestions={savedList}
+                savedQuestions={savedQuestions}
                 onNewQuestionSaved={handleNewQuestionSaved}
+                className="my-4 text-zinc-300 text-[14.5px] font-sans leading-relaxed"
               >
                 {children}
-              </InteractiveParagraph>
+              </InteractiveBlock>
+            );
+          },
+          li({ children }) {
+            const { savedQuestions } = getBlockProps(children);
+            return (
+              <InteractiveBlock
+                courseId={courseId}
+                moduleId={moduleId}
+                savedQuestions={savedQuestions}
+                onNewQuestionSaved={handleNewQuestionSaved}
+                className="my-1.5 text-zinc-300 text-[14px] font-sans list-inside"
+              >
+                <li>{children}</li>
+              </InteractiveBlock>
+            );
+          },
+          h1({ children }) {
+            const { savedQuestions } = getBlockProps(children);
+            return (
+              <InteractiveBlock
+                courseId={courseId}
+                moduleId={moduleId}
+                savedQuestions={savedQuestions}
+                onNewQuestionSaved={handleNewQuestionSaved}
+                className="my-5"
+              >
+                <h1 className="text-2xl font-bold text-white tracking-tight">{children}</h1>
+              </InteractiveBlock>
+            );
+          },
+          h2({ children }) {
+            const { savedQuestions } = getBlockProps(children);
+            return (
+              <InteractiveBlock
+                courseId={courseId}
+                moduleId={moduleId}
+                savedQuestions={savedQuestions}
+                onNewQuestionSaved={handleNewQuestionSaved}
+                className="my-4"
+              >
+                <h2 className="text-xl font-bold text-white tracking-tight">{children}</h2>
+              </InteractiveBlock>
+            );
+          },
+          h3({ children }) {
+            const { savedQuestions } = getBlockProps(children);
+            return (
+              <InteractiveBlock
+                courseId={courseId}
+                moduleId={moduleId}
+                savedQuestions={savedQuestions}
+                onNewQuestionSaved={handleNewQuestionSaved}
+                className="my-3"
+              >
+                <h3 className="text-lg font-bold text-white tracking-tight">{children}</h3>
+              </InteractiveBlock>
             );
           }
         }}

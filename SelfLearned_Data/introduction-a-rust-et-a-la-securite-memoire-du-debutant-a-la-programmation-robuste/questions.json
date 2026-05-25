@@ -7,5 +7,14 @@
         "selected_text": "Le fichier Cargo.toml (écrit en syntaxe TOML - Tom's Obvious Minimal Language) est la carte d'identité de votre projet. C'est ici que vous définissez le nom du projet, sa version, l'édition de Rust utilisée, ainsi que les bibliothèques externes (appelées crates en Rust) dont votre projet a besoin."
       }
     ]
+  },
+  "10_gestion_erreurs_result.md": {
+    "Dans les modules précédents, nous avons exploré comment Rust garantit la sécurité mémoire au niveau matériel grâce à l'ownership (Module 2) et comment structurer des données complexes (Module 3). Cependant, un logiciel robuste ne se contente pas de gérer correctement sa mémoire en situation nominale : il doit également réagir de manière prévisible et sécurisée face à l'imprévu.": [
+      {
+        "q": "c'est quoi l'ownership ?",
+        "a": "L'**ownership** (ou propriété) est le système unique de Rust qui garantit la sécurité mémoire sans avoir besoin d'un ramasse-miettes (*garbage collector*). \n\nEn résumé, il repose sur trois règles fondamentales :\n1. Chaque valeur en Rust possède une variable appelée son **propriétaire**.\n2. Il ne peut y avoir qu'un seul propriétaire à la fois.\n3. Lorsque le propriétaire sort du champ d'application (*scope*), la valeur est automatiquement supprimée de la mémoire.\n\nCe mécanisme empêche les erreurs classiques comme les doubles libérations de mémoire ou l'accès à des zones mémoire déjà libérées. Pour approfondir ces règles et voir comment elles s'appliquent concrètement, je t'invite à consulter le **Module 2**, et plus particulièrement le sous-module **2.1 : Les trois règles d'or de l'Ownership**.",
+        "selected_text": "Dans les modules précédents, nous avons exploré comment Rust garantit la sécurité mémoire au niveau matériel grâce à l'ownership (Module 2)"
+      }
+    ]
   }
 }
