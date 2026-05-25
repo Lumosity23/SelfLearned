@@ -564,7 +564,6 @@ async def upload_docs(
                         }]
                     }
                     import urllib.request
-                    import json
                     req = urllib.request.Request(
                         url,
                         data=json.dumps(payload).encode("utf-8"),
