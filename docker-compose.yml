@@ -1,29 +1,30 @@
-# version: '3.8'
+version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: selflearned-backend:latest
     container_name: selflearned-backend
-    restart: unless-stopped
+    build:
+      context: /DATA/AppData/selflearned/backend
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8082:8000" # Redirection du port libre 8082 de l'hôte vers le port 8000 du conteneur
     volumes:
-      # Map host folder to backend data folder for permanent local storage
-      - ./SelfLearned_Data:/SelfLearned_Data
-    env_file:
-      - ./backend/.env
+      - /DATA/AppData/selflearned/data:/SelfLearned_Data # Volume persistant pour tes cours et settings.json
     environment:
       - DATA_DIR=/SelfLearned_Data
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Requis pour connecter ton Ollama local si besoin
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: selflearned-frontend:latest
     container_name: selflearned-frontend
-    restart: unless-stopped
+    build:
+      context: /DATA/AppData/selflearned/frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "8081:80" # Ton interface web accessible sur http://192.168.129.93:8081
     depends_on:
       - backend
+    restart: unless-stopped
