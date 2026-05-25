@@ -57,7 +57,10 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
 }) => {
   const { addToast } = useToast();
 
-  const [genMode, setGenMode] = useState<'quick' | 'custom'>('quick');
+  const [genMode, setGenMode] = useState<'quick' | 'custom' | 'documents'>('quick');
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadingDocs, setUploadingDocs] = useState(false);
   const [subject, setSubject] = useState('');
   const [includeExercises, setIncludeExercises] = useState(true);
   const [state, setState] = useState<'idle' | 'planning_toc' | 'toc_planned' | 'submitting' | 'generating' | 'completed' | 'error'>('idle');
@@ -290,6 +293,53 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       console.error(err);
       setState('idle');
       alert(err.message || 'Impossible de planifier le cours.');
+    }
+  };
+
+  const handleUploadDocsAndGeneratePlan = async () => {
+    if (uploadedFiles.length === 0) return;
+    
+    setUploadingDocs(true);
+    setState('planning_toc');
+    
+    try {
+      const formData = new FormData();
+      uploadedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+      if (selectedProfileId) {
+        formData.append('profile_id', selectedProfileId);
+      }
+      if (selectedModel) {
+        formData.append('model', selectedModel);
+      }
+      
+      const res = await fetch('/api/upload-docs', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.detail || "Échec de l'analyse des documents");
+      }
+      
+      const data = await res.json();
+      
+      // Load generated TOC into markdown editor and set subject
+      setTocMarkdown(data.toc_markdown);
+      setSubject(data.toc_json.title);
+      
+      // Transition to Custom Mode so they can edit it in wide screen!
+      setGenMode('custom');
+      setState('idle');
+      addToast("Plan de révision généré à partir de vos documents avec succès ! Vous pouvez maintenant le modifier ou lancer la génération complète.", 'success');
+    } catch (err: any) {
+      console.error(err);
+      addToast(`Erreur lors de l'analyse : ${err.message}`, 'error');
+      setState('idle');
+    } finally {
+      setUploadingDocs(false);
     }
   };
 
@@ -551,22 +601,37 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
           {/* A. Idle state (Quick Mode Only) */}
           {state === 'idle' && genMode === 'quick' && (
             <div className="space-y-6 animate-fadeIn">
-              {/* Quick vs Custom Tab Selector */}
+              {/* Quick vs Custom vs Documents Tab Selector */}
               <div className="flex border-b border-zinc-900/60 gap-4 shrink-0">
                 <button
                   type="button"
                   onClick={() => setGenMode('quick')}
-                  className="pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors text-white"
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
                 >
                   Mode Rapide (Quick)
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />
+                  {genMode === 'quick' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
                 <button
                   type="button"
                   onClick={() => setGenMode('custom')}
-                  className="pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors text-dark-400 hover:text-white"
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
                 >
                   Personnalisé (Custom)
+                  {genMode === 'custom' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGenMode('documents')}
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Depuis Documents
+                  {genMode === 'documents' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                 </button>
               </div>
 
@@ -913,6 +978,325 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
             </div>
           )}
 
+          {state === 'idle' && genMode === 'documents' && (
+            <div className="space-y-6 animate-fadeIn">
+              {/* Tab Selector */}
+              <div className="flex border-b border-zinc-900/60 gap-4 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setGenMode('quick')}
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'quick' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Mode Rapide (Quick)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGenMode('custom')}
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'custom' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Personnalisé (Custom)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGenMode('documents')}
+                  className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                    genMode === 'documents' ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Depuis Documents
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />
+                </button>
+              </div>
+
+              {/* Profile selection & model runtime override */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <Layers className="h-3.5 w-3.5 text-zinc-400" />
+                    Clé d'API / Profil
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                      className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
+                    >
+                      <span className="truncate">
+                        {profiles.find(p => p.id === selectedProfileId)?.name 
+                          ? `${profiles.find(p => p.id === selectedProfileId)?.name} (${profiles.find(p => p.id === selectedProfileId)?.type})`
+                          : "Aucun profil (par défaut)"}
+                      </span>
+                      <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {isProfileDropdownOpen && (
+                      <>
+                        <div className="fixed inset-0 z-20" onClick={() => setIsProfileDropdownOpen(false)} />
+                        <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                          {profiles.map((p) => (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => {
+                                handleProfileChange(p.id);
+                                setIsProfileDropdownOpen(false);
+                              }}
+                              className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                selectedProfileId === p.id ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                              }`}
+                            >
+                              {p.name} ({p.type})
+                            </button>
+                          ))}
+                          {profiles.length === 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleProfileChange('');
+                                setIsProfileDropdownOpen(false);
+                              }}
+                              className="w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white text-zinc-300 bg-zinc-800/60 font-semibold"
+                            >
+                              Aucun profil (par défaut)
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <Settings className="h-3.5 w-3.5 text-zinc-400" />
+                    Modèle IA
+                  </label>
+                  {loadingModels ? (
+                    <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-xs text-dark-400 flex items-center gap-1.5 font-sans">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-500" />
+                      Chargement des modèles...
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                        className="w-full h-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-3.5 text-xs text-zinc-200 hover:text-white hover:bg-zinc-800/80 transition-all font-sans cursor-pointer shadow-sm select-none"
+                      >
+                        <span className="truncate">
+                          {isCustomModel ? `Autre modèle: ${selectedModel || '(saisir)'}` : selectedModel || 'Sélectionner un modèle'}
+                        </span>
+                        <ChevronDown className={`h-3.5 w-3.5 text-dark-400 transition-transform duration-200 ${isModelDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isModelDropdownOpen && (
+                        <>
+                          <div className="fixed inset-0 z-20" onClick={() => setIsModelDropdownOpen(false)} />
+                          <div className="absolute left-0 right-0 mt-1.5 rounded-xl border border-zinc-800 bg-zinc-900 p-1 shadow-2xl z-30 animate-in fade-in duration-150 max-h-60 overflow-y-auto custom-scrollbar">
+                            {availableModels.map((m) => (
+                              <button
+                                key={m}
+                                type="button"
+                                onClick={() => {
+                                  setIsCustomModel(false);
+                                  setSelectedModel(m);
+                                  setIsModelDropdownOpen(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                  !isCustomModel && selectedModel === m ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-300'
+                                }`}
+                              >
+                                {m}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsCustomModel(true);
+                                setSelectedModel('');
+                                setIsModelDropdownOpen(false);
+                              }}
+                              className={`w-full px-3 py-2 text-left text-xs transition-all font-sans truncate cursor-pointer rounded-lg hover:bg-zinc-850 hover:text-white ${
+                                isCustomModel ? 'bg-zinc-800/60 text-white font-semibold' : 'text-zinc-350'
+                              }`}
+                            >
+                              Autre modèle (Saisie libre)...
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {isCustomModel && (
+                <div className="space-y-1.5 animate-slideDown">
+                  <label className="text-[9px] font-bold text-dark-300 uppercase tracking-wider">
+                    Identifiant du modèle personnalisé
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    placeholder="Ex: gemini-1.5-pro..."
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-900/40 px-3.5 py-2 text-xs text-white placeholder-dark-505 focus:border-zinc-700/80 focus:outline-none font-mono transition-all"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Drag and Drop Zone */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-white uppercase tracking-wider">
+                  Documents sources pour la révision (.txt, .md, .pdf, .png, .jpg, .jpeg)
+                </label>
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    if (e.dataTransfer.files) {
+                      const filesArray = Array.from(e.dataTransfer.files);
+                      setUploadedFiles(prev => [...prev, ...filesArray]);
+                    }
+                  }}
+                  onClick={() => document.getElementById('fileInput')?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                    isDragging
+                      ? 'border-zinc-500 bg-zinc-800/40 text-white'
+                      : 'border-zinc-800 bg-zinc-900/30 text-zinc-400 hover:border-zinc-700/80 hover:bg-zinc-900/50'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    id="fileInput"
+                    multiple
+                    accept=".txt,.md,.pdf,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const filesArray = Array.from(e.target.files);
+                        setUploadedFiles(prev => [...prev, ...filesArray]);
+                      }
+                    }}
+                  />
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <svg className="h-8 w-8 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-xs font-semibold text-zinc-300">
+                      Glissez-déposez vos fichiers ici, ou cliquez pour parcourir
+                    </span>
+                    <span className="text-[10px] text-zinc-500">
+                      Fichiers pris en charge : PDFs de cours, notes Markdown, images de schémas, textes bruts.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Uploaded Files List */}
+              {uploadedFiles.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
+                      Fichiers ajoutés ({uploadedFiles.length})
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setUploadedFiles([])}
+                      className="text-[9px] text-red-400 hover:text-red-300 cursor-pointer font-semibold uppercase tracking-wider bg-transparent border-none"
+                    >
+                      Tout vider
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1">
+                    {uploadedFiles.map((file, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/40 text-xs text-zinc-300 hover:border-zinc-700/60 transition-all select-none"
+                      >
+                        <div className="flex items-center space-x-2 truncate">
+                          <svg className="h-4 w-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="truncate pr-2 font-medium">{file.name}</span>
+                          <span className="text-[9px] text-zinc-500 font-mono shrink-0">
+                            ({(file.size / 1024).toFixed(0)} KB)
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))}
+                          className="text-zinc-500 hover:text-red-400 p-0.5 rounded transition-colors cursor-pointer bg-transparent border-none"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* include exercises */}
+              <div className="flex items-center space-x-3 rounded-xl border border-zinc-800 bg-zinc-900/20 p-3.5">
+                <input
+                  type="checkbox"
+                  id="includeExercisesDocs"
+                  checked={includeExercises}
+                  onChange={(e) => setIncludeExercises(e.target.checked)}
+                  className="h-4 w-4 rounded border-zinc-800 bg-zinc-905 text-zinc-300 focus:ring-zinc-800 focus:ring-offset-dark-950 accent-zinc-300"
+                />
+                <div className="space-y-0.5">
+                  <label htmlFor="includeExercisesDocs" className="text-xs font-semibold text-white cursor-pointer">
+                    Générer des exercices d'évaluation pratiques
+                  </label>
+                  <p className="text-[10px] text-dark-400">
+                    Génère des cahiers d'exercices progressifs et leurs corrections à la fin de chaque sous-chapitre.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-300 transition-all select-none cursor-pointer"
+                >
+                  Annuler
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleUploadDocsAndGeneratePlan}
+                  disabled={uploadedFiles.length === 0 || uploadingDocs}
+                  className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800/80 text-zinc-200 hover:bg-zinc-850 hover:text-white px-5 py-2 text-xs font-semibold transition-all shadow-sm select-none cursor-pointer disabled:opacity-50"
+                >
+                  {uploadingDocs ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Analyse en cours...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Générer le plan de révision</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* B. Wide Layout (Custom Mode in Idle OR TOC Planned) */}
           {isWide && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden h-full min-h-0 animate-fadeIn">
@@ -943,6 +1327,19 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
                     >
                       Personnalisé
                       {(genMode as string) === 'custom' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGenMode('documents');
+                        setState('idle');
+                      }}
+                      className={`pb-2.5 text-xs font-semibold uppercase tracking-wider relative transition-colors ${
+                        (genMode as string) === 'documents' ? 'text-white' : 'text-dark-400 hover:text-white'
+                      }`}
+                    >
+                      Documents
+                      {(genMode as string) === 'documents' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-500 rounded-full" />}
                     </button>
                   </div>
 

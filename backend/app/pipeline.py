@@ -380,6 +380,18 @@ async def run_generation_pipeline(
             
         effective_system_prompt += f"\n\n### 5. NIVEAU CIBLE ET DIRECTIVES PÉDAGOGIQUES\n{level_directive}"
         
+        # NotebookLM: Inject private context from documents if present
+        context_path = course_dir / "context.txt"
+        if context_path.exists():
+            try:
+                with open(context_path, "r", encoding="utf-8") as f:
+                    private_context = f.read().strip()
+                if private_context:
+                    effective_system_prompt += f"\n\n### 6. CONTEXTE DE DOCUMENTS PRIVÉS (NotebookLM Flow)\nTu DOIS rédiger chaque chapitre en intégrant et en t'appuyant rigoureusement sur le contexte privé extrait des documents de l'utilisateur suivant :\n{private_context}"
+                    logger.info("Found context.txt! Injected private document context into system prompt.")
+            except Exception as e_context:
+                logger.error(f"Error reading context.txt: {e_context}")
+        
         for index, item in enumerate(all_submodules):
             module_id = item["module_id"]
             submodule = item["submodule"]
@@ -540,3 +552,39 @@ async def run_generation_pipeline(
         log_to_job(job_id, f"[ERREUR FATALE] Échec du pipeline : {str(e)}")
         if course_id:
             write_course_log(course_id, f"ÉCHEC FATAL du pipeline de génération : {str(e)}")
+
+def run_course_generation_pipeline(history: list, next_instruction: str):
+    """
+    Main optimized generation pipeline using ContextOptimizer.
+    Processes the conversation payload through the optimizer before triggering requests.
+    """
+    from app.utils.context import ContextOptimizer
+    from app.llm import get_llm_client
+    
+    # 1. Initialize optimizer using active profile safely
+    api_profile = settings_manager.get_active_profile()
+    optimizer = ContextOptimizer(
+        provider=api_profile.type,
+        model_name=api_profile.model or "gemini-flash-latest",
+        api_key=api_profile.api_key
+    )
+    
+    # 2. Optimize conversation payload
+    api_kwargs = optimizer.optimize_history(history, next_instruction)
+    
+    # 3. Perform the optimized API call
+    if optimizer.provider == "google" and optimizer.google_client:
+        response = optimizer.google_client.models.generate_content(
+            model=optimizer.model_name,
+            **api_kwargs
+        )
+        return response.text
+    else:
+        # Standard OpenAI/OpenRouter client chat completion
+        client = get_llm_client(api_profile)
+        response = client.chat.completions.create(
+            model=optimizer.model_name,
+            messages=api_kwargs.get("messages", []),
+            temperature=0.3
+        )
+        return response.choices[0].message.content

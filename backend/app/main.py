@@ -465,6 +465,215 @@ def generate_toc_only(request: TOCRequest):
         logger.exception("Error generating TOC only")
         raise HTTPException(status_code=500, detail=f"Échec de la planification du cours : {str(e)}")
 
+from fastapi import Form
+
+@app.post("/api/upload-docs")
+async def upload_docs(
+    files: List[UploadFile] = File(...),
+    profile_id: Optional[str] = Form(None),
+    model: Optional[str] = Form(None)
+):
+    """
+    POST /api/upload-docs
+    Accepts multiple documents (.txt, .md, .pdf, .png, .jpg, .jpeg).
+    Extracts text/converts images using OCR/multimodal descriptions,
+    generates a targeted revision plan (TOC JSON), and stores it on disk
+    so it can be launched later to generate the full course modules.
+    """
+    extracted_texts = []
+    
+    # Try PyPDF2 safely
+    try:
+        import PyPDF2
+    except ImportError:
+        PyPDF2 = None
+
+    # Load active profile for multimodal processing and plan generation
+    api_profile = None
+    if profile_id:
+        for p in settings_manager.profiles:
+            if p.id == profile_id:
+                api_profile = p
+                break
+    if not api_profile:
+        api_profile = settings_manager.get_active_profile()
+        
+    chosen_model = model or api_profile.model or "gemini-flash-latest"
+
+    for file in files:
+        filename = file.filename.lower()
+        content_type = file.content_type.lower() if file.content_type else ""
+        
+        file_bytes = await file.read()
+        
+        # 1. Text or Markdown files
+        if filename.endswith(".txt") or filename.endswith(".md") or "text/" in content_type:
+            try:
+                text = file_bytes.decode("utf-8", errors="ignore")
+                extracted_texts.append(f"--- FICHIER: {file.filename} ---\n{text}\n")
+            except Exception as e:
+                logger.error(f"Failed to read text file {file.filename}: {e}")
+                
+        # 2. PDF files
+        elif filename.endswith(".pdf") or "pdf" in content_type:
+            if not PyPDF2:
+                logger.warning("PyPDF2 is not installed, attempting simple text decoding fallback...")
+                try:
+                    text = file_bytes.decode("utf-8", errors="ignore")
+                    extracted_texts.append(f"--- FICHIER PDF (FALLBACK DECODING): {file.filename} ---\n{text}\n")
+                except Exception as e:
+                    logger.error(f"Failed PDF simple fallback read for {file.filename}: {e}")
+            else:
+                try:
+                    reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+                    text = ""
+                    for i, page in enumerate(reader.pages):
+                        page_text = page.extract_text()
+                        if page_text:
+                            text += page_text + "\n"
+                    extracted_texts.append(f"--- FICHIER PDF: {file.filename} ---\n{text}\n")
+                except Exception as e:
+                    logger.error(f"Failed to read PDF file {file.filename}: {e}")
+                    
+        # 3. Image files (multimodal description)
+        elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")) or "image/" in content_type:
+            try:
+                import base64
+                base64_image = base64.b64encode(file_bytes).decode("utf-8")
+                mime_type = content_type or "image/png"
+                
+                logger.info(f"Using multimodal description for image: {file.filename} using model {chosen_model}")
+                prompt = "Analyse cette image provenant des documents de l'utilisateur. Transcris tout texte visible et décris en détail tout graphique, schéma ou concept illustré afin de l'intégrer au plan de révision."
+                
+                desc = "[Description de l'image indisponible]"
+                if api_profile.type == "gemini":
+                    # Direct Gemini REST call
+                    model_path = chosen_model.replace("models/", "")
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_path}:generateContent"
+                    payload = {
+                        "contents": [{
+                            "parts": [
+                                {"text": prompt},
+                                {
+                                    "inlineData": {
+                                        "mimeType": mime_type,
+                                        "data": base64_image
+                                    }
+                                }
+                            ]
+                        }]
+                    }
+                    import urllib.request
+                    import json
+                    req = urllib.request.Request(
+                        url,
+                        data=json.dumps(payload).encode("utf-8"),
+                        headers={"Content-Type": "application/json", "X-goog-api-key": api_profile.api_key},
+                        method="POST"
+                    )
+                    with urllib.request.urlopen(req) as response:
+                        res = json.loads(response.read().decode("utf-8"))
+                        desc = res["candidates"][0]["content"]["parts"][0]["text"]
+                else:
+                    # OpenAI/OpenRouter chat completion with image_url
+                    from app.llm import get_llm_client
+                    client = get_llm_client(api_profile)
+                    response = client.chat.completions.create(
+                        model=chosen_model,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": prompt},
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:{mime_type};base64,{base64_image}"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    )
+                    desc = response.choices[0].message.content or ""
+                
+                extracted_texts.append(f"--- IMAGE: {file.filename} (ANALYSE & DESCRIPTION PAR L'IA) ---\n{desc}\n")
+            except Exception as e:
+                logger.error(f"Failed to describe image {file.filename}: {e}")
+                extracted_texts.append(f"--- IMAGE: {file.filename} ---\n[Erreur d'analyse par l'IA]\n")
+
+    if not extracted_texts:
+        raise HTTPException(status_code=422, detail="Aucun document n'a pu être lu ou extrait.")
+        
+    consolidated_context = "\n".join(extracted_texts)
+    
+    # Generate Table of Contents (TOC) matching the private context
+    try:
+        from app.llm import generate_toc
+        
+        subject = f"Révision basée sur vos {len(files)} documents"
+        prompt = f"""Tu es un expert pédagogique de premier plan, similaire à NotebookLM.
+Sur la base du [CONTENUS DU DOCUMENT/CONTEXTE PRIVÉ] ci-dessous, génère une table des matières (TOC) pour un cours de révision ciblé.
+Le plan doit être extrêmement structuré et s'appuyer sur les informations, faits et concepts décrits dans les documents.
+
+[CONTENUS DU DOCUMENT/CONTEXTE PRIVÉ] :
+{consolidated_context}
+
+Génère un plan pédagogique rigoureux et adapté.
+"""
+        
+        toc, usage = generate_toc(prompt, api_profile, chosen_model)
+        
+        # Save this customized plan in SelfLearned_Data
+        course_title = toc.get("title", subject)
+        course_id = slugify(course_title)
+        
+        data_dir = settings.get_data_dir()
+        course_dir = data_dir / course_id
+        course_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Save TOC with custom "toc_only" status (so it acts as a draft plan)
+        toc["status"] = "toc_only"
+        toc["avec_exercices"] = True
+        toc["profile_id"] = api_profile.id
+        toc["model"] = chosen_model
+        toc["level"] = "débutant"
+        toc["custom_instructions"] = "Généré à partir de vos documents privés."
+        
+        # Save toc.json and context.txt
+        with open(course_dir / "toc.json", "w", encoding="utf-8") as f:
+            json.dump(toc, f, indent=2, ensure_ascii=False)
+            
+        with open(course_dir / "context.txt", "w", encoding="utf-8") as f:
+            f.write(consolidated_context)
+            
+        write_course_log(course_id, "Plan de cours généré avec succès à partir de vos documents privés (Revision Flow).")
+        
+        # Convert to Markdown for convenience
+        def toc_json_to_markdown(toc_data: dict) -> str:
+            lines = []
+            lines.append(f"# Nom du Cours : {toc_data.get('title', 'Révision')}")
+            lines.append(f"{toc_data.get('description', '')}\n")
+            for m in toc_data.get("modules", []):
+                lines.append(f"- Module : {m.get('title', '')}")
+                for sm in m.get("submodules", []):
+                    lines.append(f"  - {sm.get('title', '')}")
+            return "\n".join(lines)
+            
+        toc_markdown = toc_json_to_markdown(toc)
+        
+        return {
+            "success": True,
+            "course_id": course_id,
+            "toc_json": toc,
+            "toc_markdown": toc_markdown,
+            "message": "Plan de révision créé et enregistré avec succès dans vos structures !"
+        }
+        
+    except Exception as e:
+        logger.exception("Error generating plan from documents")
+        raise HTTPException(status_code=500, detail=f"Échec de l'analyse des documents par l'IA : {str(e)}")
+
 class SystemPromptUpdate(BaseModel):
     system_prompt: str
 
