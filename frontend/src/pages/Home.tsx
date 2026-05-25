@@ -27,6 +27,7 @@ export const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [importing, setImporting] = useState(false);
   const [reconnectJobId, setReconnectJobId] = useState<string | null>(null);
+  const [preloadedCourseId, setPreloadedCourseId] = useState<string | null>(null);
   
   const [currentTab, setCurrentTab] = useState<'all' | 'archived'>('all');
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
@@ -349,6 +350,9 @@ export const Home: React.FC = () => {
                       if (course.status === 'generating' && course.job_id) {
                         setReconnectJobId(course.job_id);
                         setIsModalOpen(true);
+                      } else if (course.status === 'toc_only') {
+                        setPreloadedCourseId(course.id);
+                        setIsModalOpen(true);
                       } else {
                         navigate(`/course/${course.id}`);
                       }
@@ -357,11 +361,19 @@ export const Home: React.FC = () => {
                   >
                     {/* Quick Action Buttons */}
                     <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10">
-                      {course.partial && (
+                      {(course.partial || course.status === 'toc_only') && (
                         <button
-                          onClick={(e) => handleResume(e, course)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (course.status === 'toc_only') {
+                              setPreloadedCourseId(course.id);
+                              setIsModalOpen(true);
+                            } else {
+                              handleResume(e, course);
+                            }
+                          }}
                           className="p-1 rounded-lg bg-zinc-900 border border-zinc-800/80 text-dark-300 hover:text-white transition-all"
-                          title="Reprendre la génération"
+                          title="Lancer la génération du cours"
                         >
                           <Sparkles className="h-3.5 w-3.5" />
                         </button>
@@ -425,6 +437,10 @@ export const Home: React.FC = () => {
                             <span className="text-[9px] font-semibold text-amber-500 bg-amber-950/20 border border-amber-900/30 rounded px-2 py-0.5 font-mono select-none tracking-wide">
                               Génération Partielle
                             </span>
+                          ) : course.status === 'toc_only' ? (
+                            <span className="text-[9px] font-semibold text-zinc-300 bg-zinc-800/80 border border-zinc-700/50 rounded px-2 py-0.5 font-mono select-none tracking-wide">
+                              Plan / Brouillon
+                            </span>
                           ) : null}
 
                           {course.status !== 'generating' && course.total_submodules ? (
@@ -448,6 +464,8 @@ export const Home: React.FC = () => {
                       <p className="text-xs text-dark-400 line-clamp-3 leading-relaxed">
                         {course.status === 'generating'
                           ? "Le cours est actuellement planifié et en cours de rédaction active par l'intelligence artificielle..."
+                          : course.status === 'toc_only'
+                          ? "Plan de révision généré à partir de vos documents. Prêt pour la rédaction complète."
                           : (course.description || "Aucune description générée pour ce cours.")
                         }
                       </p>
@@ -463,6 +481,11 @@ export const Home: React.FC = () => {
                           <>
                             Suivre
                             <Loader2 className="h-3 w-3 animate-spin ml-0.5" />
+                          </>
+                        ) : course.status === 'toc_only' ? (
+                          <>
+                            Lancer
+                            <Sparkles className="h-3 w-3 ml-0.5 text-zinc-300 group-hover:text-white" />
                           </>
                         ) : (
                           <>
@@ -520,10 +543,12 @@ export const Home: React.FC = () => {
         onClose={() => {
           setIsModalOpen(false);
           setReconnectJobId(null);
+          setPreloadedCourseId(null);
           fetchCourses();
         }}
         onSuccess={handleGenerationSuccess}
         reconnectJobId={reconnectJobId}
+        preloadedCourseId={preloadedCourseId}
       />
 
       {/* Delete Confirmation Modal */}

@@ -7,6 +7,7 @@ interface GenerateCourseModalProps {
   onClose: () => void;
   onSuccess: (courseId: string) => void;
   reconnectJobId?: string | null;
+  preloadedCourseId?: string | null;
 }
 
 interface Submodule {
@@ -54,6 +55,7 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
   onClose,
   onSuccess,
   reconnectJobId,
+  preloadedCourseId,
 }) => {
   const { addToast } = useToast();
 
@@ -243,6 +245,48 @@ export const GenerateCourseModal: React.FC<GenerateCourseModalProps> = ({
       startProgressStream(reconnectJobId);
     }
   }, [reconnectJobId]);
+
+  // Preloaded course plan structure handling
+  useEffect(() => {
+    if (isOpen && preloadedCourseId) {
+      const fetchPreloadedTOC = async () => {
+        try {
+          const res = await fetch(`/api/courses/${preloadedCourseId}/toc`);
+          if (res.ok) {
+            const toc = await res.json();
+            setSubject(toc.title || '');
+            
+            // Convert to Markdown
+            const lines: string[] = [];
+            lines.push(`# Nom du Cours : ${toc.title || ''}`);
+            if (toc.description) {
+              lines.push(`${toc.description}\n`);
+            }
+            (toc.modules || []).forEach((m: any) => {
+              lines.push(`- Module : ${m.title || ''}`);
+              (m.submodules || []).forEach((sm: any) => {
+                lines.push(`  - ${sm.title || ''}`);
+              });
+            });
+            setTocMarkdown(lines.join('\n'));
+            
+            // Set level & other specs if stored in TOC
+            if (toc.level) setSelectedLevel(toc.level);
+            if (toc.custom_instructions) setCustomInstructions(toc.custom_instructions);
+            if (toc.profile_id) setSelectedProfileId(toc.profile_id);
+            if (toc.model) setSelectedModel(toc.model);
+            
+            // Set mode to custom so they see the editor
+            setGenMode('custom');
+            setState('idle');
+          }
+        } catch (err) {
+          console.error('Error preloading TOC:', err);
+        }
+      };
+      fetchPreloadedTOC();
+    }
+  }, [isOpen, preloadedCourseId]);
 
   // Auto-scroll logs terminal
   useEffect(() => {

@@ -5,7 +5,7 @@ services:
     image: selflearned-backend:latest
     container_name: selflearned-backend
     build:
-      context: /DATA/AppData/selflearned/backend
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8082:8000" # Redirection du port libre 8082 de l'hôte vers le port 8000 du conteneur
@@ -21,7 +21,7 @@ services:
     image: selflearned-frontend:latest
     container_name: selflearned-frontend
     build:
-      context: /DATA/AppData/selflearned/frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "8081:80" # Ton interface web accessible sur http://192.168.129.93:8081
