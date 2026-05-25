@@ -719,7 +719,8 @@ def ask_virtual_teacher(
     api_profile: Optional[Any] = None,
     override_model: Optional[str] = None,
     system_prompt: Optional[str] = None,
-    temperature: float = 0.3
+    temperature: float = 0.3,
+    selected_text: Optional[str] = ""
 ) -> tuple[str, dict[str, int]]:
     """
     Asks the virtual teacher a question regarding a specific context paragraph inside a module.
@@ -737,16 +738,24 @@ def ask_virtual_teacher(
 [TABLE DES MATIÈRES DU COURS] :
 {json.dumps(toc, indent=2, ensure_ascii=False)}
 
-[CONTENU DU MODULE ENTIER] :
+[CONTENU DU MODULE ENTIER (AMONT & AVAL)] :
 {module_content}
 
 [PARAGRAPHE CIBLÉ CONCERNÉ] :
 {context_paragraph}
+"""
 
+    if selected_text:
+        user_prompt += f"\n[TEXTE PRÉCIS SURLIGNÉ DANS CE PARAGRAPHE] :\n{selected_text}\n"
+
+    user_prompt += f"""
 [QUESTION DE L'ÉLÈVE] :
 {question}
 
-Fournis une réponse claire, directe et concise qui résout la question par rapport au paragraphe ciblé.
+Directives de réponse pour le professeur virtuel :
+1. Fournis une réponse claire, directe et concise qui résout la question par rapport au paragraphe ciblé (et au texte précis surligné s'il y en a un).
+2. Utilise le [CONTENU DU MODULE ENTIER] pour obtenir le contexte en amont et en aval de la zone de doute.
+3. Grâce à la [TABLE DES MATIÈRES DU COURS], si la question déborde sur des notions qui sont traitées ailleurs dans le cours, n'hésite pas à rediriger l'élève de manière constructive vers le module ou sous-module approprié (ex: "Nous verrons ce point en détail dans la section 2.3 du cours...").
 """
 
     if active_profile.type == "gemini":

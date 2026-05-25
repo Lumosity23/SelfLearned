@@ -965,7 +965,8 @@ def ask_virtual_teacher_route(course_id: str, module_id: str, payload: AskReques
             api_profile=api_profile,
             override_model=chosen_model,
             system_prompt=system_prompt,
-            temperature=temperature
+            temperature=temperature,
+            selected_text=payload.selected_text
         )
         
         # Persist this Q&A into questions.json

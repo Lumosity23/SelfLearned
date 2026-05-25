@@ -120,5 +120,6 @@
   "custom_instructions": "pour les exo fais de vrai ou faux\n",
   "level": "intermédiaire",
   "system_prompt_id": "universitaire",
-  "error": "Génération annulée par l'utilisateur."
+  "error": "Génération annulée par l'utilisateur.",
+  "archived": true
 }

@@ -1,0 +1,11 @@
+{
+  "01_intro_ecosysteme_cargo.md": {
+    "Le fichier Cargo.toml (écrit en syntaxe TOML - Tom's Obvious Minimal Language) est la carte d'identité de votre projet. C'est ici que vous définissez le nom du projet, sa version, l'édition de Rust utilisée, ainsi que les bibliothèques externes (appelées crates en Rust) dont votre projet a besoin.": [
+      {
+        "q": "pourrais tu me dire avec quelle autre language on a ce type de chose un fichier qui gere la config de notre projet ?",
+        "a": "Le concept de fichier de configuration centralisé pour gérer les dépendances et les métadonnées d'un projet est très courant dans le développement moderne. Voici quelques équivalents célèbres :\n\n*   **Node.js (JavaScript/TypeScript) :** Utilise le fichier `package.json`, qui remplit exactement le même rôle que `Cargo.toml` (nom du projet, version, dépendances).\n*   **Python :** Utilise traditionnellement `requirements.txt` ou, plus récemment, `pyproject.toml` (qui utilise la même syntaxe TOML que Rust).\n*   **Java (Maven) :** Utilise le fichier `pom.xml` pour définir la configuration du projet et ses bibliothèques.\n*   **Ruby :** Utilise le fichier `Gemfile` pour gérer les dépendances.\n\nCes fichiers permettent de garantir que ton environnement de développement est identique à celui de tes collaborateurs. Pour approfondir la gestion des dépendances et voir comment ajouter des bibliothèques externes dans ton `Cargo.toml`, tu pourras te référer à la suite du cours, notamment lors de l'étude des **Collections Standards** dans le **Module 3**.",
+        "selected_text": "Le fichier Cargo.toml (écrit en syntaxe TOML - Tom's Obvious Minimal Language) est la carte d'identité de votre projet. C'est ici que vous définissez le nom du projet, sa version, l'édition de Rust utilisée, ainsi que les bibliothèques externes (appelées crates en Rust) dont votre projet a besoin."
+      }
+    ]
+  }
+}
