@@ -310,6 +310,20 @@ async def run_generation_pipeline(
         toc["custom_instructions"] = custom_instructions
         toc["level"] = level
         toc["system_prompt_id"] = system_prompt_id
+        
+        # Generate tags for the knowledge graph
+        try:
+            from app.llm import generate_course_tags
+            toc["tags"] = generate_course_tags(
+                title=toc.get("title", ""),
+                description=toc.get("description", ""),
+                api_profile=api_profile,
+                override_model=profile_model
+            )
+        except Exception as e_tags:
+            logger.error(f"Error generating tags for course: {e_tags}")
+            toc["tags"] = []
+
         with open(course_dir / "toc.json", "w", encoding="utf-8") as f:
             json.dump(toc, f, indent=2, ensure_ascii=False)
             

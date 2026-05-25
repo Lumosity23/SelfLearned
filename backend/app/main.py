@@ -91,6 +91,129 @@ def list_courses():
     courses.sort(key=lambda x: (not x.get("pinned", False), -x["created_at"]))
     return courses
 
+
+@app.get("/api/graph")
+def get_knowledge_graph():
+    """
+    Scans all course directories and returns nodes (courses) and links (common tags) for the graph representation.
+    """
+    from app.config import settings
+    data_dir = settings.get_data_dir()
+    
+    nodes = []
+    links = []
+    
+    # 1. Retrieve all courses and their tags
+    courses = []
+    for entry in data_dir.iterdir():
+        if entry.is_dir() and not entry.name.startswith("."):
+            toc_path = entry / "toc.json"
+            if toc_path.exists():
+                try:
+                    with open(toc_path, "r", encoding="utf-8") as f:
+                        toc = json.load(f)
+                    
+                    course_id = entry.name
+                    title = toc.get("title", course_id)
+                    description = toc.get("description", "")
+                    
+                    # Read or heuristically compute tags if missing
+                    tags = toc.get("tags")
+                    if tags is None:
+                        # Apply fast heuristics to classify older courses dynamically
+                        heuristics = []
+                        combined = (title + " " + description).lower()
+                        keywords_map = {
+                            "python": "python",
+                            "rust": "rust",
+                            "javascript": "javascript",
+                            "typescript": "typescript",
+                            "java": "java",
+                            "cpp": "c++",
+                            "programmation": "programmation",
+                            "quantique": "quantique",
+                            "physique": "physique",
+                            "chimie": "chimie",
+                            "math": "mathématiques",
+                            "vulkan": "vulkan",
+                            "graphics": "infographie",
+                            "3d": "3d",
+                            "ia": "intelligence artificielle",
+                            "machine learning": "ia",
+                            "docker": "docker",
+                            "git": "git",
+                            "reseau": "réseau",
+                            "securite": "sécurité",
+                            "data": "data science",
+                            "web": "web",
+                            "dev": "développement",
+                            "react": "react",
+                            "node": "node.js",
+                            "sql": "base de données",
+                            "database": "base de données"
+                        }
+                        for kw, tag in keywords_map.items():
+                            if kw in combined:
+                                if tag not in heuristics:
+                                    heuristics.append(tag)
+                        if not heuristics:
+                            heuristics = ["informatique" if any(x in combined for x in ["program", "code", "logiciel"]) else "général"]
+                        tags = heuristics
+                        
+                        # Dynamically save back tags to toc.json so we cache them!
+                        try:
+                            toc["tags"] = tags
+                            with open(toc_path, "w", encoding="utf-8") as f_out:
+                                json.dump(toc, f_out, indent=2, ensure_ascii=False)
+                        except Exception as e_write:
+                            logger.error(f"Failed to write dynamically resolved tags to toc.json: {e_write}")
+                    
+                    courses.append({
+                        "id": course_id,
+                        "title": title,
+                        "description": description,
+                        "tags": tags
+                    })
+                except Exception as e:
+                    logger.error(f"Error reading toc.json in {entry.name}: {e}")
+                    
+    # 2. Build nodes list
+    for course in courses:
+        nodes.append({
+            "id": course["id"],
+            "label": course["title"],
+            "description": course["description"],
+            "tags": course["tags"],
+            "group": course["tags"][0] if course["tags"] else "général"
+        })
+        
+    # 3. Create links between courses sharing at least one common tag
+    created_pairs = set()
+    for i in range(len(courses)):
+        for j in range(i + 1, len(courses)):
+            c1 = courses[i]
+            c2 = courses[j]
+            
+            # Find intersection of tags
+            common = set(c1["tags"]).intersection(set(c2["tags"]))
+            if common:
+                # Create a link
+                link_id = f"{c1['id']}--{c2['id']}"
+                if link_id not in created_pairs:
+                    links.append({
+                        "source": c1["id"],
+                        "target": c2["id"],
+                        "value": len(common),
+                        "common_tags": list(common)
+                    })
+                    created_pairs.add(link_id)
+                    
+    return {
+        "nodes": nodes,
+        "links": links
+    }
+
+
 @app.get("/api/courses/{course_id}/toc")
 def get_course_toc(course_id: str):
     """

@@ -802,3 +802,130 @@ Directives de réponse pour le professeur virtuel :
         }
     return content.strip(), usage_dict
 
+
+def generate_course_tags(
+    title: str,
+    description: str,
+    api_profile: Optional[Any] = None,
+    override_model: Optional[str] = None
+) -> List[str]:
+    """
+    Generates a list of 2 to 4 keywords/tags in lowercase for a course based on its title and description.
+    """
+    # Heuristics fallback in case LLM fails or is not available
+    heuristics = []
+    combined = (title + " " + description).lower()
+    
+    # Simple keyword checking
+    keywords_map = {
+        "python": "python",
+        "rust": "rust",
+        "javascript": "javascript",
+        "typescript": "typescript",
+        "java": "java",
+        "cpp": "c++",
+        "programmation": "programmation",
+        "quantique": "quantique",
+        "physique": "physique",
+        "chimie": "chimie",
+        "math": "mathématiques",
+        "vulkan": "vulkan",
+        "graphics": "infographie",
+        "3d": "3d",
+        "ia": "intelligence artificielle",
+        "machine learning": "ia",
+        "docker": "docker",
+        "git": "git",
+        "reseau": "réseau",
+        "securite": "sécurité",
+        "data": "data science",
+        "web": "web",
+        "dev": "développement",
+        "react": "react",
+        "node": "node.js",
+        "sql": "base de données",
+        "database": "base de données"
+    }
+    
+    for kw, tag in keywords_map.items():
+        if kw in combined:
+            if tag not in heuristics:
+                heuristics.append(tag)
+                
+    # If no heuristics, give a general topic
+    if not heuristics:
+        heuristics = ["informatique" if any(x in combined for x in ["program", "code", "logiciel"]) else "général"]
+
+    active_profile = api_profile or settings_manager.get_active_profile()
+    if not active_profile:
+        return heuristics[:4]
+        
+    profile_model = override_model or active_profile.model or "gemini-flash-latest"
+    
+    prompt = f"""Analyse le titre et la description du cours suivant et retourne entre 2 et 4 tags / mots-clés simples de classification en minuscules (ex: ["physique", "quantique"] ou ["programmation", "python"]).
+
+Titre du cours : "{title}"
+Description : "{description}"
+
+Tu DOIS impérativement répondre sous la forme d'une liste JSON de chaînes de caractères (ex: ["tag1", "tag2"]). Rien d'autre.
+"""
+
+    try:
+        if active_profile.type == "gemini":
+            content, _ = call_gemini_api(
+                api_key=active_profile.api_key,
+                model=profile_model,
+                system_prompt="Tu es un assistant chargé de catégoriser des cours avec des tags JSON.",
+                user_prompt=prompt,
+                temperature=0.1,
+                response_json=True
+            )
+        elif active_profile.type == "aws_bedrock":
+            content, _ = call_bedrock_api(
+                api_key=active_profile.api_key,
+                base_url=active_profile.base_url,
+                model=profile_model,
+                system_prompt="Tu es un assistant chargé de catégoriser des cours avec des tags JSON.",
+                user_prompt=prompt,
+                temperature=0.1
+            )
+        else:
+            client = get_llm_client(active_profile)
+            response = client.chat.completions.create(
+                model=profile_model,
+                messages=[
+                    {"role": "system", "content": "Tu es un assistant chargé de catégoriser des cours avec des tags JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                response_format={"type": "json_object"}
+            )
+            content = response.choices[0].message.content or "[]"
+            
+        content_clean = content.strip()
+        if content_clean.startswith("```"):
+            lines = content_clean.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines[-1].startswith("```"):
+                lines = lines[:-1]
+            content_clean = "\n".join(lines).strip()
+            
+        # Parse JSON
+        parsed = json.loads(content_clean)
+        if isinstance(parsed, list):
+            tags = [str(t).lower().strip() for t in parsed if t]
+            return tags[:5]
+        elif isinstance(parsed, dict):
+            # Sometimes LLM wraps in an object e.g. {"tags": [...]}
+            for k, v in parsed.items():
+                if isinstance(v, list):
+                    tags = [str(t).lower().strip() for t in v if t]
+                    return tags[:5]
+            
+        return heuristics[:4]
+    except Exception as e:
+        logger.warning(f"Error generating LLM tags for course: {e}. Falling back to heuristics.")
+        return heuristics[:4]
+
+

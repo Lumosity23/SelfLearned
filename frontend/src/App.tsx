@@ -4,6 +4,7 @@ import CoursePresentation from './pages/CoursePresentation';
 import CourseReader from './pages/CourseReader';
 import FileExplorerPage from './pages/FileExplorerPage';
 import Settings from './pages/Settings';
+import Graph from './pages/Graph';
 import { ToastProvider } from './components/ToastProvider';
 import { ThemeProvider } from './components/ThemeContext';
 
@@ -18,6 +19,7 @@ function AppContent() {
         <Route path="/course/:courseId/read/:submoduleId" element={<CourseReader />} />
         <Route path="/explorer" element={<FileExplorerPage />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/graph" element={<Graph />} />
       </Routes>
     </ToastProvider>
   );

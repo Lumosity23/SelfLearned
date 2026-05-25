@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, FolderOpen, Settings, GraduationCap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, FolderOpen, Settings, GraduationCap, ChevronLeft, ChevronRight, Brain } from 'lucide-react';
 
 export const MainSidebar: React.FC = () => {
   const location = useLocation();
@@ -18,8 +18,9 @@ export const MainSidebar: React.FC = () => {
   }, [isCollapsed]);
 
   // Determine active route highlights
-  const isHomeActive = currentPath === '/' || (currentPath.startsWith('/course') && currentPath !== '/explorer');
+  const isHomeActive = currentPath === '/' || (currentPath.startsWith('/course') && currentPath !== '/explorer' && currentPath !== '/settings' && currentPath !== '/graph');
   const isExplorerActive = currentPath === '/explorer';
+  const isGraphActive = currentPath === '/graph';
   const isSettingsActive = currentPath === '/settings';
 
   return (
@@ -81,6 +82,27 @@ export const MainSidebar: React.FC = () => {
           {isCollapsed && (
             <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
               Explorateur RAW
+            </div>
+          )}
+        </Link>
+
+        {/* Graphe de Connaissances */}
+        <Link
+          to="/graph"
+          className={`group relative flex items-center rounded-md transition-all duration-150 ${
+            isCollapsed ? 'justify-center p-2' : 'px-3 py-2 gap-3'
+          } ${
+            isGraphActive
+              ? 'bg-dark-800 text-white border border-dark-700/50 font-medium'
+              : 'text-dark-400 hover:bg-dark-800/40 hover:text-white border border-transparent'
+          }`}
+          title={isCollapsed ? "Graphe de connaissances" : ""}
+        >
+          <Brain className={`h-4 w-4 shrink-0 ${isGraphActive ? 'text-white' : 'text-dark-400 group-hover:text-white transition-colors'}`} />
+          {!isCollapsed && <span className="text-sm font-medium">Graphe de connaissances</span>}
+          {isCollapsed && (
+            <div className="absolute left-14 scale-0 rounded bg-dark-900 border border-dark-700 px-2 py-1 text-[10px] font-medium text-white group-hover:scale-100 transition-all duration-150 shadow-md z-30 pointer-events-none whitespace-nowrap">
+              Graphe de connaissances
             </div>
           )}
         </Link>
