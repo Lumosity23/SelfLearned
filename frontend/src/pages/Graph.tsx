@@ -52,14 +52,14 @@ export const Graph: React.FC = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
-  // Physics settings (Euler integration)
-  const repulsion = 400; // Coulomb repulsion constant
-  const attraction = 0.04; // Hooke's attraction constant
-  const restLength = 120; // Natural link distance
-  const gravity = 0.03; // Pull force to center
-  const friction = 0.85; // Damping factor
+  // Viscous, smooth physics settings (Damped Euler integration)
+  const repulsion = 180; // Coulomb repulsion constant
+  const attraction = 0.015; // Hooke's attraction constant
+  const restLength = 130; // Natural link distance
+  const gravity = 0.008; // Gentle pull force to center
+  const friction = 0.72; // Damping factor (lower = more damping / viscous friction)
 
-  // Node physics references to avoid recreation in render loop
+  // Node physics references
   const nodesRef = useRef<GraphNode[]>([]);
   const linksRef = useRef<GraphLink[]>([]);
   const dragNodeRef = useRef<GraphNode | null>(null);
@@ -166,7 +166,7 @@ export const Graph: React.FC = () => {
 
       if (nodes.length > 0) {
         // --- 1. PHYSICS UPDATE ---
-        // A. Coulomb Repulsion
+        // A. Coulomb Repulsion (push nodes apart)
         for (let i = 0; i < nodes.length; i++) {
           const n1 = nodes[i];
           for (let j = i + 1; j < nodes.length; j++) {
@@ -189,7 +189,7 @@ export const Graph: React.FC = () => {
           }
         }
 
-        // B. Hooke's Attraction
+        // B. Hooke's Attraction (pull linked nodes together)
         for (let i = 0; i < links.length; i++) {
           const link = links[i];
           const n1 = link.sourceNode!;
@@ -227,8 +227,18 @@ export const Graph: React.FC = () => {
             n.vx = 0;
             n.vy = 0;
           } else {
+            // Apply friction/viscosity dampening
             n.vx *= friction;
             n.vy *= friction;
+            
+            // Speed limiter for viscous movement
+            const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+            const maxSpeed = 3.5;
+            if (speed > maxSpeed) {
+              n.vx = (n.vx / speed) * maxSpeed;
+              n.vy = (n.vy / speed) * maxSpeed;
+            }
+
             n.x += n.vx;
             n.y += n.vy;
           }
@@ -236,8 +246,10 @@ export const Graph: React.FC = () => {
       }
 
       // --- 2. DRAW GRAPH ---
-      // Background fill matching zinc-950 of the application
-      ctx.fillStyle = '#09090b';
+      // Dynamically fetch the --bg-main background variable of active design theme
+      const rootStyle = getComputedStyle(document.documentElement);
+      const bgMain = rootStyle.getPropertyValue('--bg-main').trim() || '#09090b';
+      ctx.fillStyle = bgMain;
       ctx.fillRect(0, 0, width, height);
 
       // Save standard context, apply Zoom & Pan transform
@@ -245,7 +257,7 @@ export const Graph: React.FC = () => {
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Draw infinite grid lines inside world coordinates
+      // Draw infinite grid lines matching app visual style
       ctx.strokeStyle = '#18181b'; // zinc-900 grid lines
       ctx.lineWidth = 0.5;
       const gridSpacing = 60;
@@ -293,7 +305,7 @@ export const Graph: React.FC = () => {
         ctx.stroke();
       });
 
-      // B. DRAW NODES
+      // B. DRAW NODES (Clean zinc-scale coloring)
       nodes.forEach(n => {
         const isHovered = hoveredNode && hoveredNode.id === n.id;
         const isSelected = selectedNode && selectedNode.id === n.id;
@@ -302,7 +314,6 @@ export const Graph: React.FC = () => {
         // Node circle filling in clean zinc shades
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        
         ctx.fillStyle = isHovered ? '#3f3f46' : '#27272a'; // zinc-700 when hovered, zinc-800 by default
         ctx.fill();
 
@@ -318,8 +329,8 @@ export const Graph: React.FC = () => {
           ctx.lineWidth = 1.5;
           ctx.stroke();
         } else if (matchesSearch) {
-          ctx.strokeStyle = '#f59e0b'; // Keep the search highlight in amber to be visible
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#e4e4e7'; // Beautiful off-white border highlight for matches
+          ctx.lineWidth = 2.0;
           ctx.stroke();
         } else {
           ctx.strokeStyle = '#18181b'; // zinc-900 border
@@ -333,14 +344,14 @@ export const Graph: React.FC = () => {
         ctx.textBaseline = 'top';
 
         // Draw shadow/halo background for text legibility
-        ctx.fillStyle = '#09090b';
+        ctx.fillStyle = bgMain;
         ctx.fillText(n.label, n.x - 1, n.y + n.radius + 6);
         ctx.fillText(n.label, n.x + 1, n.y + n.radius + 6);
         ctx.fillText(n.label, n.x, n.y + n.radius + 5);
         ctx.fillText(n.label, n.x, n.y + n.radius + 7);
 
         // Core text
-        ctx.fillStyle = isHovered ? '#ffffff' : matchesSearch ? '#f59e0b' : '#a1a1aa'; // white on hover, zinc-400 else
+        ctx.fillStyle = isHovered ? '#ffffff' : matchesSearch ? '#fafafa' : '#a1a1aa'; // white/off-white highlights
         ctx.fillText(n.label, n.x, n.y + n.radius + 6);
       });
 
@@ -383,14 +394,12 @@ export const Graph: React.FC = () => {
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
 
-    // World coordinate under mouse pointer before zooming
     const wx = (mx - pan.x) / zoom;
     const wy = (my - pan.y) / zoom;
 
     const scale = e.deltaY < 0 ? 1.08 : 0.92;
     const newZoom = Math.min(Math.max(zoom * scale, 0.2), 4.0);
 
-    // Calculate new pan to keep mouse pointer at the same world coordinates
     const newPanX = mx - wx * newZoom;
     const newPanY = my - wy * newZoom;
 
@@ -493,7 +502,7 @@ export const Graph: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-zinc-950 text-zinc-300 overflow-hidden font-sans relative">
+    <div className="flex h-screen w-screen bg-dark-950 text-dark-200 overflow-hidden font-sans relative">
       {/* Sidebar Links */}
       <MainSidebar />
 
@@ -501,31 +510,31 @@ export const Graph: React.FC = () => {
       <div className="flex-1 flex flex-col h-full overflow-hidden relative" ref={containerRef}>
         
         {/* Top Header */}
-        <header className="relative flex items-center justify-between border-b border-zinc-800/60 px-8 py-5 bg-zinc-900/10 backdrop-blur-md shrink-0 z-10">
+        <header className="relative flex items-center justify-between border-b border-dark-850 px-8 py-5 bg-dark-900/10 backdrop-blur-md shrink-0 z-10">
           <div>
-            <h1 className="text-sm font-semibold text-white tracking-tight m-0 leading-none flex items-center gap-2">
-              <Brain className="h-4 w-4 text-zinc-400" />
+            <h1 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2 m-0 leading-none">
+              <Brain className="h-4 w-4 text-dark-400" />
               Graphe de Connaissances
             </h1>
-            <p className="text-[10px] text-zinc-500 font-mono mt-1.5">Vue cartographique de vos cours connectés par affinité de tags</p>
+            <p className="text-[10px] text-dark-400 font-mono mt-1.5">Vue cartographique de vos cours connectés par affinité de tags</p>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-zinc-650" />
+            {/* Search Input with Loupe on the Right */}
+            <div className="relative flex items-center">
               <input
                 type="text"
                 placeholder="Rechercher un cours..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-48 sm:w-60 pl-8.5 pr-3 py-1 rounded-md border border-zinc-800 bg-zinc-950 text-xs text-white placeholder-zinc-600 focus:border-zinc-700 focus:outline-none transition-all"
+                className="w-48 sm:w-60 pl-3.5 pr-9 py-1.5 rounded-md border border-dark-850 bg-dark-950 text-xs text-white placeholder-dark-400 focus:border-dark-600 focus:outline-none transition-all"
               />
+              <Search className="absolute right-3 top-2.5 h-3.5 w-3.5 text-dark-400 pointer-events-none" />
             </div>
 
             <button
               onClick={resetLayout}
-              className="flex items-center gap-1.5 py-1 px-3 rounded-md border border-zinc-800 hover:border-zinc-700 bg-zinc-900/50 text-[10px] font-bold text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 py-1 px-3 rounded-md border border-dark-850 hover:border-dark-700 bg-dark-900/50 text-[10px] font-bold text-dark-200 hover:text-white transition-colors cursor-pointer"
               title="Réorganiser les nœuds"
             >
               <RotateCcw className="h-3 w-3" />
@@ -535,14 +544,14 @@ export const Graph: React.FC = () => {
         </header>
 
         {/* Dynamic Legend overlay (collapses to badge, expands on hover) */}
-        <div className="absolute left-8 bottom-8 bg-zinc-900/90 border border-zinc-800/80 backdrop-blur-md px-3 py-2.5 rounded-xl z-10 text-[10px] select-none font-mono max-w-[42px] max-h-[38px] hover:max-w-xs hover:max-h-56 transition-all duration-300 overflow-hidden cursor-pointer shadow-lg group/help text-zinc-450">
+        <div className="absolute left-8 bottom-8 bg-dark-900/90 border border-dark-850 backdrop-blur-md px-3 py-2.5 rounded-xl z-10 text-[10px] select-none font-mono max-w-[42px] max-h-[38px] hover:max-w-xs hover:max-h-56 transition-all duration-300 overflow-hidden cursor-pointer shadow-lg group/help text-dark-400">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-zinc-450 shrink-0 animate-pulse" />
-            <span className="font-bold text-zinc-300 uppercase tracking-wider text-[9px] whitespace-nowrap opacity-0 group-hover/help:opacity-100 transition-opacity duration-200">
+            <Activity className="h-4 w-4 text-dark-400 shrink-0 animate-pulse" />
+            <span className="font-bold text-zinc-350 uppercase tracking-wider text-[9px] whitespace-nowrap opacity-0 group-hover/help:opacity-100 transition-opacity duration-200">
               Aide & Contrôles
             </span>
           </div>
-          <div className="mt-3.5 space-y-2 opacity-0 group-hover/help:opacity-100 transition-opacity duration-250 whitespace-nowrap border-t border-zinc-800/80 pt-2.5">
+          <div className="mt-3.5 space-y-2 opacity-0 group-hover/help:opacity-100 transition-opacity duration-250 whitespace-nowrap border-t border-dark-850 pt-2.5">
             <p><span className="text-zinc-200 font-semibold">Glisser Nœud</span> : Déplacer physiquement</p>
             <p><span className="text-zinc-200 font-semibold">Glisser Fond</span> : Déplacer la caméra (Pan)</p>
             <p><span className="text-zinc-200 font-semibold">Molette Souris</span> : Zoomer sur le curseur</p>
@@ -552,10 +561,10 @@ export const Graph: React.FC = () => {
 
         {/* Loading Spinner */}
         {loading && (
-          <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center z-25">
+          <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-sm flex items-center justify-center z-25">
             <div className="text-center space-y-3">
-              <Loader2 className="h-8 w-8 text-zinc-400 animate-spin mx-auto" />
-              <p className="text-xs text-zinc-400 font-mono">Cartographie des modules de connaissances en cours...</p>
+              <Loader2 className="h-8 w-8 text-dark-400 animate-spin mx-auto" />
+              <p className="text-xs text-dark-400 font-mono">Cartographie des modules de connaissances en cours...</p>
             </div>
           </div>
         )}
@@ -573,18 +582,18 @@ export const Graph: React.FC = () => {
               navigate(`/course/${selectedNode.id}`);
             }
           }}
-          className="flex-1 w-full h-full bg-[#09090b] select-none cursor-grab active:cursor-grabbing"
+          className="flex-1 w-full h-full bg-dark-950 select-none cursor-grab active:cursor-grabbing"
         />
 
         {/* Inspector Sidebar Overlay */}
         {selectedNode && (
-          <div className="absolute right-8 top-28 bottom-8 w-80 bg-zinc-900/90 border border-zinc-800/80 backdrop-blur-lg rounded-2xl p-5 shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-200 select-text">
+          <div className="absolute right-8 top-28 bottom-8 w-80 bg-dark-900/90 border border-dark-850 backdrop-blur-lg rounded-2xl p-5 shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-200 select-text">
             <div className="flex-1 overflow-y-auto space-y-4">
-              <div className="flex items-start justify-between border-b border-zinc-800/60 pb-3">
+              <div className="flex items-start justify-between border-b border-dark-850 pb-3">
                 <h3 className="text-sm font-bold text-white leading-snug">{selectedNode.label}</h3>
                 <button
                   onClick={() => setSelectedNode(null)}
-                  className="text-zinc-550 hover:text-white transition-colors cursor-pointer text-xs font-mono font-bold"
+                  className="text-dark-400 hover:text-white transition-colors cursor-pointer text-xs font-mono font-bold"
                 >
                   ✕
                 </button>
@@ -592,13 +601,13 @@ export const Graph: React.FC = () => {
 
               {selectedNode.tags.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-mono uppercase text-zinc-500 tracking-wider flex items-center gap-1.5">
+                  <span className="text-[9px] font-mono uppercase text-dark-400 tracking-wider flex items-center gap-1.5">
                     <Tag className="h-3 w-3" />
                     Mots-clés / Domaines
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedNode.tags.map((t, idx) => (
-                      <span key={idx} className="text-[10px] font-semibold text-zinc-300 bg-zinc-800 border border-zinc-700/60 px-2 py-0.5 rounded">
+                      <span key={idx} className="text-[10px] font-semibold text-dark-200 bg-dark-800 border border-dark-700/60 px-2 py-0.5 rounded">
                         {t}
                       </span>
                     ))}
@@ -607,20 +616,20 @@ export const Graph: React.FC = () => {
               )}
 
               <div className="space-y-1.5">
-                <span className="text-[9px] font-mono uppercase text-zinc-500 tracking-wider flex items-center gap-1.5">
+                <span className="text-[9px] font-mono uppercase text-dark-400 tracking-wider flex items-center gap-1.5">
                   <Info className="h-3 w-3" />
                   Description pédagogique
                 </span>
-                <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                <p className="text-xs text-dark-400 leading-relaxed font-sans">
                   {selectedNode.description || "Aucune description fournie pour ce module de cours."}
                 </p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-800/60">
+            <div className="pt-4 border-t border-dark-850">
               <button
                 onClick={() => navigate(`/course/${selectedNode.id}`)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-zinc-800 hover:bg-zinc-750 border border-zinc-700/60 px-4 py-2.5 text-xs font-bold text-zinc-200 hover:text-white transition-all cursor-pointer shadow-md"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-dark-800 hover:bg-dark-700 border border-dark-700 text-xs font-bold text-dark-200 hover:text-white transition-all cursor-pointer shadow-md"
               >
                 <BookOpen className="h-3.5 w-3.5" />
                 Ouvrir la fiche du cours
