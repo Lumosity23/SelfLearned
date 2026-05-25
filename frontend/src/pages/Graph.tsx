@@ -293,14 +293,14 @@ export const Graph: React.FC = () => {
         ctx.lineTo(n2.x, n2.y);
 
         if (isHovered) {
-          ctx.strokeStyle = '#52525b'; // Highlight links on hover in zinc-600
+          ctx.strokeStyle = '#71717a'; // zinc-500 connection line on hover
           ctx.lineWidth = 1.5;
         } else if (isSelected) {
           ctx.strokeStyle = '#3f3f46'; // zinc-700 for selection links
           ctx.lineWidth = 1.2;
         } else {
-          ctx.strokeStyle = '#18181b'; // zinc-900 subtle connection line
-          ctx.lineWidth = 0.8;
+          ctx.strokeStyle = '#27272a'; // zinc-800 visible connection line by default
+          ctx.lineWidth = 1.0;
         }
         ctx.stroke();
       });
